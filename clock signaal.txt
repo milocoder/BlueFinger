@@ -1,0 +1,2 @@
+zet f_cpu op 1200000UL = 1,2 MHz
+dan doe je _delay_ms(84) en dat komt in werkelijkheid overeen met 100ms

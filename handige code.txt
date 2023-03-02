@@ -1,0 +1,9 @@
+#define __DELAY_BACKWARD_COMPATIBLE__
+plaatsen voor de #include <util/delay.h> dan kan je een variabele in de _delay_ms() zetten
+
+ddrc: ddr is data direction register, c indicates port C.
+je moet aangeven of alle pinnen van poort c input of output zijn
+met 1 geef je aan: output en met 0 geef je aan: input
+0xff = 0b11111111 = 255 = output
+0x00 = 0b00000000 = 0 = input
+

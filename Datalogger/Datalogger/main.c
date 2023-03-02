@@ -1,29 +1,28 @@
-/*
-* PIB_led_code.c
-*
-* Created: 21-2-2023 15:11:47
-* Author : Milo
-*/
-#define F_CPU 12000000UL
+#define F_CPU 16000000UL
 #include <avr/io.h>
-//#define __DELAY_BACKWARD_COMPATIBLE__
 #include <util/delay.h>
-#include "can_lib.h"
-
-
+#include "can.h"
 
 int main(void)
 {
-	DDRC = 0xFF;
+	/*
+	DDRC = 1; // 1 geeft aan dat alle pinnen van port c een output zijn. met 0 geef je aan dat de pinnen input zijn
 	while (1)
 	{
-		
-		PORTC = 0xFF;
-		_delay_ms(50);
-		PORTC = 0x00;
-		_delay_ms(50);
-		
-		
-		
+		PORTC = 1;
+		_delay_ms(25);
+		PORTC = 0;
+		_delay_ms(25);	
+	}
+	*/
+	DDRC = 1;
+	initCAN();
+	CANErrorStatus errorStatus = getLastCANError();
+	if (*(uint8_t*)&errorStatus) 
+	{
+		PORTC = 1;
+	} else 
+	{
+		PORTC = 0;
 	}
 }

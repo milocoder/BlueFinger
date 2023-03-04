@@ -1,4 +1,4 @@
-#define F_CPU 16000000UL
+#define F_CPU 8000000UL
 #include <avr/io.h>
 #include <util/delay.h>
 #include "can.h"
@@ -14,7 +14,7 @@ int main(void)
 		PORTC = 0;
 		_delay_ms(25);	
 	}
-	*/
+	
 	DDRC = 1;
 	initCAN();
 	CANErrorStatus errorStatus = getLastCANError();
@@ -24,5 +24,20 @@ int main(void)
 	} else 
 	{
 		PORTC = 0;
+	}
+	*/
+	DDRC = 1;
+	initCAN();
+	while(1)
+	{	
+		uint8_t hoi = listenForMessage(0x036, 8);
+		if(hoi == 1)
+		{
+			PORTC = 1;
+		} else
+		{
+			PORTC = 0;
+		}
+		
 	}
 }

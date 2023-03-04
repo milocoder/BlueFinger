@@ -1,6 +1,6 @@
 #ifndef CAN_H
 #define CAN_H
-#define F_CPU 16000000UL // dit moet of 16 of 8 MHz zijn
+#define F_CPU 8000000UL // dit moet of 16 of 8 MHz zijn
 #define CAN_BAUDRATE 500 // dit moet of 500 of 1000 kHz zijn
 
 #include <stdint.h>
@@ -42,7 +42,7 @@
 // CAN 2.0 type A message information
 typedef struct 
 {
-	uint16_t id : 11;
+	uint32_t id : 29; // dit was eerst 11
 	char data[8];
 	uint8_t length;
 } CANMessage;
@@ -64,7 +64,7 @@ void initCAN();
 
 CANErrorStatus getLastCANError();
 
-uint8_t listenForMessage( uint16_t id, uint8_t expectedLength );
+uint8_t listenForMessage( uint32_t id, uint8_t expectedLength );
 
 uint8_t getMessage( CANMessage * message );
 

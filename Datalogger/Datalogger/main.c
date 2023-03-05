@@ -15,29 +15,9 @@ int main(void)
 		_delay_ms(25);	
 	}
 	
-	DDRC = 1;
-	initCAN();
-	CANErrorStatus errorStatus = getLastCANError();
-	if (*(uint8_t*)&errorStatus) 
-	{
-		PORTC = 1;
-	} else 
-	{
-		PORTC = 0;
-	}
 	*/
 	DDRC = 1;
-	initCAN();
-	while(1)
-	{	
-		uint8_t hoi = listenForMessage(0x036, 8);
-		if(hoi == 1)
-		{
-			PORTC = 1;
-		} else
-		{
-			PORTC = 0;
-		}
-		
-	}
+	
+	
+	
 }

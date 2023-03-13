@@ -7,3 +7,6 @@ met 1 geef je aan: output en met 0 geef je aan: input
 0xff = 0b11111111 = 255 = output
 0x00 = 0b00000000 = 0 = input
 
+#include <avr/eeprom.h>
+eeprom_write_byte((uint8_t*)12, 255); // dit schrijft een decimale 255 (hex: FF) naar byte 12 in het eeprom geheugen
+

@@ -26,8 +26,8 @@ int main(void)
 	
 	int huidige_status_hall = 0; 
 	int vorige_status_hall = 0; 
-	float huidige_tijd_ms = 0; 
-	float vorige_tijd_ms = 0; 	
+	uint32_t huidige_tijd_ms = 0; 
+	uint32_t vorige_tijd_ms = 0; 	
 	
 	int addressHall = 0;
 	
@@ -52,15 +52,15 @@ int main(void)
 			float snelheidms = OMTREK_WIEL / verschil_tijd_s;
 			float snelheidKmH = snelheidms * 3.6;  		
 			writeFloatToEEPROM(snelheidKmH, addressHall);
-			addressHall += 3;		
+			addressHall += 2;		
 			
 			
-			
-			vorige_tijd_ms = huidige_tijd_ms; 
+			timer1_millis = 0; 
+			//vorige_tijd_ms = huidige_tijd_ms; 
 
 			}
 			
-			vorige_status_hall = huidige_status_hall; 
+		vorige_status_hall = huidige_status_hall; 
 		
     }	
 }
@@ -72,6 +72,5 @@ void writeFloatToEEPROM(float value, int address)
 	int val2 = (int)((value-val1)*100)+1; // pak kommagetal en doe keer 100
 	eeprom_write_byte((uint8_t*)address, val1);
 	eeprom_write_byte((uint8_t*)address+1, val2);
-	eeprom_write_byte((uint8_t*)address+2, 0);
 	
 }

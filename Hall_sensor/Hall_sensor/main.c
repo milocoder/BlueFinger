@@ -6,7 +6,7 @@
  */ 
 
 #define F_CPU 16000000UL
-#define OMTREK_WIEL	 135
+#define OMTREK_WIEL	 1.35
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -26,7 +26,7 @@ int main(void)
 	
 	int huidige_status_hall = 0; 
 	int vorige_status_hall = 0; 
-	unsigned long huidige_tijd_ms = millis(); 
+	unsigned long huidige_tijd_ms = 0; 
 	unsigned long vorige_tijd_ms = 0; 	
 	
 	int addressHall = 1;
@@ -43,22 +43,30 @@ int main(void)
 		
 		if (vorige_status_hall != huidige_status_hall && huidige_status_hall == 1) {
 		
+			huidige_tijd_ms = millis();
 			unsigned long verschil_tijd_ms = huidige_tijd_ms - vorige_tijd_ms; 
+			unsigned long verschil_tijd_s = verschil_tijd_ms / 1000; 
 			
-			float afstand_cm = OMTREK_WIEL; 
-			float tijd_uren = (float)verschil_tijd_ms / 1000.0 / 3600.0; 
-			float snelheidKmH = afstand_cm / 100000.0 / tijd_uren; 
 			
+			//float tijd_seconden = (float)verschil_tijd_ms / 1000.0; 
+			//float snelheid_ms = OMTREK_WIEL * tijd_seconden; 	
+			
+					
+			
+			float snelheidms = OMTREK_WIEL / verschil_tijd_s;
+			float snelheidKmH = snelheidms * 3.6;  		
 			writeFloatToEEPROM(snelheidKmH, addressHall);
 			addressHall += 3;		
 			
 			
-			vorige_status_hall = huidige_status_hall;
+			
 			vorige_tijd_ms = huidige_tijd_ms; 
 
 			}
+			
+			vorige_status_hall = huidige_status_hall; 
 		
-    }
+    }	
 }
 
 

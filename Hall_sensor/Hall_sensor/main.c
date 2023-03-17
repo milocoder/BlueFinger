@@ -55,7 +55,7 @@ int main(void)
 			addressHall += 2;		
 			
 			
-			timer1_millis = 0; 
+			timer1_millis = 0;				//reset millis() functie op 0; 
 			//vorige_tijd_ms = huidige_tijd_ms; 
 
 			}

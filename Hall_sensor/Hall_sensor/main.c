@@ -16,7 +16,7 @@
 #include "millis.h"
 
 
-void writeFloatToEEPROM(uint8_t value, int address);
+void writeFloatToEEPROM(float value, int address);
 
 
 int main(void)
@@ -26,10 +26,10 @@ int main(void)
 	
 	int huidige_status_hall = 0; 
 	int vorige_status_hall = 0; 
-	unsigned long huidige_tijd_ms = 0; 
-	unsigned long vorige_tijd_ms = 0; 	
+	float huidige_tijd_ms = 0; 
+	float vorige_tijd_ms = 0; 	
 	
-	int addressHall = 1;
+	int addressHall = 0;
 	
 	DDRF = 1;		//output ledje
 	DDRC = 0;		//input hall sensor
@@ -44,13 +44,13 @@ int main(void)
 		if (vorige_status_hall != huidige_status_hall && huidige_status_hall == 1) {
 		
 			huidige_tijd_ms = millis();
-			unsigned long verschil_tijd_ms = huidige_tijd_ms - vorige_tijd_ms; 
-			unsigned long verschil_tijd_s = verschil_tijd_ms / 1000; 
+			float verschil_tijd_ms = huidige_tijd_ms - vorige_tijd_ms; 
+			float verschil_tijd_s = verschil_tijd_ms / 1000; 
 	
 					
 			
-			uint8_t snelheidms = OMTREK_WIEL / verschil_tijd_s;
-			uint8_t snelheidKmH = snelheidms * 3.6;  		
+			float snelheidms = OMTREK_WIEL / verschil_tijd_s;
+			float snelheidKmH = snelheidms * 3.6;  		
 			writeFloatToEEPROM(snelheidKmH, addressHall);
 			addressHall += 3;		
 			
@@ -66,11 +66,12 @@ int main(void)
 }
 
 
-void writeFloatToEEPROM(uint8_t value, int address)
+void writeFloatToEEPROM(float value, int address)
 {
-	uint8_t val1 = value; // pak getal voor de komma
-	//int val2 = (int)((value-val1)*100)+1; // pak kommagetal en doe keer 100
+	int val1 = (int)value; // pak getal voor de komma
+	int val2 = (int)((value-val1)*100)+1; // pak kommagetal en doe keer 100
 	eeprom_write_byte((uint8_t*)address, val1);
-	//eeprom_write_byte((uint8_t*)address+1, val2);
+	eeprom_write_byte((uint8_t*)address+1, val2);
+	eeprom_write_byte((uint8_t*)address+2, 0);
 	
 }

@@ -6,7 +6,7 @@
  */ 
 
 #define F_CPU 16000000UL
-#define OMTREK_WIEL	 1.35
+#define OMTREK_WIEL	 135
 
 #include <avr/io.h>
 #include <avr/interrupt.h>

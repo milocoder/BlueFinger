@@ -18,6 +18,7 @@
 
 void writeFloatToEEPROM(float value, int address);
 
+
 int main(void)
 {	
 	init_millis(16000000UL);
@@ -25,7 +26,7 @@ int main(void)
 	
 	int huidige_status_hall = 0; 
 	int vorige_status_hall = 0; 
-	unsigned long huidige_tijd_ms = 0; 
+	unsigned long huidige_tijd_ms = millis(); 
 	unsigned long vorige_tijd_ms = 0; 	
 	
 	int addressHall = 1;
@@ -41,7 +42,7 @@ int main(void)
 		huidige_status_hall = PINC & (1 << PC0); 
 		
 		if (vorige_status_hall != huidige_status_hall && huidige_status_hall == 1) {
-			huidige_tijd_ms = millis(); 
+		
 			unsigned long verschil_tijd_ms = huidige_tijd_ms - vorige_tijd_ms; 
 			
 			float afstand_cm = OMTREK_WIEL; 
@@ -55,7 +56,7 @@ int main(void)
 			vorige_status_hall = huidige_status_hall;
 			vorige_tijd_ms = huidige_tijd_ms; 
 
-		}
+			}
 		
     }
 }

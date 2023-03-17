@@ -1,5 +1,5 @@
-input_file_location = 'C:/Users/School/Desktop/PIB/BlueFinger/PythonReadEEPROM/DocumentEEPROM.txt'
-output_file_location = 'C:/Users/School/Desktop/PIB/BlueFinger/PythonReadEEPROM/DocumentEEPROMBeter.txt'
+input_file_location = 'C:/Users/johan/OneDrive/Bureaublad/PIB_code/BlueFinger/PythonReadEEPROM/DocumentEEPROM.txt'
+output_file_location = 'C:/Users/johan/OneDrive/Bureaublad/PIB_code/BlueFinger/PythonReadEEPROM/DocumentBeter.txt'
 # Open the input and output files
 with open(input_file_location, 'r') as input_file, open(output_file_location, 'w') as output_file:
     # Iterate through each line in the input file

@@ -16,6 +16,8 @@
 #include "millis.h"
 
 
+void writeFloatToEEPROM(float value, int address);
+
 int main(void)
 {	
 	init_millis(16000000UL);
@@ -46,10 +48,24 @@ int main(void)
 			float tijd_uren = (float)verschil_tijd_ms / 1000.0 / 3600.0; 
 			float snelheidKmH = afstand_cm / 100000.0 / tijd_uren; 
 			
-	
+			writeFloatToEEPROM(snelheidKmH, addressHall);
+			addressHall += 3;		
+			
+			
+			vorige_status_hall = huidige_status_hall;
+			vorige_tijd_ms = huidige_tijd_ms; 
 
 		}
 		
     }
 }
 
+
+void writeFloatToEEPROM(float value, int address)
+{
+	int val1 = (int)value; // pak getal voor de komma
+	int val2 = (int)((value-val1)*100)+1; // pak kommagetal en doe keer 100
+	eeprom_write_byte((uint8_t*)address, val1);
+	eeprom_write_byte((uint8_t*)address+1, val2);
+	
+}

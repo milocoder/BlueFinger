@@ -119,25 +119,27 @@ float CalculateSpeed() {
 	if(PINC & (1 << PC0)){
 		rpmaantal++;
 		PORTF = 0xFF;	//led lichtje voor feedback
+	}
+	
+		// Meet de snelheid alleen als er minstens één omwenteling is gedetecteerd en een kwart seconde voorbij is
+		if(rpmaantal > 0 && TijdsVerschilSeconden > 0.25) {
+			snelheidKmH = (OmtrekWiel* rpmaantal * 3.6) / TijdsVerschilSeconden;
+			
+		
+
+			// Reset de teller en de timer voor de volgende meting
+			rpmaantal = 0;
+			VorigeMilli = HuidigAantalMili;
+		}
+
+
+		// Als er meer dan 2 seconden voorbij is dan en de rmpaantal is gelijk aan 0 -> auto staat stil of aan opstarten. Min. meting snelheid = 2.5 kmh
+		if(TijdsVerschilSeconden > 2 && rpmaantal == 0) snelheidKmH = 0.0;
+		
 	
 	}
-	// Meet de snelheid alleen als er minstens één omwenteling is gedetecteerd en een kwart seconde voorbij is
-	if(rpmaantal > 0 && TijdsVerschilSeconden > 0.25) {
-		snelheidKmH = (OmtrekWiel* rpmaantal * 3.6) / TijdsVerschilSeconden;
-			return snelheidKmH;
-
-		// Reset de teller en de timer voor de volgende meting
-		rpmaantal = 0;
-		VorigeMilli = HuidigAantalMili;
-	}
-
-
-	// Als er meer dan 2 seconden voorbij is dan en de rmpaantal is gelijk aan 0 -> auto staat stil of aan opstarten. Min. meting snelheid = 2.5 kmh
-	if(TijdsVerschilSeconden > 2 && rpmaantal == 0) snelheidKmH = 0.0;
-	
 	
 
-	
 }
 
 void writeFloatToEEPROM(float value, int address)

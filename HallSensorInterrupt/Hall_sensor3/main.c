@@ -51,7 +51,7 @@ int main(void)
     while (1) 
     {
 		uint32_t huidig_aantal_ms = millis(); 
-		double huidig_aantal_sec = huidig_aantal_ms/1000; 
+		uint32_t huidig_aantal_sec = huidig_aantal_ms/1000; 
 		
 		
 		if (rpm_aantal > 0 && huidig_aantal_sec => 0.25) {

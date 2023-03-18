@@ -45,7 +45,7 @@ unsigned long millis (void)
   unsigned long millis_return;
 
   // Ensure this cannot be disrupted
-  ATOMIC_BLOCK(ATOMIC_FORCEON) {
+ ATOMIC_BLOCK(ATOMIC_FORCEON) {
     millis_return = timer1_millis;
   }
   return millis_return;

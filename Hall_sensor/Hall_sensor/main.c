@@ -32,7 +32,7 @@ int main(void)
 	while(1)
 	{
 		
-		huidigeStatusHall = !(~PINC & (1 << PC0));
+		huidigeStatusHall = PINC & (1 << PC0); //was eerst: if(!(~PINC & (1 << PC0)))
 		if(huidigeStatusHall) {
 			if(vorigeStatusHall == 0)
 			{

@@ -47,7 +47,7 @@ int main(void)
 		
 		if(millis() - timer >= 418) // 418 komt overeen met 5 seconden in werkelijkheid
 		{			
-			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 418;
+			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 5;
 			float snelheidkmh = snelheidms * 3.6;
 			writeFloatToEEPROM(snelheidkmh, addressHall);
 			
@@ -62,7 +62,7 @@ int main(void)
 void writeFloatToEEPROM(float value, int address)
 {
 	int val1 = (int)value; // pak getal voor de komma
-	int val2 = (int)((value-val1)*100)+1; // pak kommagetal en doe keer 100
+	int val2 = (int)((value-val1)*100); // pak kommagetal en doe keer 100
 	eeprom_write_byte((uint8_t*)address, val1);
 	eeprom_write_byte((uint8_t*)address+1, val2);
 	

@@ -7,59 +7,55 @@
 #include <stdio.h>
 #include "millis.h"
 
-volatile int rpmaantal = 0; 
-float snelheidKmH = 0.0; // Snelheid in km/h
-float snelheidms = 0.0; 
-
+// if(!(~PINC & (1 << PC0))) hiermee kijk je of pin hoog is
 
 void writeFloatToEEPROM(float value, int address);
-
 
 int main(void)
 {	
 	init_millis(12000000UL);
 	sei();  // Enable interrupts
 	
-	//int huidige_status_hall = 1; 
-	//int vorige_status_hall = 0; 
-	//uint32_t huidige_tijd_ms = 0; 
-	unsigned long VorigeAantalMili = 0; 	
+	// initialiseer in- en outputs
+	DDRF = 0xFF;	//output led
+	DDRC = 0;		// input hall sensor
+	PORTC = 0;
+	PORTF = 0;
 	
 	int addressHall = 0;
 	float omtrek_wiel = 1.35;
-	float TijdVerschilSeconden = 0; 
+	volatile int rpmaantal = 0;
+	int vorigeStatusHall = 0;
+	int huidigeStatusHall = 0;
+	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
 		
-	DDRF = 0xFF;		//output ledje
-	DDRC = 0;		//input hall sensor
-	PORTC = 0;
-	
-	while(1) {
-	
-		unsigned long HuidigeAantalMili = millis();
-		TijdVerschilSeconden = (float)(HuidigeAantalMili - VorigeAantalMili)/1000;
+	while(1)
+	{
 		
-		if(TijdVerschilSeconden > 0.1)
-		{
-			if (!(~PINC & (1 << PC0))) {
-				rpmaantal++;
-			}			
+		huidigeStatusHall = !(~PINC & (1 << PC0));
+		if(huidigeStatusHall) {
+			if(vorigeStatusHall == 0)
+			{
+				PORTF = 1;
+				rpmaantal += 1;
+				vorigeStatusHall = 1;
+			} else {
+				PORTF = 0;
+			}
 		}
+		vorigeStatusHall = huidigeStatusHall;
 		
-		// Meet de snelheid alleen als er minstens één omwenteling is gedetecteerd en 0.1 seconde voorbij is
-		if(rpmaantal > 0) {
-			PORTF = 0xFF;	//led lichtje voor feedback
-			snelheidms = omtrek_wiel / TijdVerschilSeconden; 
-			snelheidKmH = snelheidms * 3.6;
-			
-			writeFloatToEEPROM(snelheidKmH, addressHall);
+		if(millis() - timer >= 418) // 418 komt overeen met 5 seconden in werkelijkheid
+		{			
+			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 418;
+			float snelheidkmh = snelheidms * 3.6;
+			writeFloatToEEPROM(snelheidkmh, addressHall);
 			
 			addressHall += 2;
-
-			// Reset de teller en de timer voor de volgende meting
-			rpmaantal = 0;
-			VorigeAantalMili = millis();
-			PORTF = 0x00;
-		}		
+			rpmaantal = 0; // reset rpm
+			timer = millis(); // reset timer
+		}
+		
 	}
 }
 

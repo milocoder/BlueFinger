@@ -1,23 +1,30 @@
-#define F_CPU 8000000UL
+#define F_CPU 16000000UL
 #include <avr/io.h>
+#include <stdio.h>
 #include <util/delay.h>
 #include "can.h"
 
 int main(void)
 {
-	/*
-	DDRC = 1; // 1 geeft aan dat alle pinnen van port c een output zijn. met 0 geef je aan dat de pinnen input zijn
-	while (1)
-	{
-		PORTC = 1;
-		_delay_ms(25);
-		PORTC = 0;
-		_delay_ms(25);	
+	initCAN();
+	
+	CANMessage message;
+	message.id = 2; 
+	message.length = 8; 
+	message.data[0] = 0; 
+	message.data[1] = 1;
+	message.data[2] = 2; 
+	message.data[3] = 3; 
+	message.data[4] = 4; 
+	message.data[5] = 5; 
+	message.data[6] = 6;
+	message.data[7] = 7; 
+	
+		
+	
+	while(1) {	
+		sendCAN(&message); 
+		
+		
 	}
-	
-	*/
-	DDRC = 1;
-	
-	
-	
 }

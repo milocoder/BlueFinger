@@ -1,6 +1,6 @@
 #ifndef CAN_H
 #define CAN_H
-#define F_CPU 8000000UL // dit moet of 16 of 8 MHz zijn
+#define F_CPU 16000000UL // dit moet of 16 of 8 MHz zijn
 #define CAN_BAUDRATE 500 // dit moet of 500 of 1000 kHz zijn
 
 #include <stdint.h>

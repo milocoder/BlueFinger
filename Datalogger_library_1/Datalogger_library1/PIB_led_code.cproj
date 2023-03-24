@@ -12,39 +12,39 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>Datalogger</AssemblyName>
-    <Name>Datalogger</Name>
-    <RootNamespace>Datalogger</RootNamespace>
+    <AssemblyName>PIB_led_code</AssemblyName>
+    <Name>PIB_led_code</Name>
+    <RootNamespace>PIB_led_code</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
     <ProgFlashFromRam>true</ProgFlashFromRam>
-    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <RamSnippetAddress />
     <UncachedRange />
     <preserveEEPROM>true</preserveEEPROM>
-    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <OverrideVtorValue />
     <BootSegment>2</BootSegment>
     <ResetRule>0</ResetRule>
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <EraseKey />
     <AsfFrameworkConfig>
-      <framework-data>
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.42.0" />
-  </dependencies>
-</framework-data>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.49.1" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <AvrGcc>
-        <avrgcc.common.Device>-mmcu=at90can64 -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\gcc\dev\at90can64"</avrgcc.common.Device>
+        <avrgcc.common.Device>-mmcu=at90can64 -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.6.364\gcc\dev\at90can64"</avrgcc.common.Device>
         <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -59,26 +59,21 @@
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
-            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.6.364\include\</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
         <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
         <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
         <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
         <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-        <avrgcc.linker.libraries.Libraries>
-          <ListValues>
-            <Value>libm</Value>
-          </ListValues>
-        </avrgcc.linker.libraries.Libraries>
         <avrgcc.linker.libraries.LibrarySearchPaths>
           <ListValues>
-            <Value>C:\Users\School\Desktop\PIB\AT90CANLib</Value>
+            <Value>C:\Users\johan\Documents\Atmel Studio\7.0\PIB_led_code\PIB_led_code</Value>
           </ListValues>
         </avrgcc.linker.libraries.LibrarySearchPaths>
         <avrgcc.assembler.general.IncludePaths>
           <ListValues>
-            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.6.364\include\</Value>
           </ListValues>
         </avrgcc.assembler.general.IncludePaths>
       </AvrGcc>
@@ -87,7 +82,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGcc>
-        <avrgcc.common.Device>-mmcu=at90can64 -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\gcc\dev\at90can64"</avrgcc.common.Device>
+        <avrgcc.common.Device>-mmcu=at90can64 -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.6.364\gcc\dev\at90can64"</avrgcc.common.Device>
         <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -102,7 +97,7 @@
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
-            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.6.364\include\</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
         <avrgcc.compiler.optimization.level>Optimize debugging experience (-Og)</avrgcc.compiler.optimization.level>
@@ -110,19 +105,14 @@
         <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
         <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
         <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-        <avrgcc.linker.libraries.Libraries>
-          <ListValues>
-            <Value>libm</Value>
-          </ListValues>
-        </avrgcc.linker.libraries.Libraries>
         <avrgcc.linker.libraries.LibrarySearchPaths>
           <ListValues>
-            <Value>C:\Users\School\Desktop\PIB\AT90CANLib</Value>
+            <Value>C:\Users\johan\Documents\Atmel Studio\7.0\PIB_led_code\PIB_led_code</Value>
           </ListValues>
         </avrgcc.linker.libraries.LibrarySearchPaths>
         <avrgcc.assembler.general.IncludePaths>
           <ListValues>
-            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.6.364\include\</Value>
           </ListValues>
         </avrgcc.assembler.general.IncludePaths>
         <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
@@ -130,13 +120,61 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="can.c">
+    <Compile Include="at90can.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_buffer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_disable_dyn_filter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_error_register.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_get_buf_message.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_get_dyn_filter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_get_message.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_private.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_send_buf_message.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_send_message.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_set_dyn_filter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="at90can_set_mode.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="can.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="can_buffer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="can_buffer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="can_private.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

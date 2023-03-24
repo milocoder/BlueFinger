@@ -1,0 +1,170 @@
+
+USART_at90can.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         0000000e  00800100  0000011c  00000190  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000011c  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  0000019e  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001d0  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000058  00000000  00000000  0000020c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000c12  00000000  00000000  00000264  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000ae6  00000000  00000000  00000e76  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000002ee  00000000  00000000  0000195c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000084  00000000  00000000  00001c4c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000051d  00000000  00000000  00001cd0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    0000007d  00000000  00000000  000021ed  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000038  00000000  00000000  0000226a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 4a 00 	jmp	0x94	; 0x94 <__ctors_end>
+   4:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+   8:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+   c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  10:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  14:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  18:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  1c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  20:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  24:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  28:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  2c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  30:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  34:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  38:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  3c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  40:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  44:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  48:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  4c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  50:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  54:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  58:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  5c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  60:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  64:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  68:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  6c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  70:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  74:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  78:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  7c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  80:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  84:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  88:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  8c:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+  90:	0c 94 5f 00 	jmp	0xbe	; 0xbe <__bad_interrupt>
+
+00000094 <__ctors_end>:
+  94:	11 24       	eor	r1, r1
+  96:	1f be       	out	0x3f, r1	; 63
+  98:	cf ef       	ldi	r28, 0xFF	; 255
+  9a:	d0 e1       	ldi	r29, 0x10	; 16
+  9c:	de bf       	out	0x3e, r29	; 62
+  9e:	cd bf       	out	0x3d, r28	; 61
+
+000000a0 <__do_copy_data>:
+  a0:	11 e0       	ldi	r17, 0x01	; 1
+  a2:	a0 e0       	ldi	r26, 0x00	; 0
+  a4:	b1 e0       	ldi	r27, 0x01	; 1
+  a6:	ec e1       	ldi	r30, 0x1C	; 28
+  a8:	f1 e0       	ldi	r31, 0x01	; 1
+  aa:	02 c0       	rjmp	.+4      	; 0xb0 <__do_copy_data+0x10>
+  ac:	05 90       	lpm	r0, Z+
+  ae:	0d 92       	st	X+, r0
+  b0:	ae 30       	cpi	r26, 0x0E	; 14
+  b2:	b1 07       	cpc	r27, r17
+  b4:	d9 f7       	brne	.-10     	; 0xac <__do_copy_data+0xc>
+  b6:	0e 94 61 00 	call	0xc2	; 0xc2 <main>
+  ba:	0c 94 8c 00 	jmp	0x118	; 0x118 <_exit>
+
+000000be <__bad_interrupt>:
+  be:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000c2 <main>:
+#define BAUD 9600
+#define UBRR_VAL (F_CPU / (16UL * BAUD)) - 1
+
+int main(void)
+{
+	initUart(UBRR_VAL);
+  c2:	87 e6       	ldi	r24, 0x67	; 103
+  c4:	90 e0       	ldi	r25, 0x00	; 0
+  c6:	0e 94 6c 00 	call	0xd8	; 0xd8 <initUart>
+	putString("Hello world!");
+  ca:	80 e0       	ldi	r24, 0x00	; 0
+  cc:	91 e0       	ldi	r25, 0x01	; 1
+  ce:	0e 94 7f 00 	call	0xfe	; 0xfe <putString>
+  d2:	80 e0       	ldi	r24, 0x00	; 0
+  d4:	90 e0       	ldi	r25, 0x00	; 0
+  d6:	08 95       	ret
+
+000000d8 <initUart>:
+    /* Wait until the data is received */
+    while (!(UCSR0A & (1 << RXC0)))
+    	;
+
+    return UDR0;
+}
+  d8:	9f 70       	andi	r25, 0x0F	; 15
+  da:	90 93 c5 00 	sts	0x00C5, r25	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7f00c5>
+  de:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7f00c4>
+  e2:	88 e1       	ldi	r24, 0x18	; 24
+  e4:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__TEXT_REGION_LENGTH__+0x7f00c1>
+  e8:	86 e0       	ldi	r24, 0x06	; 6
+  ea:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__TEXT_REGION_LENGTH__+0x7f00c2>
+  ee:	08 95       	ret
+
+000000f0 <putChar>:
+  f0:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f00c0>
+  f4:	95 ff       	sbrs	r25, 5
+  f6:	fc cf       	rjmp	.-8      	; 0xf0 <putChar>
+  f8:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f00c6>
+  fc:	08 95       	ret
+
+000000fe <putString>:
+
+void putString (char *str)
+{
+  fe:	cf 93       	push	r28
+ 100:	df 93       	push	r29
+ 102:	ec 01       	movw	r28, r24
+    while (*str)
+ 104:	03 c0       	rjmp	.+6      	; 0x10c <putString+0xe>
+    	putChar(*str++);
+ 106:	21 96       	adiw	r28, 0x01	; 1
+ 108:	0e 94 78 00 	call	0xf0	; 0xf0 <putChar>
+    return UDR0;
+}
+
+void putString (char *str)
+{
+    while (*str)
+ 10c:	88 81       	ld	r24, Y
+ 10e:	81 11       	cpse	r24, r1
+ 110:	fa cf       	rjmp	.-12     	; 0x106 <putString+0x8>
+    	putChar(*str++);
+}
+ 112:	df 91       	pop	r29
+ 114:	cf 91       	pop	r28
+ 116:	08 95       	ret
+
+00000118 <_exit>:
+ 118:	f8 94       	cli
+
+0000011a <__stop_program>:
+ 11a:	ff cf       	rjmp	.-2      	; 0x11a <__stop_program>

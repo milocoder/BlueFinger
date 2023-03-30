@@ -3,31 +3,31 @@ Datalogger.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  00000472  2**0
+  0 .data         00000000  00800100  00800100  0000048c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000003fe  00000000  00000000  00000074  2**1
+  1 .text         00000418  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          000000de  00800100  00800100  00000472  2**0
+  2 .bss          000000de  00800100  00800100  0000048c  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000472  2**0
+  3 .comment      00000030  00000000  00000000  0000048c  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000004a4  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000004bc  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000070  00000000  00000000  000004e0  2**0
+  5 .debug_aranges 00000070  00000000  00000000  000004f8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000f3e  00000000  00000000  00000550  2**0
+  6 .debug_info   00000f72  00000000  00000000  00000568  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000c26  00000000  00000000  0000148e  2**0
+  7 .debug_abbrev 00000c4d  00000000  00000000  000014da  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000624  00000000  00000000  000020b4  2**0
+  8 .debug_line   0000064e  00000000  00000000  00002127  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000120  00000000  00000000  000026d8  2**2
+  9 .debug_frame  00000120  00000000  00000000  00002778  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000062a  00000000  00000000  000027f8  2**0
+ 10 .debug_str    00000634  00000000  00000000  00002898  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    0000042a  00000000  00000000  00002e22  2**0
+ 11 .debug_loc    00000449  00000000  00000000  00002ecc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000050  00000000  00000000  0000324c  2**0
+ 12 .debug_ranges 00000050  00000000  00000000  00003315  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -93,7 +93,7 @@ Disassembly of section .text:
   ac:	b2 07       	cpc	r27, r18
   ae:	e1 f7       	brne	.-8      	; 0xa8 <.do_clear_bss_loop>
   b0:	0e 94 af 01 	call	0x35e	; 0x35e <main>
-  b4:	0c 94 fd 01 	jmp	0x3fa	; 0x3fa <_exit>
+  b4:	0c 94 0a 02 	jmp	0x414	; 0x414 <_exit>
 
 000000b8 <__bad_interrupt>:
   b8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -443,7 +443,7 @@ ISR( CANIT_vect )
  2f2:	01 96       	adiw	r24, 0x01	; 1
  2f4:	64 e1       	ldi	r22, 0x14	; 20
  2f6:	70 e0       	ldi	r23, 0x00	; 0
- 2f8:	0e 94 d5 01 	call	0x3aa	; 0x3aa <__divmodhi4>
+ 2f8:	0e 94 e2 01 	call	0x3c4	; 0x3c4 <__divmodhi4>
  2fc:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <bufIndex>
 
 			// Acknowledge the interrupt
@@ -515,9 +515,9 @@ ISR( CANIT_vect )
  35c:	18 95       	reti
 
 0000035e <main>:
-#include <stdio.h>
-#include <util/delay.h>
-#include "can.h"
+
+#define CAN_ID    0x780
+
 
 int main(void)
 {
@@ -533,104 +533,132 @@ int main(void)
  370:	cd bf       	out	0x3d, r28	; 61
 	initCAN();
  372:	0e 94 5e 00 	call	0xbc	; 0xbc <initCAN>
-	
-	CANMessage message;
-	message.id = 2; 
- 376:	92 e0       	ldi	r25, 0x02	; 2
- 378:	99 83       	std	Y+1, r25	; 0x01
- 37a:	8a 81       	ldd	r24, Y+2	; 0x02
- 37c:	88 7f       	andi	r24, 0xF8	; 248
- 37e:	8a 83       	std	Y+2, r24	; 0x02
-	message.length = 8; 
- 380:	88 e0       	ldi	r24, 0x08	; 8
- 382:	8b 87       	std	Y+11, r24	; 0x0b
-	message.data[0] = 0; 
- 384:	1b 82       	std	Y+3, r1	; 0x03
-	message.data[1] = 1;
- 386:	81 e0       	ldi	r24, 0x01	; 1
- 388:	8c 83       	std	Y+4, r24	; 0x04
-	message.data[2] = 2; 
- 38a:	9d 83       	std	Y+5, r25	; 0x05
-	message.data[3] = 3; 
- 38c:	83 e0       	ldi	r24, 0x03	; 3
- 38e:	8e 83       	std	Y+6, r24	; 0x06
-	message.data[4] = 4; 
- 390:	84 e0       	ldi	r24, 0x04	; 4
- 392:	8f 83       	std	Y+7, r24	; 0x07
-	message.data[5] = 5; 
- 394:	85 e0       	ldi	r24, 0x05	; 5
- 396:	88 87       	std	Y+8, r24	; 0x08
-	message.data[6] = 6;
- 398:	86 e0       	ldi	r24, 0x06	; 6
- 39a:	89 87       	std	Y+9, r24	; 0x09
-	message.data[7] = 7; 
- 39c:	87 e0       	ldi	r24, 0x07	; 7
- 39e:	8a 87       	std	Y+10, r24	; 0x0a
-	
 		
 	
 	while(1) {	
-		sendCAN(&message); 
- 3a0:	ce 01       	movw	r24, r28
- 3a2:	01 96       	adiw	r24, 0x01	; 1
- 3a4:	0e 94 94 00 	call	0x128	; 0x128 <sendCAN>
- 3a8:	fb cf       	rjmp	.-10     	; 0x3a0 <main+0x42>
+		
+		CANMessage tx_message;
+		tx_message.id = CAN_ID; 
+ 376:	80 e8       	ldi	r24, 0x80	; 128
+ 378:	89 83       	std	Y+1, r24	; 0x01
+ 37a:	8a 81       	ldd	r24, Y+2	; 0x02
+ 37c:	87 60       	ori	r24, 0x07	; 7
+ 37e:	8a 83       	std	Y+2, r24	; 0x02
+		
+		for (uint8_t i=0; i < 8; i++) {		//nodig?
+ 380:	80 e0       	ldi	r24, 0x00	; 0
+ 382:	08 c0       	rjmp	.+16     	; 0x394 <main+0x36>
+			tx_message.data[i] = 0;
+ 384:	e3 e0       	ldi	r30, 0x03	; 3
+ 386:	f0 e0       	ldi	r31, 0x00	; 0
+ 388:	ec 0f       	add	r30, r28
+ 38a:	fd 1f       	adc	r31, r29
+ 38c:	e8 0f       	add	r30, r24
+ 38e:	f1 1d       	adc	r31, r1
+ 390:	10 82       	st	Z, r1
+	while(1) {	
+		
+		CANMessage tx_message;
+		tx_message.id = CAN_ID; 
+		
+		for (uint8_t i=0; i < 8; i++) {		//nodig?
+ 392:	8f 5f       	subi	r24, 0xFF	; 255
+ 394:	88 30       	cpi	r24, 0x08	; 8
+ 396:	b0 f3       	brcs	.-20     	; 0x384 <main+0x26>
+			tx_message.data[i] = 0;
+		}
+		
+	
+		tx_message.length = 8;
+ 398:	88 e0       	ldi	r24, 0x08	; 8
+ 39a:	8b 87       	std	Y+11, r24	; 0x0b
+		tx_message.data[0] = 0;
+ 39c:	1b 82       	std	Y+3, r1	; 0x03
+		tx_message.data[1] = 1;
+ 39e:	81 e0       	ldi	r24, 0x01	; 1
+ 3a0:	8c 83       	std	Y+4, r24	; 0x04
+		tx_message.data[2] = 2;
+ 3a2:	82 e0       	ldi	r24, 0x02	; 2
+ 3a4:	8d 83       	std	Y+5, r24	; 0x05
+		tx_message.data[3] = 3;
+ 3a6:	83 e0       	ldi	r24, 0x03	; 3
+ 3a8:	8e 83       	std	Y+6, r24	; 0x06
+		tx_message.data[4] = 4;
+ 3aa:	84 e0       	ldi	r24, 0x04	; 4
+ 3ac:	8f 83       	std	Y+7, r24	; 0x07
+		tx_message.data[5] = 5;
+ 3ae:	85 e0       	ldi	r24, 0x05	; 5
+ 3b0:	88 87       	std	Y+8, r24	; 0x08
+		tx_message.data[6] = 6;
+ 3b2:	86 e0       	ldi	r24, 0x06	; 6
+ 3b4:	89 87       	std	Y+9, r24	; 0x09
+		tx_message.data[7] = 7;
+ 3b6:	87 e0       	ldi	r24, 0x07	; 7
+ 3b8:	8a 87       	std	Y+10, r24	; 0x0a
+		result  = sendCAN(&tx_message); 
+ 3ba:	ce 01       	movw	r24, r28
+ 3bc:	01 96       	adiw	r24, 0x01	; 1
+ 3be:	0e 94 94 00 	call	0x128	; 0x128 <sendCAN>
+		
+		
+	}
+ 3c2:	d9 cf       	rjmp	.-78     	; 0x376 <main+0x18>
 
-000003aa <__divmodhi4>:
- 3aa:	97 fb       	bst	r25, 7
- 3ac:	07 2e       	mov	r0, r23
- 3ae:	16 f4       	brtc	.+4      	; 0x3b4 <__divmodhi4+0xa>
- 3b0:	00 94       	com	r0
- 3b2:	07 d0       	rcall	.+14     	; 0x3c2 <__divmodhi4_neg1>
- 3b4:	77 fd       	sbrc	r23, 7
- 3b6:	09 d0       	rcall	.+18     	; 0x3ca <__divmodhi4_neg2>
- 3b8:	0e 94 e9 01 	call	0x3d2	; 0x3d2 <__udivmodhi4>
- 3bc:	07 fc       	sbrc	r0, 7
- 3be:	05 d0       	rcall	.+10     	; 0x3ca <__divmodhi4_neg2>
- 3c0:	3e f4       	brtc	.+14     	; 0x3d0 <__divmodhi4_exit>
+000003c4 <__divmodhi4>:
+ 3c4:	97 fb       	bst	r25, 7
+ 3c6:	07 2e       	mov	r0, r23
+ 3c8:	16 f4       	brtc	.+4      	; 0x3ce <__divmodhi4+0xa>
+ 3ca:	00 94       	com	r0
+ 3cc:	07 d0       	rcall	.+14     	; 0x3dc <__divmodhi4_neg1>
+ 3ce:	77 fd       	sbrc	r23, 7
+ 3d0:	09 d0       	rcall	.+18     	; 0x3e4 <__divmodhi4_neg2>
+ 3d2:	0e 94 f6 01 	call	0x3ec	; 0x3ec <__udivmodhi4>
+ 3d6:	07 fc       	sbrc	r0, 7
+ 3d8:	05 d0       	rcall	.+10     	; 0x3e4 <__divmodhi4_neg2>
+ 3da:	3e f4       	brtc	.+14     	; 0x3ea <__divmodhi4_exit>
 
-000003c2 <__divmodhi4_neg1>:
- 3c2:	90 95       	com	r25
- 3c4:	81 95       	neg	r24
- 3c6:	9f 4f       	sbci	r25, 0xFF	; 255
- 3c8:	08 95       	ret
+000003dc <__divmodhi4_neg1>:
+ 3dc:	90 95       	com	r25
+ 3de:	81 95       	neg	r24
+ 3e0:	9f 4f       	sbci	r25, 0xFF	; 255
+ 3e2:	08 95       	ret
 
-000003ca <__divmodhi4_neg2>:
- 3ca:	70 95       	com	r23
- 3cc:	61 95       	neg	r22
- 3ce:	7f 4f       	sbci	r23, 0xFF	; 255
+000003e4 <__divmodhi4_neg2>:
+ 3e4:	70 95       	com	r23
+ 3e6:	61 95       	neg	r22
+ 3e8:	7f 4f       	sbci	r23, 0xFF	; 255
 
-000003d0 <__divmodhi4_exit>:
- 3d0:	08 95       	ret
+000003ea <__divmodhi4_exit>:
+ 3ea:	08 95       	ret
 
-000003d2 <__udivmodhi4>:
- 3d2:	aa 1b       	sub	r26, r26
- 3d4:	bb 1b       	sub	r27, r27
- 3d6:	51 e1       	ldi	r21, 0x11	; 17
- 3d8:	07 c0       	rjmp	.+14     	; 0x3e8 <__udivmodhi4_ep>
+000003ec <__udivmodhi4>:
+ 3ec:	aa 1b       	sub	r26, r26
+ 3ee:	bb 1b       	sub	r27, r27
+ 3f0:	51 e1       	ldi	r21, 0x11	; 17
+ 3f2:	07 c0       	rjmp	.+14     	; 0x402 <__udivmodhi4_ep>
 
-000003da <__udivmodhi4_loop>:
- 3da:	aa 1f       	adc	r26, r26
- 3dc:	bb 1f       	adc	r27, r27
- 3de:	a6 17       	cp	r26, r22
- 3e0:	b7 07       	cpc	r27, r23
- 3e2:	10 f0       	brcs	.+4      	; 0x3e8 <__udivmodhi4_ep>
- 3e4:	a6 1b       	sub	r26, r22
- 3e6:	b7 0b       	sbc	r27, r23
+000003f4 <__udivmodhi4_loop>:
+ 3f4:	aa 1f       	adc	r26, r26
+ 3f6:	bb 1f       	adc	r27, r27
+ 3f8:	a6 17       	cp	r26, r22
+ 3fa:	b7 07       	cpc	r27, r23
+ 3fc:	10 f0       	brcs	.+4      	; 0x402 <__udivmodhi4_ep>
+ 3fe:	a6 1b       	sub	r26, r22
+ 400:	b7 0b       	sbc	r27, r23
 
-000003e8 <__udivmodhi4_ep>:
- 3e8:	88 1f       	adc	r24, r24
- 3ea:	99 1f       	adc	r25, r25
- 3ec:	5a 95       	dec	r21
- 3ee:	a9 f7       	brne	.-22     	; 0x3da <__udivmodhi4_loop>
- 3f0:	80 95       	com	r24
- 3f2:	90 95       	com	r25
- 3f4:	bc 01       	movw	r22, r24
- 3f6:	cd 01       	movw	r24, r26
- 3f8:	08 95       	ret
+00000402 <__udivmodhi4_ep>:
+ 402:	88 1f       	adc	r24, r24
+ 404:	99 1f       	adc	r25, r25
+ 406:	5a 95       	dec	r21
+ 408:	a9 f7       	brne	.-22     	; 0x3f4 <__udivmodhi4_loop>
+ 40a:	80 95       	com	r24
+ 40c:	90 95       	com	r25
+ 40e:	bc 01       	movw	r22, r24
+ 410:	cd 01       	movw	r24, r26
+ 412:	08 95       	ret
 
-000003fa <_exit>:
- 3fa:	f8 94       	cli
+00000414 <_exit>:
+ 414:	f8 94       	cli
 
-000003fc <__stop_program>:
- 3fc:	ff cf       	rjmp	.-2      	; 0x3fc <__stop_program>
+00000416 <__stop_program>:
+ 416:	ff cf       	rjmp	.-2      	; 0x416 <__stop_program>

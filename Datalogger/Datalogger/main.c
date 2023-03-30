@@ -4,26 +4,35 @@
 #include <util/delay.h>
 #include "can.h"
 
+#define CAN_ID    0x780
+
+
 int main(void)
 {
 	initCAN();
-	
-	CANMessage message;
-	message.id = 2; 
-	message.length = 8; 
-	message.data[0] = 0; 
-	message.data[1] = 1;
-	message.data[2] = 2; 
-	message.data[3] = 3; 
-	message.data[4] = 4; 
-	message.data[5] = 5; 
-	message.data[6] = 6;
-	message.data[7] = 7; 
-	
+	uint8_t result; 
 		
 	
 	while(1) {	
-		sendCAN(&message); 
+		
+		CANMessage tx_message;
+		tx_message.id = CAN_ID; 
+		
+		for (uint8_t i=0; i < 8; i++) {		
+			tx_message.data[i] = 0;
+		}
+		
+	
+		tx_message.length = 8;
+		tx_message.data[0] = 0;
+		tx_message.data[1] = 1;
+		tx_message.data[2] = 2;
+		tx_message.data[3] = 3;
+		tx_message.data[4] = 4;
+		tx_message.data[5] = 5;
+		tx_message.data[6] = 6;
+		tx_message.data[7] = 7;
+		result  = sendCAN(&tx_message); 
 		
 		
 	}

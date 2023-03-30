@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000dc  00000000  00000000  00002884  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000615  00000000  00000000  00002960  2**0
+ 10 .debug_str    00000605  00000000  00000000  00002960  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000348  00000000  00000000  00002f75  2**0
+ 11 .debug_loc    00000348  00000000  00000000  00002f65  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  000032bd  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  000032ad  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -229,7 +229,7 @@ int main(void)
 	while(1)
 	{
 		
-		huidigeStatusHall = PINC & (1 << PC0);
+		huidigeStatusHall = PINC & (1 << PC0); //was eerst: if(!(~PINC & (1 << PC0)))
  16a:	26 b1       	in	r18, 0x06	; 6
 		if(huidigeStatusHall) {
  16c:	20 fb       	bst	r18, 0
@@ -237,7 +237,7 @@ int main(void)
  170:	b0 f8       	bld	r11, 0
  172:	20 ff       	sbrs	r18, 0
  174:	0b c0       	rjmp	.+22     	; 0x18c <main+0x5c>
-			if(vorigeStatusHall == 0)
+			if(vorigeStatusHall == 0) // was 0
  176:	89 2b       	or	r24, r25
  178:	41 f4       	brne	.+16     	; 0x18a <main+0x5a>
 			{
@@ -251,7 +251,7 @@ int main(void)
  184:	9a 83       	std	Y+2, r25	; 0x02
  186:	89 83       	std	Y+1, r24	; 0x01
  188:	01 c0       	rjmp	.+2      	; 0x18c <main+0x5c>
-				vorigeStatusHall = 1;
+				vorigeStatusHall = 1; // was 1
 			} else {
 				PORTF = 0;
  18a:	11 ba       	out	0x11, r1	; 17

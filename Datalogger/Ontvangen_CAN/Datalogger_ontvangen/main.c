@@ -2,7 +2,7 @@
  * Datalogger_ontvangen.c
  *
  * Created: 30-3-2023 13:27:06
- * Author : Kohan
+ * Author : Johan
  */ 
 
 

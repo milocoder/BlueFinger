@@ -14,8 +14,9 @@
 #define SCK             PINB1
 
 
-void SPI_Init(void); 
-void SPI_Transmit(char cData)
+void SPI_init(void); 
+uint8_t SPI_transfer(uint8_t data)
+
 
 
 
@@ -26,9 +27,20 @@ int main(void)
     {
     }
 }
+void SPI_init()
+{
+	// set CS, MOSI and SCK to output
+	DDR_SPI |= (1 << CS) | (1 << MOSI) | (1 << SCK);
+
+	// enable pull up resistor in MISO
+	DDR_SPI |= (1 << MISO);
+
+	// enable SPI, set as master, and clock to fosc/128
+	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
+}
 
 
-void SPI_Init(void)
+void SPI_init(void)
 {
 	/* Set MOSI and SCK output, all others input */
 	DDR_SPI = (1<<MOSI)|(1<<SCK);
@@ -36,11 +48,15 @@ void SPI_Init(void)
 	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
 }
 
-
-void SPI_Transmit(char cData)
+uint8_t SPI_transfer(uint8_t data)
 {
-	/* Start transmission */
-	SPDR = cData;
-	/* Wait for transmission complete */
-	while(!(SPSR & (1<<SPIF)));
+	// load data into register
+	SPDR = data;
+
+	// Wait for transmission complete
+	while(!(SPSR & (1 << SPIF)));
+
+	// return SPDR
+	return SPDR;
 }
+

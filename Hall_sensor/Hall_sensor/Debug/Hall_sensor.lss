@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000dc  00000000  00000000  00002884  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000605  00000000  00000000  00002960  2**0
+ 10 .debug_str    00000615  00000000  00000000  00002960  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000348  00000000  00000000  00002f65  2**0
+ 11 .debug_loc    00000348  00000000  00000000  00002f75  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  000032ad  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  000032bd  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -237,7 +237,7 @@ int main(void)
  170:	b0 f8       	bld	r11, 0
  172:	20 ff       	sbrs	r18, 0
  174:	0b c0       	rjmp	.+22     	; 0x18c <main+0x5c>
-			if(vorigeStatusHall == 0) // was 0
+			if(vorigeStatusHall == 0)
  176:	89 2b       	or	r24, r25
  178:	41 f4       	brne	.+16     	; 0x18a <main+0x5a>
 			{
@@ -251,7 +251,7 @@ int main(void)
  184:	9a 83       	std	Y+2, r25	; 0x02
  186:	89 83       	std	Y+1, r24	; 0x01
  188:	01 c0       	rjmp	.+2      	; 0x18c <main+0x5c>
-				vorigeStatusHall = 1; // was 1
+				vorigeStatusHall = 1;
 			} else {
 				PORTF = 0;
  18a:	11 ba       	out	0x11, r1	; 17
@@ -259,7 +259,7 @@ int main(void)
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		if(millis() - timer >= 418) // 418 komt overeen met 5 seconden in werkelijkheid
+		if(millis() - timer >= 250) // 418 komt overeen met3 seconden in werkelijkheid
  18c:	0e 94 37 01 	call	0x26e	; 0x26e <millis>
  190:	dc 01       	movw	r26, r24
  192:	cb 01       	movw	r24, r22
@@ -267,13 +267,13 @@ int main(void)
  196:	9d 09       	sbc	r25, r13
  198:	ae 09       	sbc	r26, r14
  19a:	bf 09       	sbc	r27, r15
- 19c:	82 3a       	cpi	r24, 0xA2	; 162
- 19e:	91 40       	sbci	r25, 0x01	; 1
+ 19c:	8a 3f       	cpi	r24, 0xFA	; 250
+ 19e:	91 05       	cpc	r25, r1
  1a0:	a1 05       	cpc	r26, r1
  1a2:	b1 05       	cpc	r27, r1
  1a4:	00 f3       	brcs	.-64     	; 0x166 <main+0x36>
 		{			
-			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 5;
+			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 3;
  1a6:	69 81       	ldd	r22, Y+1	; 0x01
  1a8:	7a 81       	ldd	r23, Y+2	; 0x02
  1aa:	07 2e       	mov	r0, r23
@@ -288,7 +288,7 @@ int main(void)
  1be:	0e 94 ea 02 	call	0x5d4	; 0x5d4 <__mulsf3>
  1c2:	20 e0       	ldi	r18, 0x00	; 0
  1c4:	30 e0       	ldi	r19, 0x00	; 0
- 1c6:	40 ea       	ldi	r20, 0xA0	; 160
+ 1c6:	40 e4       	ldi	r20, 0x40	; 64
  1c8:	50 e4       	ldi	r21, 0x40	; 64
  1ca:	0e 94 b4 01 	call	0x368	; 0x368 <__divsf3>
 			float snelheidkmh = snelheidms * 3.6;

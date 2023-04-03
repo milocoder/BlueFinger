@@ -1,18 +1,56 @@
-#define F_CPU 12000000UL
-
+#define F_CPU 16000000UL
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
-#include <avr/eeprom.h>
 #include <stdio.h>
-#include "millis.h"
+#include <util/delay.h>
 
-// if(!(~PINC & (1 << PC0))) hiermee kijk je of pin hoog is
+#include "can.h"
+//#include "millis.h"
+
+#define CAN_ID    0x50
+
+
+int main(void)
+{
+	initCAN();
+	uint8_t result;
+	
+	DDRC = 0xFF;	//output led
+	PORTC = 0;
+	
+	uint8_t a = 1;
+	while(1) {
+		CANMessage tx_message;
+		tx_message.id = CAN_ID;
+		
+		for (uint8_t i=0; i < 8; i++) {
+			tx_message.data[i] = 0;
+		}
+		
+		tx_message.length = 8;
+		tx_message.data[0] = a & 0xFF;
+		tx_message.data[1] = 8;
+		tx_message.data[2] = 8;
+		tx_message.data[3] = 8;
+		tx_message.data[4] = 0;
+		tx_message.data[5] = 0;
+		tx_message.data[6] = 0;
+		tx_message.data[7] = a & 0xFF;
+		result  = sendCAN(&tx_message);
+		a++;
+		
+		for (uint8_t i=0; i < 8; i++) {
+			tx_message.data[i] = 0;
+		}
+		
+	}
+}
+
+/*
 
 void writeFloatToEEPROM(float value, int address);
 
 int main(void)
-{	
+{
 	init_millis(12000000UL);
 	sei();  // Enable interrupts
 	
@@ -28,7 +66,7 @@ int main(void)
 	int vorigeStatusHall = 0;
 	int huidigeStatusHall = 0;
 	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
-		
+	
 	while(1)
 	{
 		
@@ -39,15 +77,15 @@ int main(void)
 				PORTF = 1;
 				rpmaantal += 1;
 				vorigeStatusHall = 1;
-			} else {
+				} else {
 				PORTF = 0;
 			}
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		if(millis() - timer >= 250) // 418 komt overeen met3 seconden in werkelijkheid
-		{			
-			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 3;
+		if(millis() - timer >= 418) // 418 komt overeen met 5 seconden in werkelijkheid
+		{
+			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 5;
 			float snelheidkmh = snelheidms * 3.6;
 			writeFloatToEEPROM(snelheidkmh, addressHall);
 			
@@ -67,3 +105,4 @@ void writeFloatToEEPROM(float value, int address)
 	eeprom_write_byte((uint8_t*)address+1, val2);
 	
 }
+*/

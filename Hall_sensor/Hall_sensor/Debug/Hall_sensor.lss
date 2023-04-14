@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000dc  00000000  00000000  00002884  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000615  00000000  00000000  00002960  2**0
+ 10 .debug_str    00000605  00000000  00000000  00002960  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000348  00000000  00000000  00002f75  2**0
+ 11 .debug_loc    00000348  00000000  00000000  00002f65  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  000032bd  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  000032ad  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -174,10 +174,10 @@ int main(void)
  134:	00 d0       	rcall	.+0      	; 0x136 <main+0x6>
  136:	cd b7       	in	r28, 0x3d	; 61
  138:	de b7       	in	r29, 0x3e	; 62
-	init_millis(12000000UL);
+	init_millis(16000000UL);
  13a:	60 e0       	ldi	r22, 0x00	; 0
- 13c:	7b e1       	ldi	r23, 0x1B	; 27
- 13e:	87 eb       	ldi	r24, 0xB7	; 183
+ 13c:	74 e2       	ldi	r23, 0x24	; 36
+ 13e:	84 ef       	ldi	r24, 0xF4	; 244
  140:	90 e0       	ldi	r25, 0x00	; 0
  142:	0e 94 1e 01 	call	0x23c	; 0x23c <init_millis>
 	sei();  // Enable interrupts
@@ -259,7 +259,7 @@ int main(void)
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		if(millis() - timer >= 250) // 418 komt overeen met3 seconden in werkelijkheid
+		if(millis() - timer >= 300)
  18c:	0e 94 37 01 	call	0x26e	; 0x26e <millis>
  190:	dc 01       	movw	r26, r24
  192:	cb 01       	movw	r24, r22
@@ -267,8 +267,8 @@ int main(void)
  196:	9d 09       	sbc	r25, r13
  198:	ae 09       	sbc	r26, r14
  19a:	bf 09       	sbc	r27, r15
- 19c:	8a 3f       	cpi	r24, 0xFA	; 250
- 19e:	91 05       	cpc	r25, r1
+ 19c:	8c 32       	cpi	r24, 0x2C	; 44
+ 19e:	91 40       	sbci	r25, 0x01	; 1
  1a0:	a1 05       	cpc	r26, r1
  1a2:	b1 05       	cpc	r27, r1
  1a4:	00 f3       	brcs	.-64     	; 0x166 <main+0x36>

@@ -1,4 +1,4 @@
-#define F_CPU 12000000UL
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -13,7 +13,7 @@ void writeFloatToEEPROM(float value, int address);
 
 int main(void)
 {	
-	init_millis(12000000UL);
+	init_millis(16000000UL);
 	sei();  // Enable interrupts
 	
 	// initialiseer in- en outputs
@@ -45,7 +45,7 @@ int main(void)
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		if(millis() - timer >= 250) // 418 komt overeen met3 seconden in werkelijkheid
+		if(millis() - timer >= 300)
 		{			
 			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 3;
 			float snelheidkmh = snelheidms * 3.6;

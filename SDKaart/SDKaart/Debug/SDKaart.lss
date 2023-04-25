@@ -3,29 +3,29 @@ SDKaart.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  0000041a  2**0
+  0 .data         00000000  00800100  00800100  0000052c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000003c6  00000000  00000000  00000054  2**1
+  1 .text         000004d8  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  0000041a  2**0
+  2 .comment      00000030  00000000  00000000  0000052c  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000044c  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000055c  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000088  00000000  00000000  00000488  2**0
+  4 .debug_aranges 00000090  00000000  00000000  00000598  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00001266  00000000  00000000  00000510  2**0
+  5 .debug_info   0000142a  00000000  00000000  00000628  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000bd2  00000000  00000000  00001776  2**0
+  6 .debug_abbrev 00000c50  00000000  00000000  00001a52  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000612  00000000  00000000  00002348  2**0
+  7 .debug_line   000006a4  00000000  00000000  000026a2  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000188  00000000  00000000  0000295c  2**2
+  8 .debug_frame  000001f4  00000000  00000000  00002d48  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000005e6  00000000  00000000  00002ae4  2**0
+  9 .debug_str    0000061a  00000000  00000000  00002f3c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000051f  00000000  00000000  000030ca  2**0
+ 10 .debug_loc    0000078e  00000000  00000000  00003556  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000078  00000000  00000000  000035e9  2**0
+ 11 .debug_ranges 00000098  00000000  00000000  00003ce4  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -76,8 +76,8 @@ Disassembly of section .text:
   9a:	d0 e1       	ldi	r29, 0x10	; 16
   9c:	de bf       	out	0x3e, r29	; 62
   9e:	cd bf       	out	0x3d, r28	; 61
-  a0:	0e 94 dc 01 	call	0x3b8	; 0x3b8 <main>
-  a4:	0c 94 e1 01 	jmp	0x3c2	; 0x3c2 <_exit>
+  a0:	0e 94 4d 02 	call	0x49a	; 0x49a <main>
+  a4:	0c 94 6a 02 	jmp	0x4d4	; 0x4d4 <_exit>
 
 000000a8 <__bad_interrupt>:
   a8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -99,7 +99,7 @@ void SPI_init()
   b4:	88 60       	ori	r24, 0x08	; 8
   b6:	84 b9       	out	0x04, r24	; 4
 
-	// enable SPI, zet as master, and clock to fosc/128
+	// enable SPI, zet als master, and clock to fosc/128
 	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
   b8:	83 e5       	ldi	r24, 0x53	; 83
   ba:	8c bd       	out	0x2c, r24	; 44
@@ -288,480 +288,677 @@ void SD_command(uint8_t cmd, uint32_t arg, uint8_t crc)
  192:	ff 90       	pop	r15
  194:	08 95       	ret
 
-00000196 <SD_readOCR>:
+00000196 <SD_readSingleBlock>:
+// lees een 512 byte block uit het geheugen
+// token = 0xFE - succesvolle performance
+// token = 0x0X - data error
+// token = 0xFF - timeout
+uint8_t SD_readSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token)
+{
+ 196:	4f 92       	push	r4
+ 198:	5f 92       	push	r5
+ 19a:	6f 92       	push	r6
+ 19c:	7f 92       	push	r7
+ 19e:	af 92       	push	r10
+ 1a0:	bf 92       	push	r11
+ 1a2:	cf 92       	push	r12
+ 1a4:	df 92       	push	r13
+ 1a6:	ef 92       	push	r14
+ 1a8:	ff 92       	push	r15
+ 1aa:	0f 93       	push	r16
+ 1ac:	1f 93       	push	r17
+ 1ae:	cf 93       	push	r28
+ 1b0:	df 93       	push	r29
+ 1b2:	2b 01       	movw	r4, r22
+ 1b4:	3c 01       	movw	r6, r24
+ 1b6:	ea 01       	movw	r28, r20
+ 1b8:	59 01       	movw	r10, r18
+	uint8_t res1, read;
+	uint16_t readAttempts;
+
+	// set token to none
+	*token = 0xFF;
+ 1ba:	8f ef       	ldi	r24, 0xFF	; 255
+ 1bc:	f9 01       	movw	r30, r18
+ 1be:	80 83       	st	Z, r24
+
+	// assert chip select
+	SPI_transfer(0xFF);
+ 1c0:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+	CS_ENABLE();
+ 1c4:	85 b1       	in	r24, 0x05	; 5
+ 1c6:	8e 7f       	andi	r24, 0xFE	; 254
+ 1c8:	85 b9       	out	0x05, r24	; 5
+	SPI_transfer(0xFF);
+ 1ca:	8f ef       	ldi	r24, 0xFF	; 255
+ 1cc:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+
+	// send CMD17
+	SD_command(CMD17, addr, CMD17_CRC);
+ 1d0:	20 e0       	ldi	r18, 0x00	; 0
+ 1d2:	b3 01       	movw	r22, r6
+ 1d4:	a2 01       	movw	r20, r4
+ 1d6:	81 e1       	ldi	r24, 0x11	; 17
+ 1d8:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
+
+	// read R1
+	res1 = SD_readRes1();
+ 1dc:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
+ 1e0:	c8 2e       	mov	r12, r24
+
+	// if response received from card
+	if(res1 != 0xFF)
+ 1e2:	ff ef       	ldi	r31, 0xFF	; 255
+ 1e4:	8f 13       	cpse	r24, r31
+ 1e6:	09 c0       	rjmp	.+18     	; 0x1fa <SD_readSingleBlock+0x64>
+ 1e8:	2e c0       	rjmp	.+92     	; 0x246 <SD_readSingleBlock+0xb0>
+		// vb: spi clock set divided by 128. daarom 128.
+		// deze divider kunnen we aanpassen bij SPI_init()
+		// 0.1 * 16 000 000 (mhz) / (128 * 8 bytes) = 1563.
+		readAttempts = 0;
+		while(++readAttempts != SD_MAX_READ_ATTEMPTS) 
+			if((read = SPI_transfer(0xFF)) != 0xFF) break;
+ 1ea:	8f ef       	ldi	r24, 0xFF	; 255
+ 1ec:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 1f0:	d8 2e       	mov	r13, r24
+ 1f2:	8f ef       	ldi	r24, 0xFF	; 255
+ 1f4:	d8 16       	cp	r13, r24
+ 1f6:	19 f0       	breq	.+6      	; 0x1fe <SD_readSingleBlock+0x68>
+ 1f8:	08 c0       	rjmp	.+16     	; 0x20a <SD_readSingleBlock+0x74>
+ 1fa:	00 e0       	ldi	r16, 0x00	; 0
+ 1fc:	10 e0       	ldi	r17, 0x00	; 0
+		// verzonden moeten worden om 100ms te wachten
+		// vb: spi clock set divided by 128. daarom 128.
+		// deze divider kunnen we aanpassen bij SPI_init()
+		// 0.1 * 16 000 000 (mhz) / (128 * 8 bytes) = 1563.
+		readAttempts = 0;
+		while(++readAttempts != SD_MAX_READ_ATTEMPTS) 
+ 1fe:	0f 5f       	subi	r16, 0xFF	; 255
+ 200:	1f 4f       	sbci	r17, 0xFF	; 255
+ 202:	0b 31       	cpi	r16, 0x1B	; 27
+ 204:	e6 e0       	ldi	r30, 0x06	; 6
+ 206:	1e 07       	cpc	r17, r30
+ 208:	81 f7       	brne	.-32     	; 0x1ea <SD_readSingleBlock+0x54>
+			if((read = SPI_transfer(0xFF)) != 0xFF) break;
+
+		// if response token is 0xFE
+		if(read == 0xFE)
+ 20a:	fe ef       	ldi	r31, 0xFE	; 254
+ 20c:	df 12       	cpse	r13, r31
+ 20e:	19 c0       	rjmp	.+50     	; 0x242 <SD_readSingleBlock+0xac>
+ 210:	0c c0       	rjmp	.+24     	; 0x22a <SD_readSingleBlock+0x94>
+		{
+			// read 512 byte block
+			for(uint16_t i = 0; i < 512; i++) *buf++ = SPI_transfer(0xFF);
+ 212:	7e 01       	movw	r14, r28
+ 214:	8f ef       	ldi	r24, 0xFF	; 255
+ 216:	e8 1a       	sub	r14, r24
+ 218:	f8 0a       	sbc	r15, r24
+ 21a:	8f ef       	ldi	r24, 0xFF	; 255
+ 21c:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 220:	88 83       	st	Y, r24
+ 222:	0f 5f       	subi	r16, 0xFF	; 255
+ 224:	1f 4f       	sbci	r17, 0xFF	; 255
+ 226:	e7 01       	movw	r28, r14
+ 228:	02 c0       	rjmp	.+4      	; 0x22e <SD_readSingleBlock+0x98>
+ 22a:	00 e0       	ldi	r16, 0x00	; 0
+ 22c:	10 e0       	ldi	r17, 0x00	; 0
+ 22e:	01 15       	cp	r16, r1
+ 230:	e2 e0       	ldi	r30, 0x02	; 2
+ 232:	1e 07       	cpc	r17, r30
+ 234:	70 f3       	brcs	.-36     	; 0x212 <SD_readSingleBlock+0x7c>
+
+			// read 16-bit CRC
+			SPI_transfer(0xFF);
+ 236:	8f ef       	ldi	r24, 0xFF	; 255
+ 238:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+			SPI_transfer(0xFF);
+ 23c:	8f ef       	ldi	r24, 0xFF	; 255
+ 23e:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+		}
+
+		// set token to card response
+		*token = read;
+ 242:	f5 01       	movw	r30, r10
+ 244:	d0 82       	st	Z, r13
+	}
+
+	// deassert chip select
+	SPI_transfer(0xFF);
+ 246:	8f ef       	ldi	r24, 0xFF	; 255
+ 248:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+	CS_DISABLE();
+ 24c:	85 b1       	in	r24, 0x05	; 5
+ 24e:	81 60       	ori	r24, 0x01	; 1
+ 250:	85 b9       	out	0x05, r24	; 5
+	SPI_transfer(0xFF);
+ 252:	8f ef       	ldi	r24, 0xFF	; 255
+ 254:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+
+	return res1;
+}
+ 258:	8c 2d       	mov	r24, r12
+ 25a:	df 91       	pop	r29
+ 25c:	cf 91       	pop	r28
+ 25e:	1f 91       	pop	r17
+ 260:	0f 91       	pop	r16
+ 262:	ff 90       	pop	r15
+ 264:	ef 90       	pop	r14
+ 266:	df 90       	pop	r13
+ 268:	cf 90       	pop	r12
+ 26a:	bf 90       	pop	r11
+ 26c:	af 90       	pop	r10
+ 26e:	7f 90       	pop	r7
+ 270:	6f 90       	pop	r6
+ 272:	5f 90       	pop	r5
+ 274:	4f 90       	pop	r4
+ 276:	08 95       	ret
+
+00000278 <SD_readOCR>:
 	return SD_SUCCESS;
 	
 }
 
 void SD_readOCR(uint8_t *res)
 {
- 196:	cf 93       	push	r28
- 198:	df 93       	push	r29
- 19a:	ec 01       	movw	r28, r24
+ 278:	cf 93       	push	r28
+ 27a:	df 93       	push	r29
+ 27c:	ec 01       	movw	r28, r24
 	 // assert chip select
 	 SPI_transfer(0xFF);
- 19c:	8f ef       	ldi	r24, 0xFF	; 255
- 19e:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 27e:	8f ef       	ldi	r24, 0xFF	; 255
+ 280:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	 CS_ENABLE();
- 1a2:	85 b1       	in	r24, 0x05	; 5
- 1a4:	8e 7f       	andi	r24, 0xFE	; 254
- 1a6:	85 b9       	out	0x05, r24	; 5
+ 284:	85 b1       	in	r24, 0x05	; 5
+ 286:	8e 7f       	andi	r24, 0xFE	; 254
+ 288:	85 b9       	out	0x05, r24	; 5
 	 SPI_transfer(0xFF);
- 1a8:	8f ef       	ldi	r24, 0xFF	; 255
- 1aa:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 28a:	8f ef       	ldi	r24, 0xFF	; 255
+ 28c:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 
 	 // send CMD58
 	 SD_command(CMD58, CMD58_ARG, CMD58_CRC);
- 1ae:	20 e0       	ldi	r18, 0x00	; 0
- 1b0:	40 e0       	ldi	r20, 0x00	; 0
- 1b2:	50 e0       	ldi	r21, 0x00	; 0
- 1b4:	ba 01       	movw	r22, r20
- 1b6:	8a e3       	ldi	r24, 0x3A	; 58
- 1b8:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
+ 290:	20 e0       	ldi	r18, 0x00	; 0
+ 292:	40 e0       	ldi	r20, 0x00	; 0
+ 294:	50 e0       	ldi	r21, 0x00	; 0
+ 296:	ba 01       	movw	r22, r20
+ 298:	8a e3       	ldi	r24, 0x3A	; 58
+ 29a:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
 
 	 // read response
 	 SD_readRes3_7(res);
- 1bc:	ce 01       	movw	r24, r28
- 1be:	0e 94 72 00 	call	0xe4	; 0xe4 <SD_readRes3_7>
+ 29e:	ce 01       	movw	r24, r28
+ 2a0:	0e 94 72 00 	call	0xe4	; 0xe4 <SD_readRes3_7>
 
 	 // deassert chip select
 	 SPI_transfer(0xFF);
- 1c2:	8f ef       	ldi	r24, 0xFF	; 255
- 1c4:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2a4:	8f ef       	ldi	r24, 0xFF	; 255
+ 2a6:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	 CS_DISABLE();
- 1c8:	85 b1       	in	r24, 0x05	; 5
- 1ca:	81 60       	ori	r24, 0x01	; 1
- 1cc:	85 b9       	out	0x05, r24	; 5
+ 2aa:	85 b1       	in	r24, 0x05	; 5
+ 2ac:	81 60       	ori	r24, 0x01	; 1
+ 2ae:	85 b9       	out	0x05, r24	; 5
 	 SPI_transfer(0xFF);
- 1ce:	8f ef       	ldi	r24, 0xFF	; 255
- 1d0:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2b0:	8f ef       	ldi	r24, 0xFF	; 255
+ 2b2:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 }
- 1d4:	df 91       	pop	r29
- 1d6:	cf 91       	pop	r28
- 1d8:	08 95       	ret
+ 2b6:	df 91       	pop	r29
+ 2b8:	cf 91       	pop	r28
+ 2ba:	08 95       	ret
 
-000001da <SD_sendApp>:
+000002bc <SD_sendApp>:
 	res[3] = SPI_transfer(0xFF);
 	res[4] = SPI_transfer(0xFF);
 }
 
 uint8_t SD_sendApp()
 {
- 1da:	cf 93       	push	r28
+ 2bc:	cf 93       	push	r28
 	SPI_transfer(0xFF);
- 1dc:	8f ef       	ldi	r24, 0xFF	; 255
- 1de:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2be:	8f ef       	ldi	r24, 0xFF	; 255
+ 2c0:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_ENABLE();
- 1e2:	85 b1       	in	r24, 0x05	; 5
- 1e4:	8e 7f       	andi	r24, 0xFE	; 254
- 1e6:	85 b9       	out	0x05, r24	; 5
+ 2c4:	85 b1       	in	r24, 0x05	; 5
+ 2c6:	8e 7f       	andi	r24, 0xFE	; 254
+ 2c8:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 1e8:	8f ef       	ldi	r24, 0xFF	; 255
- 1ea:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2ca:	8f ef       	ldi	r24, 0xFF	; 255
+ 2cc:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	
 	SD_command(CMD55, CMD55_ARG, CMD55_CRC);
- 1ee:	20 e0       	ldi	r18, 0x00	; 0
- 1f0:	40 e0       	ldi	r20, 0x00	; 0
- 1f2:	50 e0       	ldi	r21, 0x00	; 0
- 1f4:	ba 01       	movw	r22, r20
- 1f6:	87 e3       	ldi	r24, 0x37	; 55
- 1f8:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
+ 2d0:	20 e0       	ldi	r18, 0x00	; 0
+ 2d2:	40 e0       	ldi	r20, 0x00	; 0
+ 2d4:	50 e0       	ldi	r21, 0x00	; 0
+ 2d6:	ba 01       	movw	r22, r20
+ 2d8:	87 e3       	ldi	r24, 0x37	; 55
+ 2da:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
 	uint8_t res1 = SD_readRes1();
- 1fc:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
- 200:	c8 2f       	mov	r28, r24
+ 2de:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
+ 2e2:	c8 2f       	mov	r28, r24
 	
 	SPI_transfer(0xFF);
- 202:	8f ef       	ldi	r24, 0xFF	; 255
- 204:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2e4:	8f ef       	ldi	r24, 0xFF	; 255
+ 2e6:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_DISABLE();
- 208:	85 b1       	in	r24, 0x05	; 5
- 20a:	81 60       	ori	r24, 0x01	; 1
- 20c:	85 b9       	out	0x05, r24	; 5
+ 2ea:	85 b1       	in	r24, 0x05	; 5
+ 2ec:	81 60       	ori	r24, 0x01	; 1
+ 2ee:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 20e:	8f ef       	ldi	r24, 0xFF	; 255
- 210:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2f0:	8f ef       	ldi	r24, 0xFF	; 255
+ 2f2:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	
 	return res1;
 }
- 214:	8c 2f       	mov	r24, r28
- 216:	cf 91       	pop	r28
- 218:	08 95       	ret
+ 2f6:	8c 2f       	mov	r24, r28
+ 2f8:	cf 91       	pop	r28
+ 2fa:	08 95       	ret
 
-0000021a <SD_sendOpCond>:
+000002fc <SD_sendOpCond>:
 
 uint8_t SD_sendOpCond()
 {
- 21a:	cf 93       	push	r28
+ 2fc:	cf 93       	push	r28
 	SPI_transfer(0xFF);
- 21c:	8f ef       	ldi	r24, 0xFF	; 255
- 21e:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 2fe:	8f ef       	ldi	r24, 0xFF	; 255
+ 300:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_ENABLE();
- 222:	85 b1       	in	r24, 0x05	; 5
- 224:	8e 7f       	andi	r24, 0xFE	; 254
- 226:	85 b9       	out	0x05, r24	; 5
+ 304:	85 b1       	in	r24, 0x05	; 5
+ 306:	8e 7f       	andi	r24, 0xFE	; 254
+ 308:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 228:	8f ef       	ldi	r24, 0xFF	; 255
- 22a:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 30a:	8f ef       	ldi	r24, 0xFF	; 255
+ 30c:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	
 	SD_command(ACMD41, ACMD41_ARG, ACMD41_CRC);
- 22e:	20 e0       	ldi	r18, 0x00	; 0
- 230:	40 e0       	ldi	r20, 0x00	; 0
- 232:	50 e0       	ldi	r21, 0x00	; 0
- 234:	60 e0       	ldi	r22, 0x00	; 0
- 236:	70 e4       	ldi	r23, 0x40	; 64
- 238:	89 e2       	ldi	r24, 0x29	; 41
- 23a:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
+ 310:	20 e0       	ldi	r18, 0x00	; 0
+ 312:	40 e0       	ldi	r20, 0x00	; 0
+ 314:	50 e0       	ldi	r21, 0x00	; 0
+ 316:	60 e0       	ldi	r22, 0x00	; 0
+ 318:	70 e4       	ldi	r23, 0x40	; 64
+ 31a:	89 e2       	ldi	r24, 0x29	; 41
+ 31c:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
 	uint8_t res1 = SD_readRes1();
- 23e:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
- 242:	c8 2f       	mov	r28, r24
+ 320:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
+ 324:	c8 2f       	mov	r28, r24
 	
 	SPI_transfer(0xFF);
- 244:	8f ef       	ldi	r24, 0xFF	; 255
- 246:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 326:	8f ef       	ldi	r24, 0xFF	; 255
+ 328:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_DISABLE();
- 24a:	85 b1       	in	r24, 0x05	; 5
- 24c:	81 60       	ori	r24, 0x01	; 1
- 24e:	85 b9       	out	0x05, r24	; 5
+ 32c:	85 b1       	in	r24, 0x05	; 5
+ 32e:	81 60       	ori	r24, 0x01	; 1
+ 330:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 250:	8f ef       	ldi	r24, 0xFF	; 255
- 252:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 332:	8f ef       	ldi	r24, 0xFF	; 255
+ 334:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	
 	return res1;
 }
- 256:	8c 2f       	mov	r24, r28
- 258:	cf 91       	pop	r28
- 25a:	08 95       	ret
+ 338:	8c 2f       	mov	r24, r28
+ 33a:	cf 91       	pop	r28
+ 33c:	08 95       	ret
 
-0000025c <SD_sendIfCond>:
+0000033e <SD_sendIfCond>:
 
 void SD_sendIfCond(uint8_t *res)
 {
- 25c:	cf 93       	push	r28
- 25e:	df 93       	push	r29
- 260:	ec 01       	movw	r28, r24
+ 33e:	cf 93       	push	r28
+ 340:	df 93       	push	r29
+ 342:	ec 01       	movw	r28, r24
 	// assert chip select
 	SPI_transfer(0xFF);
- 262:	8f ef       	ldi	r24, 0xFF	; 255
- 264:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 344:	8f ef       	ldi	r24, 0xFF	; 255
+ 346:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_ENABLE();
- 268:	85 b1       	in	r24, 0x05	; 5
- 26a:	8e 7f       	andi	r24, 0xFE	; 254
- 26c:	85 b9       	out	0x05, r24	; 5
+ 34a:	85 b1       	in	r24, 0x05	; 5
+ 34c:	8e 7f       	andi	r24, 0xFE	; 254
+ 34e:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 26e:	8f ef       	ldi	r24, 0xFF	; 255
- 270:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 350:	8f ef       	ldi	r24, 0xFF	; 255
+ 352:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	// send CMD8
 	SD_command(CMD8, CMD8_ARG, CMD8_CRC);
- 274:	26 e8       	ldi	r18, 0x86	; 134
- 276:	4a ea       	ldi	r20, 0xAA	; 170
- 278:	51 e0       	ldi	r21, 0x01	; 1
- 27a:	60 e0       	ldi	r22, 0x00	; 0
- 27c:	70 e0       	ldi	r23, 0x00	; 0
- 27e:	88 e0       	ldi	r24, 0x08	; 8
- 280:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
+ 356:	26 e8       	ldi	r18, 0x86	; 134
+ 358:	4a ea       	ldi	r20, 0xAA	; 170
+ 35a:	51 e0       	ldi	r21, 0x01	; 1
+ 35c:	60 e0       	ldi	r22, 0x00	; 0
+ 35e:	70 e0       	ldi	r23, 0x00	; 0
+ 360:	88 e0       	ldi	r24, 0x08	; 8
+ 362:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
 	SD_readRes7(res); // read response
- 284:	ce 01       	movw	r24, r28
- 286:	0e 94 8d 00 	call	0x11a	; 0x11a <SD_readRes7>
+ 366:	ce 01       	movw	r24, r28
+ 368:	0e 94 8d 00 	call	0x11a	; 0x11a <SD_readRes7>
 	// deassert chip select
 	SPI_transfer(0xFF);
- 28a:	8f ef       	ldi	r24, 0xFF	; 255
- 28c:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 36c:	8f ef       	ldi	r24, 0xFF	; 255
+ 36e:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_DISABLE();
- 290:	85 b1       	in	r24, 0x05	; 5
- 292:	81 60       	ori	r24, 0x01	; 1
- 294:	85 b9       	out	0x05, r24	; 5
+ 372:	85 b1       	in	r24, 0x05	; 5
+ 374:	81 60       	ori	r24, 0x01	; 1
+ 376:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 296:	8f ef       	ldi	r24, 0xFF	; 255
- 298:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 378:	8f ef       	ldi	r24, 0xFF	; 255
+ 37a:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 }
- 29c:	df 91       	pop	r29
- 29e:	cf 91       	pop	r28
- 2a0:	08 95       	ret
+ 37e:	df 91       	pop	r29
+ 380:	cf 91       	pop	r28
+ 382:	08 95       	ret
 
-000002a2 <SD_goIdleState>:
+00000384 <SD_goIdleState>:
 	res[3] = SPI_transfer(0xFF);
 	res[4] = SPI_transfer(0xFF);
 }
 
 uint8_t SD_goIdleState()
 {
- 2a2:	cf 93       	push	r28
+ 384:	cf 93       	push	r28
 	// assert chip select
 	SPI_transfer(0xFF);
- 2a4:	8f ef       	ldi	r24, 0xFF	; 255
- 2a6:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 386:	8f ef       	ldi	r24, 0xFF	; 255
+ 388:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_ENABLE();
- 2aa:	85 b1       	in	r24, 0x05	; 5
- 2ac:	8e 7f       	andi	r24, 0xFE	; 254
- 2ae:	85 b9       	out	0x05, r24	; 5
+ 38c:	85 b1       	in	r24, 0x05	; 5
+ 38e:	8e 7f       	andi	r24, 0xFE	; 254
+ 390:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 2b0:	8f ef       	ldi	r24, 0xFF	; 255
- 2b2:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 392:	8f ef       	ldi	r24, 0xFF	; 255
+ 394:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	// verstuurt CMD0
 	SD_command(CMD0, CMD0_ARG, CMD0_CRC);
- 2b6:	24 e9       	ldi	r18, 0x94	; 148
- 2b8:	40 e0       	ldi	r20, 0x00	; 0
- 2ba:	50 e0       	ldi	r21, 0x00	; 0
- 2bc:	ba 01       	movw	r22, r20
- 2be:	80 e0       	ldi	r24, 0x00	; 0
- 2c0:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
+ 398:	24 e9       	ldi	r18, 0x94	; 148
+ 39a:	40 e0       	ldi	r20, 0x00	; 0
+ 39c:	50 e0       	ldi	r21, 0x00	; 0
+ 39e:	ba 01       	movw	r22, r20
+ 3a0:	80 e0       	ldi	r24, 0x00	; 0
+ 3a2:	0e 94 a8 00 	call	0x150	; 0x150 <SD_command>
 	// lees resultaat
 	uint8_t res1 = SD_readRes1();
- 2c4:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
- 2c8:	c8 2f       	mov	r28, r24
+ 3a6:	0e 94 65 00 	call	0xca	; 0xca <SD_readRes1>
+ 3aa:	c8 2f       	mov	r28, r24
 	// deassert chip select
 	SPI_transfer(0xFF);
- 2ca:	8f ef       	ldi	r24, 0xFF	; 255
- 2cc:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 3ac:	8f ef       	ldi	r24, 0xFF	; 255
+ 3ae:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	CS_DISABLE();
- 2d0:	85 b1       	in	r24, 0x05	; 5
- 2d2:	81 60       	ori	r24, 0x01	; 1
- 2d4:	85 b9       	out	0x05, r24	; 5
+ 3b2:	85 b1       	in	r24, 0x05	; 5
+ 3b4:	81 60       	ori	r24, 0x01	; 1
+ 3b6:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 2d6:	8f ef       	ldi	r24, 0xFF	; 255
- 2d8:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 3b8:	8f ef       	ldi	r24, 0xFF	; 255
+ 3ba:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 	
 	return res1;
 }
- 2dc:	8c 2f       	mov	r24, r28
- 2de:	cf 91       	pop	r28
- 2e0:	08 95       	ret
+ 3be:	8c 2f       	mov	r24, r28
+ 3c0:	cf 91       	pop	r28
+ 3c2:	08 95       	ret
 
-000002e2 <SD_powerUpSeq>:
+000003c4 <SD_powerUpSeq>:
 	// verstuurt crc
 	SPI_transfer(crc|0x01);
 }
 
 void SD_powerUpSeq()
 {
- 2e2:	cf 93       	push	r28
+ 3c4:	cf 93       	push	r28
 	CS_DISABLE(); // deselecteer sd-kaart
- 2e4:	85 b1       	in	r24, 0x05	; 5
- 2e6:	81 60       	ori	r24, 0x01	; 1
- 2e8:	85 b9       	out	0x05, r24	; 5
+ 3c6:	85 b1       	in	r24, 0x05	; 5
+ 3c8:	81 60       	ori	r24, 0x01	; 1
+ 3ca:	85 b9       	out	0x05, r24	; 5
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
- 2ea:	8f e9       	ldi	r24, 0x9F	; 159
- 2ec:	9f e0       	ldi	r25, 0x0F	; 15
- 2ee:	01 97       	sbiw	r24, 0x01	; 1
- 2f0:	f1 f7       	brne	.-4      	; 0x2ee <SD_powerUpSeq+0xc>
- 2f2:	00 c0       	rjmp	.+0      	; 0x2f4 <SD_powerUpSeq+0x12>
- 2f4:	00 00       	nop
+ 3cc:	8f e9       	ldi	r24, 0x9F	; 159
+ 3ce:	9f e0       	ldi	r25, 0x0F	; 15
+ 3d0:	01 97       	sbiw	r24, 0x01	; 1
+ 3d2:	f1 f7       	brne	.-4      	; 0x3d0 <SD_powerUpSeq+0xc>
+ 3d4:	00 c0       	rjmp	.+0      	; 0x3d6 <SD_powerUpSeq+0x12>
+ 3d6:	00 00       	nop
 	_delay_ms(1); // wacht op opstarten
 	for(uint8_t i = 0; i < 10; i++) // stuur 80 clockcycles om te synchroniseren
- 2f6:	c0 e0       	ldi	r28, 0x00	; 0
- 2f8:	04 c0       	rjmp	.+8      	; 0x302 <SD_powerUpSeq+0x20>
+ 3d8:	c0 e0       	ldi	r28, 0x00	; 0
+ 3da:	04 c0       	rjmp	.+8      	; 0x3e4 <SD_powerUpSeq+0x20>
 	{
 		SPI_transfer(0xFF);
- 2fa:	8f ef       	ldi	r24, 0xFF	; 255
- 2fc:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 3dc:	8f ef       	ldi	r24, 0xFF	; 255
+ 3de:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 
 void SD_powerUpSeq()
 {
 	CS_DISABLE(); // deselecteer sd-kaart
 	_delay_ms(1); // wacht op opstarten
 	for(uint8_t i = 0; i < 10; i++) // stuur 80 clockcycles om te synchroniseren
- 300:	cf 5f       	subi	r28, 0xFF	; 255
- 302:	ca 30       	cpi	r28, 0x0A	; 10
- 304:	d0 f3       	brcs	.-12     	; 0x2fa <SD_powerUpSeq+0x18>
+ 3e2:	cf 5f       	subi	r28, 0xFF	; 255
+ 3e4:	ca 30       	cpi	r28, 0x0A	; 10
+ 3e6:	d0 f3       	brcs	.-12     	; 0x3dc <SD_powerUpSeq+0x18>
 	{
 		SPI_transfer(0xFF);
 	}
 	CS_DISABLE(); // deselecteer sd-kaart
- 306:	85 b1       	in	r24, 0x05	; 5
- 308:	81 60       	ori	r24, 0x01	; 1
- 30a:	85 b9       	out	0x05, r24	; 5
+ 3e8:	85 b1       	in	r24, 0x05	; 5
+ 3ea:	81 60       	ori	r24, 0x01	; 1
+ 3ec:	85 b9       	out	0x05, r24	; 5
 	SPI_transfer(0xFF);
- 30c:	8f ef       	ldi	r24, 0xFF	; 255
- 30e:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
+ 3ee:	8f ef       	ldi	r24, 0xFF	; 255
+ 3f0:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_transfer>
 }
- 312:	cf 91       	pop	r28
- 314:	08 95       	ret
+ 3f4:	cf 91       	pop	r28
+ 3f6:	08 95       	ret
 
-00000316 <SD_init>:
-		}
-    }
+000003f8 <SD_init>:
+
+	return res1;
 }
 
 uint8_t SD_init()
 {
- 316:	ff 92       	push	r15
- 318:	0f 93       	push	r16
- 31a:	1f 93       	push	r17
- 31c:	cf 93       	push	r28
- 31e:	df 93       	push	r29
- 320:	00 d0       	rcall	.+0      	; 0x322 <SD_init+0xc>
- 322:	00 d0       	rcall	.+0      	; 0x324 <SD_init+0xe>
- 324:	1f 92       	push	r1
- 326:	cd b7       	in	r28, 0x3d	; 61
- 328:	de b7       	in	r29, 0x3e	; 62
+ 3f8:	ff 92       	push	r15
+ 3fa:	0f 93       	push	r16
+ 3fc:	1f 93       	push	r17
+ 3fe:	cf 93       	push	r28
+ 400:	df 93       	push	r29
+ 402:	00 d0       	rcall	.+0      	; 0x404 <__LOCK_REGION_LENGTH__+0x4>
+ 404:	00 d0       	rcall	.+0      	; 0x406 <__LOCK_REGION_LENGTH__+0x6>
+ 406:	1f 92       	push	r1
+ 408:	cd b7       	in	r28, 0x3d	; 61
+ 40a:	de b7       	in	r29, 0x3e	; 62
 	uint8_t res[5], cmdAttempts = 0;
 	
 	SD_powerUpSeq();
- 32a:	0e 94 71 01 	call	0x2e2	; 0x2e2 <SD_powerUpSeq>
-    }
+ 40c:	0e 94 e2 01 	call	0x3c4	; 0x3c4 <SD_powerUpSeq>
+	return res1;
 }
 
 uint8_t SD_init()
 {
 	uint8_t res[5], cmdAttempts = 0;
- 32e:	00 e0       	ldi	r16, 0x00	; 0
+ 410:	00 e0       	ldi	r16, 0x00	; 0
 	
 	SD_powerUpSeq();
 	// zet kaart in idle stand
 	while((res[0] = SD_goIdleState()) != 0x01)
- 330:	03 c0       	rjmp	.+6      	; 0x338 <SD_init+0x22>
+ 412:	03 c0       	rjmp	.+6      	; 0x41a <__LOCK_REGION_LENGTH__+0x1a>
 	{
 		cmdAttempts++;
- 332:	0f 5f       	subi	r16, 0xFF	; 255
+ 414:	0f 5f       	subi	r16, 0xFF	; 255
 		if(cmdAttempts > 10) return SD_ERROR; // return error als idle stand niet lukt
- 334:	0b 30       	cpi	r16, 0x0B	; 11
- 336:	78 f5       	brcc	.+94     	; 0x396 <SD_init+0x80>
+ 416:	0b 30       	cpi	r16, 0x0B	; 11
+ 418:	78 f5       	brcc	.+94     	; 0x478 <__LOCK_REGION_LENGTH__+0x78>
 {
 	uint8_t res[5], cmdAttempts = 0;
 	
 	SD_powerUpSeq();
 	// zet kaart in idle stand
 	while((res[0] = SD_goIdleState()) != 0x01)
- 338:	0e 94 51 01 	call	0x2a2	; 0x2a2 <SD_goIdleState>
- 33c:	18 2f       	mov	r17, r24
- 33e:	89 83       	std	Y+1, r24	; 0x01
- 340:	81 30       	cpi	r24, 0x01	; 1
- 342:	b9 f7       	brne	.-18     	; 0x332 <SD_init+0x1c>
+ 41a:	0e 94 c2 01 	call	0x384	; 0x384 <SD_goIdleState>
+ 41e:	18 2f       	mov	r17, r24
+ 420:	89 83       	std	Y+1, r24	; 0x01
+ 422:	81 30       	cpi	r24, 0x01	; 1
+ 424:	b9 f7       	brne	.-18     	; 0x414 <__LOCK_REGION_LENGTH__+0x14>
 		cmdAttempts++;
 		if(cmdAttempts > 10) return SD_ERROR; // return error als idle stand niet lukt
 	}
 	
 	// verstuur interface conditie (welke generatie de kaart is)
 	SD_sendIfCond(res);
- 344:	ce 01       	movw	r24, r28
- 346:	01 96       	adiw	r24, 0x01	; 1
- 348:	0e 94 2e 01 	call	0x25c	; 0x25c <SD_sendIfCond>
+ 426:	ce 01       	movw	r24, r28
+ 428:	01 96       	adiw	r24, 0x01	; 1
+ 42a:	0e 94 9f 01 	call	0x33e	; 0x33e <SD_sendIfCond>
 	if(res[0] != 0x01)
- 34c:	f9 80       	ldd	r15, Y+1	; 0x01
- 34e:	81 e0       	ldi	r24, 0x01	; 1
- 350:	f8 12       	cpse	r15, r24
- 352:	26 c0       	rjmp	.+76     	; 0x3a0 <SD_init+0x8a>
+ 42e:	f9 80       	ldd	r15, Y+1	; 0x01
+ 430:	81 e0       	ldi	r24, 0x01	; 1
+ 432:	f8 12       	cpse	r15, r24
+ 434:	26 c0       	rjmp	.+76     	; 0x482 <__LOCK_REGION_LENGTH__+0x82>
 	{
 		return SD_ERROR; // error als de sd-kaart 1e generatie is ipv Version 2.00
 	}
 	
 	// check echo pattern (geen idee wat dit inhoudt maar heb het maar overgenomen)
 	if(res[4] != 0xAA)
- 354:	8d 81       	ldd	r24, Y+5	; 0x05
- 356:	8a 3a       	cpi	r24, 0xAA	; 170
- 358:	01 f5       	brne	.+64     	; 0x39a <SD_init+0x84>
- 35a:	00 e0       	ldi	r16, 0x00	; 0
+ 436:	8d 81       	ldd	r24, Y+5	; 0x05
+ 438:	8a 3a       	cpi	r24, 0xAA	; 170
+ 43a:	01 f5       	brne	.+64     	; 0x47c <__LOCK_REGION_LENGTH__+0x7c>
+ 43c:	00 e0       	ldi	r16, 0x00	; 0
 	
 	// sd-kaart initaliseren
 	cmdAttempts = 0;
 	do 
 	{
 		if(cmdAttempts > 100) return SD_ERROR;
- 35c:	05 36       	cpi	r16, 0x65	; 101
- 35e:	f8 f4       	brcc	.+62     	; 0x39e <SD_init+0x88>
+ 43e:	05 36       	cpi	r16, 0x65	; 101
+ 440:	f8 f4       	brcc	.+62     	; 0x480 <__LOCK_REGION_LENGTH__+0x80>
 		
 		// stuur commando om aan te geven dat het commando hierna applicatie-specifiek is
 		res[0] = SD_sendApp();
- 360:	0e 94 ed 00 	call	0x1da	; 0x1da <SD_sendApp>
- 364:	89 83       	std	Y+1, r24	; 0x01
+ 442:	0e 94 5e 01 	call	0x2bc	; 0x2bc <SD_sendApp>
+ 446:	89 83       	std	Y+1, r24	; 0x01
 		
 		// als er geen error is -> verdergaan
 		if(res[0] < 2)
- 366:	82 30       	cpi	r24, 0x02	; 2
- 368:	18 f4       	brcc	.+6      	; 0x370 <SD_init+0x5a>
+ 448:	82 30       	cpi	r24, 0x02	; 2
+ 44a:	18 f4       	brcc	.+6      	; 0x452 <__LOCK_REGION_LENGTH__+0x52>
 		{
 			res[0] = SD_sendOpCond();
- 36a:	0e 94 0d 01 	call	0x21a	; 0x21a <SD_sendOpCond>
- 36e:	89 83       	std	Y+1, r24	; 0x01
- 370:	8f e3       	ldi	r24, 0x3F	; 63
- 372:	9c e9       	ldi	r25, 0x9C	; 156
- 374:	01 97       	sbiw	r24, 0x01	; 1
- 376:	f1 f7       	brne	.-4      	; 0x374 <SD_init+0x5e>
- 378:	00 c0       	rjmp	.+0      	; 0x37a <SD_init+0x64>
- 37a:	00 00       	nop
+ 44c:	0e 94 7e 01 	call	0x2fc	; 0x2fc <SD_sendOpCond>
+ 450:	89 83       	std	Y+1, r24	; 0x01
+ 452:	8f e3       	ldi	r24, 0x3F	; 63
+ 454:	9c e9       	ldi	r25, 0x9C	; 156
+ 456:	01 97       	sbiw	r24, 0x01	; 1
+ 458:	f1 f7       	brne	.-4      	; 0x456 <__LOCK_REGION_LENGTH__+0x56>
+ 45a:	00 c0       	rjmp	.+0      	; 0x45c <__LOCK_REGION_LENGTH__+0x5c>
+ 45c:	00 00       	nop
 		}
 		
 		_delay_ms(10);
 		cmdAttempts++;	
- 37c:	0f 5f       	subi	r16, 0xFF	; 255
+ 45e:	0f 5f       	subi	r16, 0xFF	; 255
 	} 
 	while (res[0] != SD_READY);
- 37e:	19 81       	ldd	r17, Y+1	; 0x01
- 380:	11 11       	cpse	r17, r1
- 382:	ec cf       	rjmp	.-40     	; 0x35c <SD_init+0x46>
+ 460:	19 81       	ldd	r17, Y+1	; 0x01
+ 462:	11 11       	cpse	r17, r1
+ 464:	ec cf       	rjmp	.-40     	; 0x43e <__LOCK_REGION_LENGTH__+0x3e>
 	
 	SD_readOCR(res);
- 384:	ce 01       	movw	r24, r28
- 386:	01 96       	adiw	r24, 0x01	; 1
- 388:	0e 94 cb 00 	call	0x196	; 0x196 <SD_readOCR>
+ 466:	ce 01       	movw	r24, r28
+ 468:	01 96       	adiw	r24, 0x01	; 1
+ 46a:	0e 94 3c 01 	call	0x278	; 0x278 <SD_readOCR>
 	
 	if(!(res[1] & 0x80)) return SD_ERROR;
- 38c:	8a 81       	ldd	r24, Y+2	; 0x02
- 38e:	88 23       	and	r24, r24
- 390:	3c f0       	brlt	.+14     	; 0x3a0 <SD_init+0x8a>
- 392:	1f 2d       	mov	r17, r15
- 394:	05 c0       	rjmp	.+10     	; 0x3a0 <SD_init+0x8a>
+ 46e:	8a 81       	ldd	r24, Y+2	; 0x02
+ 470:	88 23       	and	r24, r24
+ 472:	3c f0       	brlt	.+14     	; 0x482 <__LOCK_REGION_LENGTH__+0x82>
+ 474:	1f 2d       	mov	r17, r15
+ 476:	05 c0       	rjmp	.+10     	; 0x482 <__LOCK_REGION_LENGTH__+0x82>
 	SD_powerUpSeq();
 	// zet kaart in idle stand
 	while((res[0] = SD_goIdleState()) != 0x01)
 	{
 		cmdAttempts++;
 		if(cmdAttempts > 10) return SD_ERROR; // return error als idle stand niet lukt
- 396:	11 e0       	ldi	r17, 0x01	; 1
- 398:	03 c0       	rjmp	.+6      	; 0x3a0 <SD_init+0x8a>
+ 478:	11 e0       	ldi	r17, 0x01	; 1
+ 47a:	03 c0       	rjmp	.+6      	; 0x482 <__LOCK_REGION_LENGTH__+0x82>
 	}
 	
 	// check echo pattern (geen idee wat dit inhoudt maar heb het maar overgenomen)
 	if(res[4] != 0xAA)
 	{
 		return SD_ERROR;
- 39a:	1f 2d       	mov	r17, r15
- 39c:	01 c0       	rjmp	.+2      	; 0x3a0 <SD_init+0x8a>
+ 47c:	1f 2d       	mov	r17, r15
+ 47e:	01 c0       	rjmp	.+2      	; 0x482 <__LOCK_REGION_LENGTH__+0x82>
 	
 	// sd-kaart initaliseren
 	cmdAttempts = 0;
 	do 
 	{
 		if(cmdAttempts > 100) return SD_ERROR;
- 39e:	1f 2d       	mov	r17, r15
+ 480:	1f 2d       	mov	r17, r15
 	
 	if(!(res[1] & 0x80)) return SD_ERROR;
 	
 	return SD_SUCCESS;
 	
 }
- 3a0:	81 2f       	mov	r24, r17
- 3a2:	0f 90       	pop	r0
- 3a4:	0f 90       	pop	r0
- 3a6:	0f 90       	pop	r0
- 3a8:	0f 90       	pop	r0
- 3aa:	0f 90       	pop	r0
- 3ac:	df 91       	pop	r29
- 3ae:	cf 91       	pop	r28
- 3b0:	1f 91       	pop	r17
- 3b2:	0f 91       	pop	r16
- 3b4:	ff 90       	pop	r15
- 3b6:	08 95       	ret
+ 482:	81 2f       	mov	r24, r17
+ 484:	0f 90       	pop	r0
+ 486:	0f 90       	pop	r0
+ 488:	0f 90       	pop	r0
+ 48a:	0f 90       	pop	r0
+ 48c:	0f 90       	pop	r0
+ 48e:	df 91       	pop	r29
+ 490:	cf 91       	pop	r28
+ 492:	1f 91       	pop	r17
+ 494:	0f 91       	pop	r16
+ 496:	ff 90       	pop	r15
+ 498:	08 95       	ret
 
-000003b8 <main>:
+0000049a <main>:
+void SD_readRes3_7(uint8_t *res);
 uint8_t SD_init();
+uint8_t SD_readSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token);
 
 int main(void)
 {
-	uint8_t res[5];
+ 49a:	cf 93       	push	r28
+ 49c:	df 93       	push	r29
+ 49e:	cd b7       	in	r28, 0x3d	; 61
+ 4a0:	de b7       	in	r29, 0x3e	; 62
+ 4a2:	c1 50       	subi	r28, 0x01	; 1
+ 4a4:	d2 40       	sbci	r29, 0x02	; 2
+ 4a6:	0f b6       	in	r0, 0x3f	; 63
+ 4a8:	f8 94       	cli
+ 4aa:	de bf       	out	0x3e, r29	; 62
+ 4ac:	0f be       	out	0x3f, r0	; 63
+ 4ae:	cd bf       	out	0x3d, r28	; 61
+	uint8_t res[5], sdBuf[512], token;
 	SPI_init(); // initialiseer SPI
- 3b8:	0e 94 56 00 	call	0xac	; 0xac <SPI_init>
-	uint8_t initResult = SD_init(); // returnt OF SD_ERROR = 1 OF SD_SUCCESS = 0; gebruik dit om een lampje aan uit of te zetten om te kijken of de initialisatie volledig lukt
- 3bc:	0e 94 8b 01 	call	0x316	; 0x316 <SD_init>
- 3c0:	ff cf       	rjmp	.-2      	; 0x3c0 <main+0x8>
+ 4b0:	0e 94 56 00 	call	0xac	; 0xac <SPI_init>
+	if(SD_init() != SD_SUCCESS)
+ 4b4:	0e 94 fc 01 	call	0x3f8	; 0x3f8 <SD_init>
+ 4b8:	81 11       	cpse	r24, r1
+ 4ba:	ff cf       	rjmp	.-2      	; 0x4ba <main+0x20>
+	} else
+	{
+		// lamp indicator dat het gelukt is te initialiseren
+	}
+	// lees 1e blok van de sd-kaart
+	res[0] = SD_readSingleBlock(0x00000000, sdBuf, &token);
+ 4bc:	9e 01       	movw	r18, r28
+ 4be:	2f 5f       	subi	r18, 0xFF	; 255
+ 4c0:	3d 4f       	sbci	r19, 0xFD	; 253
+ 4c2:	ae 01       	movw	r20, r28
+ 4c4:	4f 5f       	subi	r20, 0xFF	; 255
+ 4c6:	5f 4f       	sbci	r21, 0xFF	; 255
+ 4c8:	60 e0       	ldi	r22, 0x00	; 0
+ 4ca:	70 e0       	ldi	r23, 0x00	; 0
+ 4cc:	cb 01       	movw	r24, r22
+ 4ce:	0e 94 cb 00 	call	0x196	; 0x196 <SD_readSingleBlock>
+ 4d2:	ff cf       	rjmp	.-2      	; 0x4d2 <main+0x38>
 
-000003c2 <_exit>:
- 3c2:	f8 94       	cli
+000004d4 <_exit>:
+ 4d4:	f8 94       	cli
 
-000003c4 <__stop_program>:
- 3c4:	ff cf       	rjmp	.-2      	; 0x3c4 <__stop_program>
+000004d6 <__stop_program>:
+ 4d6:	ff cf       	rjmp	.-2      	; 0x4d6 <__stop_program>

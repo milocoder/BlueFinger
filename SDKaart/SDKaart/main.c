@@ -30,6 +30,10 @@ Op regel 73 en 77: schrijf code om een lamp uit of aan te zetten. initialiseer d
 #define CMD8        8
 #define CMD8_ARG    0x0000001AA
 #define CMD8_CRC    0x86 //(1000011 << 1)
+// cmd17 verstuurt een signaal met argument, returnt data die je uitleest. READ
+#define CMD17                   17
+#define CMD17_CRC               0x00
+#define SD_MAX_READ_ATTEMPTS    1563
 // acmd41 verstuurt info over de kaart en start het initalisatieproces
 #define ACMD41      41
 #define ACMD41_ARG  0x40000000
@@ -46,6 +50,7 @@ Op regel 73 en 77: schrijf code om een lamp uit of aan te zetten. initialiseer d
 #define SD_SUCCESS 0
 #define SD_ERROR 1
 #define SD_READY 0x00
+#define SD_R1_NO_ERROR(X) X < 0x02
 
 void SPI_init();
 uint8_t SPI_transfer(uint8_t data);
@@ -60,23 +65,92 @@ uint8_t SD_sendOpCond();
 void SD_readOCR(uint8_t *res);
 void SD_readRes3_7(uint8_t *res);
 uint8_t SD_init();
+uint8_t SD_readSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token);
 
 int main(void)
 {
+	uint8_t res[5], sdBuf[512], token;
 	SPI_init(); // initialiseer SPI
-	uint8_t initResult = SD_init(); // returnt OF SD_ERROR = 1 OF SD_SUCCESS = 0; gebruik dit om een lampje aan uit of te zetten om te kijken of de initialisatie volledig lukt
+	if(SD_init() != SD_SUCCESS)
+	{
+		// lamp indicator dat er een fout is
+		while(1);
+	} else
+	{
+		// lamp indicator dat het gelukt is te initialiseren
+	}
+	// lees 1e blok van de sd-kaart
+	res[0] = SD_readSingleBlock(0x00000000, sdBuf, &token);
 	
-	while (1) 
-    {
-		if(initResult == 0)
+	// doe iets met deze data
+	if(SD_R1_NO_ERROR(res[0]) && (token == 0xFE))
+	{
+		uint8_t eenbyte = sdBuf[4]; // de 5e byte = sdBuf[4] van het 1e blok 0x00000000 wordt in eenbyte gestopt
+	} else {
+		// error met het uitlezen van de sector
+	}
+	
+	while(1);
+	
+}
+
+// lees een 512 byte block uit het geheugen
+// token = 0xFE - succesvolle performance
+// token = 0x0X - data error
+// token = 0xFF - timeout
+uint8_t SD_readSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token)
+{
+	uint8_t res1, read;
+	uint16_t readAttempts;
+
+	// set token to none
+	*token = 0xFF;
+
+	// assert chip select
+	SPI_transfer(0xFF);
+	CS_ENABLE();
+	SPI_transfer(0xFF);
+
+	// send CMD17
+	SD_command(CMD17, addr, CMD17_CRC);
+
+	// read R1
+	res1 = SD_readRes1();
+
+	// if response received from card
+	if(res1 != 0xFF)
+	{
+		// wait for a response token (timeout = 100ms)
+		// SD_MAX_READ_ATTEMPTS wordt berekend door te bepalen hoeveel bytes er over SPI
+		// verzonden moeten worden om 100ms te wachten
+		// vb: spi clock set divided by 128. daarom 128.
+		// deze divider kunnen we aanpassen bij SPI_init()
+		// 0.1 * 16 000 000 (mhz) / (128 * 8 bytes) = 1563.
+		readAttempts = 0;
+		while(++readAttempts != SD_MAX_READ_ATTEMPTS) 
+			if((read = SPI_transfer(0xFF)) != 0xFF) break;
+
+		// if response token is 0xFE
+		if(read == 0xFE)
 		{
-			// zet lampje aan
+			// read 512 byte block
+			for(uint16_t i = 0; i < 512; i++) *buf++ = SPI_transfer(0xFF);
+
+			// read 16-bit CRC
+			SPI_transfer(0xFF);
+			SPI_transfer(0xFF);
 		}
-		else
-		{
-			// zet lampje uit
-		}
-    }
+
+		// set token to card response
+		*token = read;
+	}
+
+	// deassert chip select
+	SPI_transfer(0xFF);
+	CS_DISABLE();
+	SPI_transfer(0xFF);
+
+	return res1;
 }
 
 uint8_t SD_init()
@@ -288,7 +362,7 @@ void SPI_init()
 	// enable pull up resistor in MISO
 	DDR_SPI |= (1 << MISO);
 
-	// enable SPI, zet as master, and clock to fosc/128
+	// enable SPI, zet als master, and clock to fosc/128
 	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
 }
 

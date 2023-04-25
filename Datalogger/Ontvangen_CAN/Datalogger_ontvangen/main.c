@@ -34,7 +34,8 @@ int main(void)
 				uint16_t data = rx_message.data[1] << 8 | rx_message.data[0];
 				char buf[17];
 				itoa(data, buf, 10);			// 10 is decimaal
-				//uart -> puts buf; 
+			}
+		}
 				
     }
 }

@@ -39,10 +39,10 @@
 // Number of Message Objects in the CAN Controller
 #define MOB_COUNT 15
 
-// CAN 2.0 type A message information
+// CAN 2.0 type B message information
 typedef struct
 {
-	uint16_t id : 11;
+	uint32_t id : 29;
 	char data[8];
 	uint8_t length;
 } CANMessage;

@@ -64,7 +64,7 @@ void initCAN();
 
 CANErrorStatus getLastCANError();
 
-uint8_t listenForMessage( uint16_t id, uint8_t expectedLength );
+uint8_t listenForMessage( uint32_t id, uint8_t expectedLength );
 
 uint8_t getMessage( CANMessage * message );
 

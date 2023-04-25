@@ -167,7 +167,7 @@ uint8_t sendCAN( CANMessage* message )
  * @return 0 if no free message objects left, 1 otherwise
  *
  */
-uint8_t listenForMessage( uint16_t id, uint8_t expectedLength )
+uint8_t listenForMessage( uint32_t id, uint8_t expectedLength )
 {
 	// Try to get a free MOb
 	uint8_t mobIndex = getFreeMob();

@@ -21,7 +21,7 @@ int main(void)
    CANMessage rx_message; 
    uint8_t result; 
    
-   
+    DDRC |= (1<<PC0);
    
     /* Replace with your application code */
     while (1) 
@@ -31,9 +31,11 @@ int main(void)
 		
 		if(getMessage(&rx_message)) {
 			if (rx_message.id == EXPECTED_CAN_ID) {
-				uint16_t data = rx_message.data[1] << 8 | rx_message.data[0];
-				char buf[17];
-				itoa(data, buf, 10);			// 10 is decimaal
+				PORTC |= (1<<PC0);
+				
+				//uint16_t data = rx_message.data[1] << 8 | rx_message.data[0];
+				//char buf[17];
+				//itoa(data, buf, 10);			// 10 is decimaal
 			}
 		}
 				

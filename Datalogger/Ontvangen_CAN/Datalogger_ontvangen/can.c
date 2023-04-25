@@ -4,6 +4,8 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
+
+
 // Where the CAN ISR writes received messages to
 CANMessage messageBuffer[ MESSAGE_BUFFER_LENGTH ];
 

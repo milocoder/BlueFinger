@@ -2,7 +2,12 @@
 Gebruikte handleidingen: 
 http://www.rjhcoding.com/avrc-sd-interface-1.php
 https://openlabpro.com/guide/interfacing-microcontrollers-with-sd-card/
+
+DOEN:
+Op regel 73 en 77: schrijf code om een lamp uit of aan te zetten. initialiseer deze port/led ook van te voren
 */
+
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -17,26 +22,206 @@ https://openlabpro.com/guide/interfacing-microcontrollers-with-sd-card/
 #define CS_ENABLE() PORT_SPI &= ~(1 << CS)
 #define CS_DISABLE() PORT_SPI |= (1 << CS)
 
+// cmd0 zet in idle state
 #define CMD0 0
 #define CMD0_ARG 0x00000000
 #define CMD0_CRC 0x94
+// cmd8 kijk naar sd-kaart versie (1 of 2)
+#define CMD8        8
+#define CMD8_ARG    0x0000001AA
+#define CMD8_CRC    0x86 //(1000011 << 1)
+// acmd41 verstuurt info over de kaart en start het initalisatieproces
+#define ACMD41      41
+#define ACMD41_ARG  0x40000000
+#define ACMD41_CRC  0x00
+// cmd55 geef aan dat het hiernavolgende command applicatie-specifiek is
+#define CMD55       55
+#define CMD55_ARG   0x00000000
+#define CMD55_CRC   0x00
+// cmd58 leest het Operation Conditions Register - geeft o.a. Card Capacity Status aan
+#define CMD58       58
+#define CMD58_ARG   0x00000000
+#define CMD58_CRC   0x00
+
+#define SD_SUCCESS 0
+#define SD_ERROR 1
+#define SD_READY 0x00
 
 void SPI_init();
 uint8_t SPI_transfer(uint8_t data);
-void SD_powerUp();
+void SD_powerUpSeq();
 void SD_command(uint8_t cmd, uint32_t arg, uint8_t crc);
 uint8_t SD_readRes1();
 uint8_t SD_goIdleState();
+void SD_readRes7(uint8_t *res);
+void SD_sendIfCond(uint8_t *res);
+uint8_t SD_sendApp();
+uint8_t SD_sendOpCond();
+void SD_readOCR(uint8_t *res);
+void SD_readRes3_7(uint8_t *res);
+uint8_t SD_init();
 
 int main(void)
 {
 	SPI_init(); // initialiseer SPI
-	SD_powerUp(); // start power up sequence
-	SD_goIdleState(); // zet sd-kaart in idle stand
+	uint8_t initResult = SD_init(); // returnt OF SD_ERROR = 1 OF SD_SUCCESS = 0; gebruik dit om een lampje aan uit of te zetten om te kijken of de initialisatie volledig lukt
+	
 	while (1) 
     {
-		
+		if(initResult == 0)
+		{
+			// zet lampje aan
+		}
+		else
+		{
+			// zet lampje uit
+		}
     }
+}
+
+uint8_t SD_init()
+{
+	uint8_t res[5], cmdAttempts = 0;
+	
+	SD_powerUpSeq();
+	// zet kaart in idle stand
+	while((res[0] = SD_goIdleState()) != 0x01)
+	{
+		cmdAttempts++;
+		if(cmdAttempts > 10) return SD_ERROR; // return error als idle stand niet lukt
+	}
+	
+	// verstuur interface conditie (welke generatie de kaart is)
+	SD_sendIfCond(res);
+	if(res[0] != 0x01)
+	{
+		return SD_ERROR; // error als de sd-kaart 1e generatie is ipv Version 2.00
+	}
+	
+	// check echo pattern (geen idee wat dit inhoudt maar heb het maar overgenomen)
+	if(res[4] != 0xAA)
+	{
+		return SD_ERROR;
+	}
+	
+	// sd-kaart initaliseren
+	cmdAttempts = 0;
+	do 
+	{
+		if(cmdAttempts > 100) return SD_ERROR;
+		
+		// stuur commando om aan te geven dat het commando hierna applicatie-specifiek is
+		res[0] = SD_sendApp();
+		
+		// als er geen error is -> verdergaan
+		if(res[0] < 2)
+		{
+			res[0] = SD_sendOpCond();
+		}
+		
+		_delay_ms(10);
+		cmdAttempts++;	
+	} 
+	while (res[0] != SD_READY);
+	
+	SD_readOCR(res);
+	
+	if(!(res[1] & 0x80)) return SD_ERROR;
+	
+	return SD_SUCCESS;
+	
+}
+
+void SD_readOCR(uint8_t *res)
+{
+	 // assert chip select
+	 SPI_transfer(0xFF);
+	 CS_ENABLE();
+	 SPI_transfer(0xFF);
+
+	 // send CMD58
+	 SD_command(CMD58, CMD58_ARG, CMD58_CRC);
+
+	 // read response
+	 SD_readRes3_7(res);
+
+	 // deassert chip select
+	 SPI_transfer(0xFF);
+	 CS_DISABLE();
+	 SPI_transfer(0xFF);
+}
+
+void SD_readRes3_7(uint8_t *res)
+{
+	// read R1
+	res[0] = SD_readRes1();
+
+	// if error reading R1, return
+	if(res[0] > 1) return;
+
+	// read remaining bytes
+	res[1] = SPI_transfer(0xFF);
+	res[2] = SPI_transfer(0xFF);
+	res[3] = SPI_transfer(0xFF);
+	res[4] = SPI_transfer(0xFF);
+}
+
+uint8_t SD_sendApp()
+{
+	SPI_transfer(0xFF);
+	CS_ENABLE();
+	SPI_transfer(0xFF);
+	
+	SD_command(CMD55, CMD55_ARG, CMD55_CRC);
+	uint8_t res1 = SD_readRes1();
+	
+	SPI_transfer(0xFF);
+	CS_DISABLE();
+	SPI_transfer(0xFF);
+	
+	return res1;
+}
+
+uint8_t SD_sendOpCond()
+{
+	SPI_transfer(0xFF);
+	CS_ENABLE();
+	SPI_transfer(0xFF);
+	
+	SD_command(ACMD41, ACMD41_ARG, ACMD41_CRC);
+	uint8_t res1 = SD_readRes1();
+	
+	SPI_transfer(0xFF);
+	CS_DISABLE();
+	SPI_transfer(0xFF);
+	
+	return res1;
+}
+
+void SD_sendIfCond(uint8_t *res)
+{
+	// assert chip select
+	SPI_transfer(0xFF);
+	CS_ENABLE();
+	SPI_transfer(0xFF);
+	// send CMD8
+	SD_command(CMD8, CMD8_ARG, CMD8_CRC);
+	SD_readRes7(res); // read response
+	// deassert chip select
+	SPI_transfer(0xFF);
+	CS_DISABLE();
+	SPI_transfer(0xFF);
+}
+
+void SD_readRes7(uint8_t *res)
+{
+	res[0] = SD_readRes1();
+	if(res[0] > 1) return ; // als er een error in R1 is, return
+	// lees de resterende bytes
+	res[1] = SPI_transfer(0xFF);
+	res[2] = SPI_transfer(0xFF);
+	res[3] = SPI_transfer(0xFF);
+	res[4] = SPI_transfer(0xFF);
 }
 
 uint8_t SD_goIdleState()
@@ -83,7 +268,7 @@ void SD_command(uint8_t cmd, uint32_t arg, uint8_t crc)
 	SPI_transfer(crc|0x01);
 }
 
-void SD_powerUp()
+void SD_powerUpSeq()
 {
 	CS_DISABLE(); // deselecteer sd-kaart
 	_delay_ms(1); // wacht op opstarten

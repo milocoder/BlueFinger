@@ -23,34 +23,47 @@ Op regel 73 en 77: schrijf code om een lamp uit of aan te zetten. initialiseer d
 #define CS_DISABLE() PORT_SPI |= (1 << CS)
 
 // cmd0 zet in idle state
-#define CMD0 0
-#define CMD0_ARG 0x00000000
-#define CMD0_CRC 0x94
+#define CMD0					0
+#define CMD0_ARG				0x00000000
+#define CMD0_CRC				0x94
 // cmd8 kijk naar sd-kaart versie (1 of 2)
-#define CMD8        8
-#define CMD8_ARG    0x0000001AA
-#define CMD8_CRC    0x86 //(1000011 << 1)
+#define CMD8					8
+#define CMD8_ARG				0x0000001AA
+#define CMD8_CRC				0x86 //(1000011 << 1)
 // cmd17 verstuurt een signaal met argument, returnt data die je uitleest. READ
 #define CMD17                   17
 #define CMD17_CRC               0x00
-#define SD_MAX_READ_ATTEMPTS    1563
+// cmd24 verstuurt een signaal met waarmee we aangeven dat we iets gaan schrijven. WRITE
+#define CMD24                   24
+#define CMD24_CRC               0x00
 // acmd41 verstuurt info over de kaart en start het initalisatieproces
-#define ACMD41      41
-#define ACMD41_ARG  0x40000000
-#define ACMD41_CRC  0x00
+#define ACMD41					41
+#define ACMD41_ARG				0x40000000
+#define ACMD41_CRC				0x00
 // cmd55 geef aan dat het hiernavolgende command applicatie-specifiek is
-#define CMD55       55
-#define CMD55_ARG   0x00000000
-#define CMD55_CRC   0x00
+#define CMD55					55
+#define CMD55_ARG				0x00000000
+#define CMD55_CRC				0x00
 // cmd58 leest het Operation Conditions Register - geeft o.a. Card Capacity Status aan
-#define CMD58       58
-#define CMD58_ARG   0x00000000
-#define CMD58_CRC   0x00
+#define CMD58					58
+#define CMD58_ARG				0x00000000
+#define CMD58_CRC				0x00
 
-#define SD_SUCCESS 0
-#define SD_ERROR 1
-#define SD_READY 0x00
-#define SD_R1_NO_ERROR(X) X < 0x02
+#define SD_SUCCESS				0
+#define SD_ERROR				1
+#define SD_READY				0x00
+#define SD_START_TOKEN			0xFE
+#define SD_R1_NO_ERROR(X)		X < 0x02
+#define SD_MAX_READ_ATTEMPTS    1563
+// SD_MAX_READ_ATTEMPTS wordt berekend door te bepalen hoeveel bytes er over SPI
+// verzonden moeten worden om 100ms te wachten
+// vb: spi clock set divided by 128. daarom 128.
+// deze divider kunnen we aanpassen bij SPI_init()
+// 0.1 * 16 000 000 (mhz) / (128 * 8 bytes) = 1563
+#define SD_MAX_WRITE_ATTEMPTS   3907
+// dit wordt op dezelfde manier berekent als max read attempts, maar nu 0.25 ipv 0.1
+// want 250 ms wachten ipv 100 ms wachten
+#define SD_BLOCK_LEN			512
 
 void SPI_init();
 uint8_t SPI_transfer(uint8_t data);
@@ -66,10 +79,11 @@ void SD_readOCR(uint8_t *res);
 void SD_readRes3_7(uint8_t *res);
 uint8_t SD_init();
 uint8_t SD_readSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token);
+uint8_t SD_writeSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token);
 
 int main(void)
 {
-	uint8_t res[5], sdBuf[512], token;
+	uint8_t res, sdBuf[512], token;
 	SPI_init(); // initialiseer SPI
 	if(SD_init() != SD_SUCCESS)
 	{
@@ -79,19 +93,72 @@ int main(void)
 	{
 		// lamp indicator dat het gelukt is te initialiseren
 	}
-	// lees 1e blok van de sd-kaart
-	res[0] = SD_readSingleBlock(0x00000000, sdBuf, &token);
 	
-	// doe iets met deze data
-	if(SD_R1_NO_ERROR(res[0]) && (token == 0xFE))
-	{
-		uint8_t eenbyte = sdBuf[4]; // de 5e byte = sdBuf[4] van het 1e blok 0x00000000 wordt in eenbyte gestopt
-	} else {
-		// error met het uitlezen van de sector
-	}
+	// vull buffer met 0x55;
+	for (uint16_t i = 0; i < 512; i++) sdBuf[i] = 0x55;
+	// schijf 0x55 (85 in decimaal) naar alle 512 bytes op address 0x100 (256 in decimaal)
+	res = SD_writeSingleBlock(0x00000100, sdBuf, &token);
 	
 	while(1);
 	
+}
+
+// schrijf een block van 512 bytes
+// token = 0x00 - busy timeout
+// token = 0x05 - data accepted
+// token = 0xFF - response timeout
+uint8_t SD_writeSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token)
+{
+	uint16_t readAttempts;
+	uint8_t res1, read;
+
+	// set token to none
+	*token = 0xFF;
+
+	// assert chip select
+	SPI_transfer(0xFF);
+	CS_ENABLE();
+	SPI_transfer(0xFF);
+
+	// send CMD24
+	SD_command(CMD24, addr, CMD24_CRC);
+
+	// read response
+	res1 = SD_readRes1();
+
+	// if no error
+	if(res1 == SD_READY)
+	{
+		// send start token
+		SPI_transfer(SD_START_TOKEN);
+
+		// write buffer to card
+		for(uint16_t i = 0; i < SD_BLOCK_LEN; i++) SPI_transfer(buf[i]);
+
+		// wait for a response (timeout = 250ms)
+		readAttempts = 0;
+		while(++readAttempts != SD_MAX_WRITE_ATTEMPTS)
+			if((read = SPI_transfer(0xFF)) != 0xFF) { *token = 0xFF; break; }
+
+		// if data accepted
+		if((read & 0x1F) == 0x05)
+		{
+			// set token to data accepted
+			*token = 0x05;
+
+			// wait for write to finish (timeout = 250ms)
+			readAttempts = 0;
+			while(SPI_transfer(0xFF) == 0x00)
+				if(++readAttempts == SD_MAX_WRITE_ATTEMPTS) { *token = 0x00; break; }
+		}
+	}
+
+	// deassert chip select
+	SPI_transfer(0xFF);
+	CS_DISABLE();
+	SPI_transfer(0xFF);
+
+	return res1;
 }
 
 // lees een 512 byte block uit het geheugen
@@ -121,11 +188,6 @@ uint8_t SD_readSingleBlock(uint32_t addr, uint8_t *buf, uint8_t *token)
 	if(res1 != 0xFF)
 	{
 		// wait for a response token (timeout = 100ms)
-		// SD_MAX_READ_ATTEMPTS wordt berekend door te bepalen hoeveel bytes er over SPI
-		// verzonden moeten worden om 100ms te wachten
-		// vb: spi clock set divided by 128. daarom 128.
-		// deze divider kunnen we aanpassen bij SPI_init()
-		// 0.1 * 16 000 000 (mhz) / (128 * 8 bytes) = 1563.
 		readAttempts = 0;
 		while(++readAttempts != SD_MAX_READ_ATTEMPTS) 
 			if((read = SPI_transfer(0xFF)) != 0xFF) break;

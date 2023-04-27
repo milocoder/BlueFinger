@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <avr/io.h>
-#include <util/delay.h>
 #include <avr/interrupt.h>
 #include "can.h"
 
@@ -39,7 +38,7 @@ int main(void)
 				//char buf[17];
 				//itoa(data, buf, 10);			// 10 is decimaal
 		 }
-			_delay_ms(500);
+			
 		}
 		 
 	}

@@ -1,5 +1,5 @@
 #include "can.h"
-#include "avr/interrupt.h"
+#include <avr/interrupt.h>
 
 #include <util/delay.h>
 #include <avr/io.h>
@@ -294,7 +294,7 @@ ISR( CANIT_vect )
 		else if ( CANSTMOB & (1 << RXOK) )
 		{
 			// Default to impossible ID
-			uint16_t id = 0xFFFF;
+			uint32_t id = 0xFFFF;			//omgezet naar 32 bits voor 2.0B
 
 			// Load the message data into a free message buffer object
 			if( CANCDMOB & (1 << IDE) )
@@ -302,11 +302,12 @@ ISR( CANIT_vect )
 				// Message type is CAN 2.0B
 				id = (CANIDT4 >> 3) | ((CANIDT3 & 0x7F) << 5); 
 			}
-			else
-			{
+			
+			//else
+			//{
 				// Message type is CAN 2.0A
-				id = (CANIDT2 >> 5) | (((uint16_t)CANIDT1 << 3));
-			}
+			//	id = (CANIDT2 >> 5) | (((uint16_t)CANIDT1 << 3));
+			//}
 
 			messageBuffer[bufIndex].id = id;
 

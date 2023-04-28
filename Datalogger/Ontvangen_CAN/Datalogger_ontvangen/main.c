@@ -5,12 +5,14 @@
  * Author : Johan
  */ 
 
+#define F_CPU 16000000UL 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 #include "can.h"
 
 #define CAN_ID_ARDUINO 0x778
@@ -19,27 +21,32 @@
 int main(void)
 {
    CANMessage rx_message; 
-  // uint8_t result; 
+	uint8_t result; 
+
+
    
     DDRC |= (1<<PC0);
 	initCAN(); 
    
+   	result = listenForMessage(CAN_ID_ARDUINO, 8);
+	   
+	  // if (result == 1) {
+		//	PORTC |= (1<<PC0);				//hoog maken pin
+	  // } 
    
     while (1) 
     {
+		// PORTC |= (1<<PC0);				//hoog maken pin
+	
+		// PORTC &= ~(1 << PC0);			//laag maken pin	
 		
-		//result = listenForMessage(CAN_ID_ARDUINO, 8); 			
-			
-	if (getMessage(&rx_message)) {
-		 if (rx_message.id == CAN_ID_ARDUINO) {
-			 PORTC |= (1<<PC0);
-				
-				//uint16_t data = rx_message.data[1] << 8 | rx_message.data[0];
-				//char buf[17];
-				//itoa(data, buf, 10);			// 10 is decimaal
-		 }
-			
-		}
+			uint8_t myMessage = getMessage(&rx_message);
+			if (myMessage) {
+					PORTC |= (1<<PC0);
+			}
+
+		
+		
 		 
 	}
 }

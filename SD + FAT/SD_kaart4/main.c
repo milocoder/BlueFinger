@@ -80,7 +80,7 @@ void init_sd_card(void)
 		} else {
 			//LED_OFF();
 			/* Set SPI clock faster after initialization */
-			//SPI0.CTRLA = (SPI_MASTER_bm | SPI_CLK2X_bm | SPI_PRESC_DIV4_gc | SPI_ENABLE_bm);
+			SPI0.CTRLA = (SPI_MASTER_bm | SPI_CLK2X_bm | SPI_PRESC_DIV4_gc | SPI_ENABLE_bm);
 		}
 		/* The application will continue to try and initialize the card.
 		 * If the LED is on, try taking out the SD card and putting

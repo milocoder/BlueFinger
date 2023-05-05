@@ -28,6 +28,12 @@ SELECT, DESELECT, SELECTING functies
 //#define SPI_MOSI (1 << 2) /* PC2 SD card DI */
 //#define SPI_CS (1 << 3)   /* PC3 */
 
+
+/* Port controls  (Platform dependent) */
+//#define SELECT() SPIPORT.OUTCLR = SPI_CS   /* CS = L */
+//#define DESELECT() SPIPORT.OUTSET = SPI_CS /* CS = H */
+//#define SELECTING ((SPIPORT.DIR & SPI_CS) && !(SPIPORT.OUT & SPI_CS)
+
 #define DDR_SPI				DDRB
 #define SPI_PORT			PORTB
 #define CS					PINB0
@@ -36,29 +42,12 @@ SELECT, DESELECT, SELECTING functies
 #define MISO				PINB3
 
 /* Port controls  (Platform dependent) */
-#define SELECT()			SPI_PORT &= (1 << CS);				/* CS = L */
-#define DESELECT()			SPI_PORT |= (1 << CS);				/* CS = H */
+#define SELECT()			SPI_PORT &= (1 << CS);				/* CS = LOW */
+#define DESELECT()			SPI_PORT |= (1 << CS);				/* CS = HIGH */
 #define SELECTING ((SPIPORT.DIR & SPI_CS) && !(SPIPORT.OUT & SPI_CS))
 //betekent. dir een input en .out een output??. Hieronder begin implementatie. 
 
 #define SELECTING ((DDR_SPI |= (1 << CS) && !()))
-
-
-
-/* Port controls  (Platform dependent) */
-//#define SELECT() SPIPORT.OUTCLR = SPI_CS   /* CS = L */
-//#define DESELECT() SPIPORT.OUTSET = SPI_CS /* CS = H */
-//#define SELECTING ((SPIPORT.DIR & SPI_CS) && !(SPIPORT.OUT & SPI_CS)
-
-
-DDRB |= (1 << DDB3);     // set pin 3 of Port B as output
-DDRB &= ~(1 << PINB4);
-
-
-//PORTB |= (1 << PB3);     // set pin 3 of Port B high
-//PORTB &= (1 << PB3);    // set pin 3 of Port B low
-
-
 
 
 static void init_spi(void)

@@ -5,6 +5,8 @@
 #ifndef _DISKIO_DEFINED
 #define _DISKIO_DEFINED
 
+#define F_CPU 16000000UL
+
 #ifdef __cplusplus
 extern "C" {
 #endif

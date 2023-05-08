@@ -5,24 +5,27 @@
  * Author : Johan
  */ 
 
+#define F_CPU 16000000UL
+
 #include <avr/io.h>
+#include <stdbool.h>
 #include "diskio.h"
 #include "pff.h"
 #include "pffconf.h"
 
-#define EXAMPLE_FILENAME "example.txt"
+#define EXAMPLE_FILENAME "log.txt"
 
 #define MINI_BOARD false
 
-	#define BUFFER_SIZE 10
+#define BUFFER_SIZE 10
 
-	FATFS file_system;
+FATFS file_system;
 
-	uint8_t write_buffer[BUFFER_SIZE] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-	uint8_t read_buffer[BUFFER_SIZE]  = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	UINT    byte_counter              = 0;
+uint8_t write_buffer[BUFFER_SIZE] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+uint8_t read_buffer[BUFFER_SIZE]  = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+UINT    byte_counter              = 0;
 
-	void init_sd_card(void);
+void init_sd_card(void);
 
 
 	
@@ -71,23 +74,26 @@ void init_sd_card(void)
 {
 	DSTATUS status;
 	FRESULT result;
+	bool check = true; 
 
 	/* Initialize physical drive */
 	do {
 		status = disk_initialize();
 		if (status != 0) {
+			check = false; 
 			//LED_ON();
 		} else {
+			check = false; 
 			//LED_OFF();
 			/* Set SPI clock faster after initialization */
-			SPI0.CTRLA = (SPI_MASTER_bm | SPI_CLK2X_bm | SPI_PRESC_DIV4_gc | SPI_ENABLE_bm);
+			//SPI0.CTRLA = (SPI_MASTER_bm | SPI_CLK2X_bm | SPI_PRESC_DIV4_gc | SPI_ENABLE_bm);
 		}
 		/* The application will continue to try and initialize the card.
 		 * If the LED is on, try taking out the SD card and putting
 		 * it back in again.  After an operation has been interrupted this is
 		 * sometimes necessary.
 		 */
-	} while (LED_IS_ON());
+	} while (check == false);
 
 	/* Mount volume */
 	result = pf_mount(&file_system);
@@ -102,6 +108,7 @@ void init_sd_card(void)
 	}
 		
 }
-    
+
+
 
 

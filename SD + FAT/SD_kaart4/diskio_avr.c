@@ -36,19 +36,23 @@ SELECT, DESELECT, SELECTING functies
 
 #define DDR_SPI				DDRB
 #define SPI_PORT			PORTB
-#define CS					PINB0
-#define SCK					PINB1
-#define MOSI				PINB2
-#define MISO				PINB3
+#define CS					0b00000001
+#define SCK					0b00000010	
+#define MOSI				0b00000100
+#define MISO				0b00001000
+				
 
 /* Port controls  (Platform dependent) */
-#define SELECT()			SPI_PORT &= (1 << CS);				/* CS = LOW */
+#define SELECT()			SPI_PORT &= ~(1 << CS);				/* CS = LOW */
 #define DESELECT()			SPI_PORT |= (1 << CS);				/* CS = HIGH */
-#define SELECTING ((SPIPORT.DIR & SPI_CS) && !(SPIPORT.OUT & SPI_CS))
-//betekent. dir een input en .out een output??. Hieronder begin implementatie. 
+#define SELECTING ((DDRB & CS) && !(SPI_PORT & CS))
+//DDRB is het input/output register van portb
+// spi_port (PORTB) is het register voor het hoog/laag zetten van de output pinnen van portb
+// linker deel van define: kijken naar portb register van in en outputs en AND-en met CS (de output pin)
+// rechter deel: kijken naar portb output register en hoog/lage outputs AND-en met CS (output pin)
 
-#define SELECTING ((DDR_SPI |= (1 << CS) && !()))
-
+//.dir betekend configuratie output pin.
+//
 
 static void init_spi(void)
 {
@@ -111,8 +115,7 @@ BYTE CardType = 0;
 /* Send a command packet to MMC                                          */
 /*-----------------------------------------------------------------------*/
 static BYTE send_cmd(BYTE  cmd, /* 1st byte (Start + Index) */
-                     DWORD arg  /* Argument (32 bits) */
-)
+                     DWORD arg ) /* Argument (32 bits) */
 {
 	BYTE n, res;
 

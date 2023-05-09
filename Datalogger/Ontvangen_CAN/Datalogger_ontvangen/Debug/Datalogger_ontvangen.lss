@@ -3,31 +3,31 @@ Datalogger_ontvangen.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  00000510  2**0
+  0 .data         00000000  00800100  00800100  00000544  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         0000049c  00000000  00000000  00000074  2**1
+  1 .text         000004d0  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000107  00800100  00800100  00000510  2**0
+  2 .bss          00000107  00800100  00800100  00000544  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000510  2**0
+  3 .comment      00000030  00000000  00000000  00000544  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000540  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000574  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000070  00000000  00000000  0000057c  2**0
+  5 .debug_aranges 00000098  00000000  00000000  000005b0  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000f95  00000000  00000000  000005ec  2**0
+  6 .debug_info   000010b7  00000000  00000000  00000648  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000c4d  00000000  00000000  00001581  2**0
+  7 .debug_abbrev 00000ca6  00000000  00000000  000016ff  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000005fe  00000000  00000000  000021ce  2**0
+  8 .debug_line   00000719  00000000  00000000  000023a5  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000134  00000000  00000000  000027cc  2**2
+  9 .debug_frame  00000144  00000000  00000000  00002ac0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000656  00000000  00000000  00002900  2**0
+ 10 .debug_str    0000069c  00000000  00000000  00002c04  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000004a1  00000000  00000000  00002f56  2**0
+ 11 .debug_loc    000004fd  00000000  00000000  000032a0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000050  00000000  00000000  000033f7  2**0
+ 12 .debug_ranges 00000058  00000000  00000000  0000379d  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -92,8 +92,8 @@ Disassembly of section .text:
   aa:	a7 30       	cpi	r26, 0x07	; 7
   ac:	b2 07       	cpc	r27, r18
   ae:	e1 f7       	brne	.-8      	; 0xa8 <.do_clear_bss_loop>
-  b0:	0e 94 04 02 	call	0x408	; 0x408 <main>
-  b4:	0c 94 4c 02 	jmp	0x498	; 0x498 <_exit>
+  b0:	0e 94 0a 02 	call	0x414	; 0x414 <main>
+  b4:	0c 94 66 02 	jmp	0x4cc	; 0x4cc <_exit>
 
 000000b8 <__bad_interrupt>:
   b8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -418,7 +418,7 @@ uint8_t getMessage( CANMessage * message )
  28e:	01 96       	adiw	r24, 0x01	; 1
  290:	64 e1       	ldi	r22, 0x14	; 20
  292:	70 e0       	ldi	r23, 0x00	; 0
- 294:	0e 94 24 02 	call	0x448	; 0x448 <__divmodhi4>
+ 294:	0e 94 31 02 	call	0x462	; 0x462 <__divmodhi4>
  298:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <serviceIndex>
 
 		messageAvailable = 1;
@@ -635,7 +635,7 @@ ISR( CANIT_vect )
  39c:	01 96       	adiw	r24, 0x01	; 1
  39e:	64 e1       	ldi	r22, 0x14	; 20
  3a0:	70 e0       	ldi	r23, 0x00	; 0
- 3a2:	0e 94 24 02 	call	0x448	; 0x448 <__divmodhi4>
+ 3a2:	0e 94 31 02 	call	0x462	; 0x462 <__divmodhi4>
  3a6:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <bufIndex>
 
 			// Acknowledge the interrupt
@@ -706,115 +706,156 @@ ISR( CANIT_vect )
  404:	1f 90       	pop	r1
  406:	18 95       	reti
 
-00000408 <main>:
+00000408 <writeFloatToEEPROM>:
+}
 
-#define CAN_ID_ARDUINO 0x778
+
+
+void writeFloatToEEPROM(int value, int address)
+{
+ 408:	28 2f       	mov	r18, r24
+ 40a:	cb 01       	movw	r24, r22
+	int val1 = (int)value; // pak getal voor de komma
+	//int val2 = (int)((value-val1)*100); // pak kommagetal en doe keer 100
+	eeprom_write_byte((uint8_t*)address, val1);
+ 40c:	62 2f       	mov	r22, r18
+ 40e:	0e 94 59 02 	call	0x4b2	; 0x4b2 <eeprom_write_byte>
+ 412:	08 95       	ret
+
+00000414 <main>:
+
+void writeFloatToEEPROM(int value, int address);
 
 
 int main(void)
 {
- 408:	cf 93       	push	r28
- 40a:	df 93       	push	r29
- 40c:	cd b7       	in	r28, 0x3d	; 61
- 40e:	de b7       	in	r29, 0x3e	; 62
- 410:	2d 97       	sbiw	r28, 0x0d	; 13
- 412:	0f b6       	in	r0, 0x3f	; 63
- 414:	f8 94       	cli
- 416:	de bf       	out	0x3e, r29	; 62
- 418:	0f be       	out	0x3f, r0	; 63
- 41a:	cd bf       	out	0x3d, r28	; 61
-   CANMessage rx_message; 
+ 414:	cf 93       	push	r28
+ 416:	df 93       	push	r29
+ 418:	cd b7       	in	r28, 0x3d	; 61
+ 41a:	de b7       	in	r29, 0x3e	; 62
+ 41c:	2d 97       	sbiw	r28, 0x0d	; 13
+ 41e:	0f b6       	in	r0, 0x3f	; 63
+ 420:	f8 94       	cli
+ 422:	de bf       	out	0x3e, r29	; 62
+ 424:	0f be       	out	0x3f, r0	; 63
+ 426:	cd bf       	out	0x3d, r28	; 61
+	CANMessage rx_message; 
 	uint8_t result; 
-
+	int addressEEPROM = 0;
 
    
     DDRC |= (1<<PC0);
- 41c:	87 b1       	in	r24, 0x07	; 7
- 41e:	81 60       	ori	r24, 0x01	; 1
- 420:	87 b9       	out	0x07, r24	; 7
+ 428:	87 b1       	in	r24, 0x07	; 7
+ 42a:	81 60       	ori	r24, 0x01	; 1
+ 42c:	87 b9       	out	0x07, r24	; 7
 	initCAN(); 
- 422:	0e 94 5e 00 	call	0xbc	; 0xbc <initCAN>
+ 42e:	0e 94 5e 00 	call	0xbc	; 0xbc <initCAN>
    
    	result = listenForMessage(CAN_ID_ARDUINO, 8);
- 426:	48 e0       	ldi	r20, 0x08	; 8
- 428:	68 e7       	ldi	r22, 0x78	; 120
- 42a:	77 e0       	ldi	r23, 0x07	; 7
- 42c:	80 e0       	ldi	r24, 0x00	; 0
- 42e:	90 e0       	ldi	r25, 0x00	; 0
- 430:	0e 94 94 00 	call	0x128	; 0x128 <listenForMessage>
-    {
+ 432:	48 e0       	ldi	r20, 0x08	; 8
+ 434:	60 e1       	ldi	r22, 0x10	; 16
+ 436:	70 e0       	ldi	r23, 0x00	; 0
+ 438:	80 e0       	ldi	r24, 0x00	; 0
+ 43a:	90 e0       	ldi	r25, 0x00	; 0
+ 43c:	0e 94 94 00 	call	0x128	; 0x128 <listenForMessage>
 		// PORTC |= (1<<PC0);				//hoog maken pin
 	
 		// PORTC &= ~(1 << PC0);			//laag maken pin	
 		
+		
 			uint8_t myMessage = getMessage(&rx_message);
- 434:	ce 01       	movw	r24, r28
- 436:	01 96       	adiw	r24, 0x01	; 1
- 438:	0e 94 ff 00 	call	0x1fe	; 0x1fe <getMessage>
+ 440:	ce 01       	movw	r24, r28
+ 442:	01 96       	adiw	r24, 0x01	; 1
+ 444:	0e 94 ff 00 	call	0x1fe	; 0x1fe <getMessage>
 			if (myMessage) {
- 43c:	88 23       	and	r24, r24
- 43e:	d1 f3       	breq	.-12     	; 0x434 <main+0x2c>
-					PORTC |= (1<<PC0);
- 440:	88 b1       	in	r24, 0x08	; 8
- 442:	81 60       	ori	r24, 0x01	; 1
- 444:	88 b9       	out	0x08, r24	; 8
- 446:	f6 cf       	rjmp	.-20     	; 0x434 <main+0x2c>
+ 448:	88 23       	and	r24, r24
+ 44a:	d1 f3       	breq	.-12     	; 0x440 <main+0x2c>
+				
+						PORTC ^= (1<<PC0);	
+ 44c:	98 b1       	in	r25, 0x08	; 8
+ 44e:	81 e0       	ldi	r24, 0x01	; 1
+ 450:	89 27       	eor	r24, r25
+ 452:	88 b9       	out	0x08, r24	; 8
+						writeFloatToEEPROM(rx_message.id, addressEEPROM);
+ 454:	60 e0       	ldi	r22, 0x00	; 0
+ 456:	70 e0       	ldi	r23, 0x00	; 0
+ 458:	89 81       	ldd	r24, Y+1	; 0x01
+ 45a:	9a 81       	ldd	r25, Y+2	; 0x02
+ 45c:	0e 94 04 02 	call	0x408	; 0x408 <writeFloatToEEPROM>
+ 460:	ef cf       	rjmp	.-34     	; 0x440 <main+0x2c>
 
-00000448 <__divmodhi4>:
- 448:	97 fb       	bst	r25, 7
- 44a:	07 2e       	mov	r0, r23
- 44c:	16 f4       	brtc	.+4      	; 0x452 <__divmodhi4+0xa>
- 44e:	00 94       	com	r0
- 450:	07 d0       	rcall	.+14     	; 0x460 <__divmodhi4_neg1>
- 452:	77 fd       	sbrc	r23, 7
- 454:	09 d0       	rcall	.+18     	; 0x468 <__divmodhi4_neg2>
- 456:	0e 94 38 02 	call	0x470	; 0x470 <__udivmodhi4>
- 45a:	07 fc       	sbrc	r0, 7
- 45c:	05 d0       	rcall	.+10     	; 0x468 <__divmodhi4_neg2>
- 45e:	3e f4       	brtc	.+14     	; 0x46e <__divmodhi4_exit>
+00000462 <__divmodhi4>:
+ 462:	97 fb       	bst	r25, 7
+ 464:	07 2e       	mov	r0, r23
+ 466:	16 f4       	brtc	.+4      	; 0x46c <__divmodhi4+0xa>
+ 468:	00 94       	com	r0
+ 46a:	07 d0       	rcall	.+14     	; 0x47a <__divmodhi4_neg1>
+ 46c:	77 fd       	sbrc	r23, 7
+ 46e:	09 d0       	rcall	.+18     	; 0x482 <__divmodhi4_neg2>
+ 470:	0e 94 45 02 	call	0x48a	; 0x48a <__udivmodhi4>
+ 474:	07 fc       	sbrc	r0, 7
+ 476:	05 d0       	rcall	.+10     	; 0x482 <__divmodhi4_neg2>
+ 478:	3e f4       	brtc	.+14     	; 0x488 <__divmodhi4_exit>
 
-00000460 <__divmodhi4_neg1>:
- 460:	90 95       	com	r25
- 462:	81 95       	neg	r24
- 464:	9f 4f       	sbci	r25, 0xFF	; 255
- 466:	08 95       	ret
+0000047a <__divmodhi4_neg1>:
+ 47a:	90 95       	com	r25
+ 47c:	81 95       	neg	r24
+ 47e:	9f 4f       	sbci	r25, 0xFF	; 255
+ 480:	08 95       	ret
 
-00000468 <__divmodhi4_neg2>:
- 468:	70 95       	com	r23
- 46a:	61 95       	neg	r22
- 46c:	7f 4f       	sbci	r23, 0xFF	; 255
+00000482 <__divmodhi4_neg2>:
+ 482:	70 95       	com	r23
+ 484:	61 95       	neg	r22
+ 486:	7f 4f       	sbci	r23, 0xFF	; 255
 
-0000046e <__divmodhi4_exit>:
- 46e:	08 95       	ret
+00000488 <__divmodhi4_exit>:
+ 488:	08 95       	ret
 
-00000470 <__udivmodhi4>:
- 470:	aa 1b       	sub	r26, r26
- 472:	bb 1b       	sub	r27, r27
- 474:	51 e1       	ldi	r21, 0x11	; 17
- 476:	07 c0       	rjmp	.+14     	; 0x486 <__udivmodhi4_ep>
+0000048a <__udivmodhi4>:
+ 48a:	aa 1b       	sub	r26, r26
+ 48c:	bb 1b       	sub	r27, r27
+ 48e:	51 e1       	ldi	r21, 0x11	; 17
+ 490:	07 c0       	rjmp	.+14     	; 0x4a0 <__udivmodhi4_ep>
 
-00000478 <__udivmodhi4_loop>:
- 478:	aa 1f       	adc	r26, r26
- 47a:	bb 1f       	adc	r27, r27
- 47c:	a6 17       	cp	r26, r22
- 47e:	b7 07       	cpc	r27, r23
- 480:	10 f0       	brcs	.+4      	; 0x486 <__udivmodhi4_ep>
- 482:	a6 1b       	sub	r26, r22
- 484:	b7 0b       	sbc	r27, r23
+00000492 <__udivmodhi4_loop>:
+ 492:	aa 1f       	adc	r26, r26
+ 494:	bb 1f       	adc	r27, r27
+ 496:	a6 17       	cp	r26, r22
+ 498:	b7 07       	cpc	r27, r23
+ 49a:	10 f0       	brcs	.+4      	; 0x4a0 <__udivmodhi4_ep>
+ 49c:	a6 1b       	sub	r26, r22
+ 49e:	b7 0b       	sbc	r27, r23
 
-00000486 <__udivmodhi4_ep>:
- 486:	88 1f       	adc	r24, r24
- 488:	99 1f       	adc	r25, r25
- 48a:	5a 95       	dec	r21
- 48c:	a9 f7       	brne	.-22     	; 0x478 <__udivmodhi4_loop>
- 48e:	80 95       	com	r24
- 490:	90 95       	com	r25
- 492:	bc 01       	movw	r22, r24
- 494:	cd 01       	movw	r24, r26
- 496:	08 95       	ret
+000004a0 <__udivmodhi4_ep>:
+ 4a0:	88 1f       	adc	r24, r24
+ 4a2:	99 1f       	adc	r25, r25
+ 4a4:	5a 95       	dec	r21
+ 4a6:	a9 f7       	brne	.-22     	; 0x492 <__udivmodhi4_loop>
+ 4a8:	80 95       	com	r24
+ 4aa:	90 95       	com	r25
+ 4ac:	bc 01       	movw	r22, r24
+ 4ae:	cd 01       	movw	r24, r26
+ 4b0:	08 95       	ret
 
-00000498 <_exit>:
- 498:	f8 94       	cli
+000004b2 <eeprom_write_byte>:
+ 4b2:	26 2f       	mov	r18, r22
 
-0000049a <__stop_program>:
- 49a:	ff cf       	rjmp	.-2      	; 0x49a <__stop_program>
+000004b4 <eeprom_write_r18>:
+ 4b4:	f9 99       	sbic	0x1f, 1	; 31
+ 4b6:	fe cf       	rjmp	.-4      	; 0x4b4 <eeprom_write_r18>
+ 4b8:	92 bd       	out	0x22, r25	; 34
+ 4ba:	81 bd       	out	0x21, r24	; 33
+ 4bc:	20 bd       	out	0x20, r18	; 32
+ 4be:	0f b6       	in	r0, 0x3f	; 63
+ 4c0:	f8 94       	cli
+ 4c2:	fa 9a       	sbi	0x1f, 2	; 31
+ 4c4:	f9 9a       	sbi	0x1f, 1	; 31
+ 4c6:	0f be       	out	0x3f, r0	; 63
+ 4c8:	01 96       	adiw	r24, 0x01	; 1
+ 4ca:	08 95       	ret
+
+000004cc <_exit>:
+ 4cc:	f8 94       	cli
+
+000004ce <__stop_program>:
+ 4ce:	ff cf       	rjmp	.-2      	; 0x4ce <__stop_program>

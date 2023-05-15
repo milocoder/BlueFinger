@@ -7,6 +7,8 @@
 
 #define F_CPU 16000000UL
 
+#define _PROTECTED_WRITE(register, value)
+
 #include <avr/io.h>
 #include <stdbool.h>
 #include "diskio.h"
@@ -15,7 +17,11 @@
 
 #define EXAMPLE_FILENAME "log.txt"
 
-#define MINI_BOARD false
+#define MINI_BOARD		false
+	
+
+#define LED_OFF()		PORTC &= ~(1 << PC0);	
+#define LED_ON()		PORTC |= (1 << PC0);
 
 #define BUFFER_SIZE 10
 
@@ -31,8 +37,13 @@ void init_sd_card(void);
 	
 int main(void)
 {
-	/* Set clock to known value, e.g. 5MHz */
-	//_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_4X_gc));
+	
+	DDRC = 1; // output led (p4)
+	PORTC = 0; 
+	
+	//_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_4X_gc))
+	
+	_PROTECTED_WRITE(CLKPR, ( (1<<CLKPCE) | ((0<<CLKPS3) | (0<<CLKPS2) | (1<<CLKPS1) | (0<<CLKPS0)))); 
 
 	/* Initialize card */
 	init_sd_card();
@@ -59,14 +70,14 @@ int main(void)
 	while (byte_counter) {
 		if (write_buffer[byte_counter] != read_buffer[byte_counter]) {
 			/* ERROR! */
-			//LED_ON();
+		//	LED_ON();
 			while (1)
 				;
 		}
 		byte_counter--;
 	}
 	/* SUCCESS! */
-	while (1)
+	while (1) 
 		;
 }
 
@@ -74,26 +85,36 @@ void init_sd_card(void)
 {
 	DSTATUS status;
 	FRESULT result;
-	bool check = true; 
+	int ERROR = 0;
 
 	/* Initialize physical drive */
 	do {
+		
 		status = disk_initialize();
 		if (status != 0) {
-			check = false; 
+			
 			//LED_ON();
+		ERROR = 1; 
 		} else {
-			check = false; 
-			//LED_OFF();
+			//LED_OFF();			
 			/* Set SPI clock faster after initialization */
+			SPCR = (1<<MSTR) | (0<<SPR1) | (0<<SPR0) | (1<<SPE);
+			SPSR = (1<<SPI2X); 			
+			//SPR1 en 0 op 0 SPI clock set to fck/4 (blaz. 174)
+			//MSTR, in mastermode zetten
+			//SPE, SPI enable maken.
+			//SPI2X, het verdubbelen van de snelheid.
+			
+			//hieronder de oude code
 			//SPI0.CTRLA = (SPI_MASTER_bm | SPI_CLK2X_bm | SPI_PRESC_DIV4_gc | SPI_ENABLE_bm);
+			
 		}
 		/* The application will continue to try and initialize the card.
 		 * If the LED is on, try taking out the SD card and putting
 		 * it back in again.  After an operation has been interrupted this is
 		 * sometimes necessary.
 		 */
-	} while (check == false);
+	} while (ERROR == 1);
 
 	/* Mount volume */
 	result = pf_mount(&file_system);
@@ -106,6 +127,8 @@ void init_sd_card(void)
 	if (result != FR_OK) {
 		//LED_ON();
 	}
+
+		
 		
 }
 

@@ -10,16 +10,6 @@
 /* Platform dependent macros and functions MODIFY FOR YOUR DEVICE           */
 /*-------------------------------------------------------------------------*/
 
-
-
-/*
-Gewijzigd:
-SPI functies - init en transfer
-Poortbenamingen
-SELECT, DESELECT, SELECTING functies
-
-*/
-
 #include <avr/io.h> /* Device specific include files */
 
 //#define SPIPORT PORTC
@@ -36,16 +26,22 @@ SELECT, DESELECT, SELECTING functies
 
 #define DDR_SPI				DDRB
 #define SPI_PORT			PORTB
-#define CS					0b00000001
-#define SCK					0b00000010	
-#define MOSI				0b00000100
-#define MISO				0b00001000
+#define CS (1<<0)
+#define SCK (1<<1)
+#define MOSI (1<<2)
+#define MISO (1<<3)
+
+
+//#define CS					0b00000001
+//#define SCK					0b00000010	
+//#define MOSI				0b00000100
+//#define MISO				0b00001000
 				
 
 /* Port controls  (Platform dependent) */
 #define SELECT()			SPI_PORT &= ~(1 << CS);				/* CS = LOW */
 #define DESELECT()			SPI_PORT |= (1 << CS);				/* CS = HIGH */
-#define SELECTING ((DDRB & CS) && !(SPI_PORT & CS))
+#define SELECTING ((DDRB & CS) && !(SPI_PORT & CS)) 
 //DDRB is het input/output register van portb
 // spi_port (PORTB) is het register voor het hoog/laag zetten van de output pinnen van portb
 // linker deel van define: kijken naar portb register van in en outputs en AND-en met CS (de output pin)
@@ -56,6 +52,21 @@ SELECT, DESELECT, SELECTING functies
 
 static void init_spi(void)
 {
+	
+		/* SPI pins */
+		//PORTMUX.CTRLB    = PORTMUX_SPI0_ALTERNATE_gc;   /* Alternative comms location for SPI */
+		//SPIPORT.DIRSET   = SPI_MOSI | SPI_CS | SPI_SCK; /* Set outputs */
+		//SPIPORT.PIN1CTRL = PORT_PULLUPEN_bm;            /* Pull up on SPI_MISO (SD card DO) */
+
+		/* Customize SPI prescaler to give 100-400kHz clock */
+		//SPI0.CTRLA = SPI_MASTER_bm | SPI_PRESC_DIV16_gc; /* With 5MHz F_CPU */
+		/* Slave select pin controlled in software */
+		//SPI0.CTRLB = SPI_SSD_bm;														nog even vragen wat dit betekent en of nodig is voor onze toepassing
+		/* SPI Enable */
+		//SPI0.CTRLA |= SPI_ENABLE_bm;
+		
+		
+		
 		/* Set MOSI and SCK output, all others input */
 		DDR_SPI = (1 << MOSI) | (1 << SCK) | (1 << CS);			//geen cs - dan in IDLE stand?
 		
@@ -63,7 +74,7 @@ static void init_spi(void)
 		DDR_SPI |= (1 << MISO);
 		
 		/* Enable SPI, Master, set clock rate fck/16 */
-		SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0);
+		SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0); 
 }
 
 static BYTE spi(BYTE d)
@@ -172,15 +183,17 @@ DSTATUS disk_initialize(void)
 #if _USE_WRITE
 	if (CardType && SELECTING)
 		disk_writep(0, 0); /* Finalize write process if it is in progress */
+	
 #endif
 
-	init_spi(); /* Initialize ports to control MMC */
+	init_spi(); /* Initialize ports to control MMC */ 
 	DESELECT();
 	for (n = 10; n; n--)
 		rcv_spi(); /* 80 dummy clocks with CS=H */
 
 	ty = 0;
-	if (send_cmd(CMD0, 0) == 1) {         /* GO_IDLE_STATE */
+	if (send_cmd(CMD0, 0) == 1) { 
+		PORTC=1;        /* GO_IDLE_STATE */
 		if (send_cmd(CMD8, 0x1AA) == 1) { /* SDv2 */
 			for (n = 0; n < 4; n++)
 				ocr[n] = rcv_spi();                 /* Get trailing return value of R7 resp */

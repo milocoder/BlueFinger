@@ -1,0 +1,180 @@
+
+SPI_test.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  0000015c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000108  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  0000015c  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000018c  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000030  00000000  00000000  000001c8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000bea  00000000  00000000  000001f8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000ae9  00000000  00000000  00000de2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000303  00000000  00000000  000018cb  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000044  00000000  00000000  00001bd0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000535  00000000  00000000  00001c14  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000067  00000000  00000000  00002149  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000020  00000000  00000000  000021b0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 4a 00 	jmp	0x94	; 0x94 <__ctors_end>
+   4:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+   8:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+   c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  10:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  14:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  18:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  1c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  20:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  24:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  28:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  2c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  30:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  34:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  38:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  3c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  40:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  44:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  48:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  4c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  50:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  54:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  58:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  5c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  60:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  64:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  68:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  6c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  70:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  74:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  78:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  7c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  80:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  84:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  88:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  8c:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+  90:	0c 94 54 00 	jmp	0xa8	; 0xa8 <__bad_interrupt>
+
+00000094 <__ctors_end>:
+  94:	11 24       	eor	r1, r1
+  96:	1f be       	out	0x3f, r1	; 63
+  98:	cf ef       	ldi	r28, 0xFF	; 255
+  9a:	d8 e0       	ldi	r29, 0x08	; 8
+  9c:	de bf       	out	0x3e, r29	; 62
+  9e:	cd bf       	out	0x3d, r28	; 61
+  a0:	0e 94 67 00 	call	0xce	; 0xce <main>
+  a4:	0c 94 82 00 	jmp	0x104	; 0x104 <_exit>
+
+000000a8 <__bad_interrupt>:
+  a8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000ac <init_spi>:
+	//enable uit voor instellen
+	//SPCR = (0<<SPE); 
+	
+	
+	/* Set MOSI, SCK and CS output, all others input */
+	DDRB |= 0b00000111; 
+  ac:	84 b1       	in	r24, 0x04	; 4
+  ae:	87 60       	ori	r24, 0x07	; 7
+  b0:	84 b9       	out	0x04, r24	; 4
+	//DDR_SPI = (1 << MOSI) | (1 << SCK) | (1 << CS);			//geen cs - dan in IDLE stand?
+	
+	// enable pull up resistor in MISO
+	//DDR_SPI |= (1 << MISO);
+	PORTB |= 0b00001000; 
+  b2:	85 b1       	in	r24, 0x05	; 5
+  b4:	88 60       	ori	r24, 0x08	; 8
+  b6:	85 b9       	out	0x05, r24	; 5
+	
+	/* Enable SPI, Master, set clock rate fck/16 */
+	SPCR = (1<<MSTR) | (1<<SPR0) | (1<<SPIE); 
+  b8:	81 e9       	ldi	r24, 0x91	; 145
+  ba:	8c bd       	out	0x2c, r24	; 44
+	SPCR = (1<<SPE); 
+  bc:	80 e4       	ldi	r24, 0x40	; 64
+  be:	8c bd       	out	0x2c, r24	; 44
+  c0:	08 95       	ret
+
+000000c2 <transmit>:
+}
+
+char transmit(char a)
+{
+	/* Start transmission */
+	SPDR = a;
+  c2:	8e bd       	out	0x2e, r24	; 46
+	/* Wait for transmission complete */
+	while(!(SPSR & (1<<SPIF)));
+  c4:	0d b4       	in	r0, 0x2d	; 45
+  c6:	07 fe       	sbrs	r0, 7
+  c8:	fd cf       	rjmp	.-6      	; 0xc4 <transmit+0x2>
+	
+	return SPDR;
+  ca:	8e b5       	in	r24, 0x2e	; 46
+}
+  cc:	08 95       	ret
+
+000000ce <main>:
+char transmit(char a);
+
+
+int main(void)
+{
+	init_spi(); 
+  ce:	0e 94 56 00 	call	0xac	; 0xac <init_spi>
+    /* Replace with your application code */
+    while (1) 
+    {
+		transmit(0x87); 
+  d2:	87 e8       	ldi	r24, 0x87	; 135
+  d4:	0e 94 61 00 	call	0xc2	; 0xc2 <transmit>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  d8:	2f ef       	ldi	r18, 0xFF	; 255
+  da:	89 e6       	ldi	r24, 0x69	; 105
+  dc:	98 e1       	ldi	r25, 0x18	; 24
+  de:	21 50       	subi	r18, 0x01	; 1
+  e0:	80 40       	sbci	r24, 0x00	; 0
+  e2:	90 40       	sbci	r25, 0x00	; 0
+  e4:	e1 f7       	brne	.-8      	; 0xde <main+0x10>
+  e6:	00 c0       	rjmp	.+0      	; 0xe8 <main+0x1a>
+  e8:	00 00       	nop
+		_delay_ms(500); 
+		transmit(0x50);	
+  ea:	80 e5       	ldi	r24, 0x50	; 80
+  ec:	0e 94 61 00 	call	0xc2	; 0xc2 <transmit>
+  f0:	2f ef       	ldi	r18, 0xFF	; 255
+  f2:	89 e6       	ldi	r24, 0x69	; 105
+  f4:	98 e1       	ldi	r25, 0x18	; 24
+  f6:	21 50       	subi	r18, 0x01	; 1
+  f8:	80 40       	sbci	r24, 0x00	; 0
+  fa:	90 40       	sbci	r25, 0x00	; 0
+  fc:	e1 f7       	brne	.-8      	; 0xf6 <main+0x28>
+  fe:	00 c0       	rjmp	.+0      	; 0x100 <main+0x32>
+ 100:	00 00       	nop
+ 102:	e7 cf       	rjmp	.-50     	; 0xd2 <main+0x4>
+
+00000104 <_exit>:
+ 104:	f8 94       	cli
+
+00000106 <__stop_program>:
+ 106:	ff cf       	rjmp	.-2      	; 0x106 <__stop_program>

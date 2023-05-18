@@ -26,17 +26,10 @@
 
 #define DDR_SPI				DDRB
 #define SPI_PORT			PORTB
-#define CS (1<<0)
-#define SCK (1<<1)
-#define MOSI (1<<2)
-#define MISO (1<<3)
-
-
-//#define CS					0b00000001
-//#define SCK					0b00000010	
-//#define MOSI				0b00000100
-//#define MISO				0b00001000
-				
+#define CS					PINB0
+#define SCK					PINB1
+#define MOSI				PINB2
+#define MISO				PINB3				
 
 /* Port controls  (Platform dependent) */
 #define SELECT()			SPI_PORT &= ~(1 << CS);				/* CS = LOW */
@@ -52,54 +45,32 @@
 
 static void init_spi(void)
 {
+	/* Set MOSI and SCK output, all others input */
+	DDR_SPI |= ((1 << MOSI) | (1 << SCK) | (1 << CS));
 	
-		/* SPI pins */
-		//PORTMUX.CTRLB    = PORTMUX_SPI0_ALTERNATE_gc;   /* Alternative comms location for SPI */
-		//SPIPORT.DIRSET   = SPI_MOSI | SPI_CS | SPI_SCK; /* Set outputs */
-		//SPIPORT.PIN1CTRL = PORT_PULLUPEN_bm;            /* Pull up on SPI_MISO (SD card DO) */
-
-		/* Customize SPI prescaler to give 100-400kHz clock */
-		//SPI0.CTRLA = SPI_MASTER_bm | SPI_PRESC_DIV16_gc; /* With 5MHz F_CPU */
-		/* Slave select pin controlled in software */
-		//SPI0.CTRLB = SPI_SSD_bm;														nog even vragen wat dit betekent en of nodig is voor onze toepassing
-		/* SPI Enable */
-		//SPI0.CTRLA |= SPI_ENABLE_bm;
-		
-		
-		
-		SPCR = (0<<SPE);
-		
-		
-		/* Set MOSI and SCK output, all others input */
-		DDR_SPI = (1 << MOSI) | (1 << SCK) | (1 << CS);			//geen cs - dan in IDLE stand?
-		
-		// enable pull up resistor in MISO
-		DDR_SPI |= (1 << MISO);
-		
-		/* Enable SPI, Master, set clock rate fck/16 */
-		SPCR = (1<<MSTR) | (1<<SPR0);
-		SPCR = (1<<SPE);
+	// enable pull up resistor in MISO
+	PORTB |= (1 << MISO);
 	
+	/* Enable SPI, Master, set clock rate fck/16 */
+	SPCR |= ((1<<SPE) | (1<<MSTR) | (1<<SPR0));
+	PORTB |= (1<<CS); 				//hoog maken CS	
 }
 
-static BYTE spi(BYTE d)
+static BYTE xmit_spi(BYTE data)
 {
+	PORTB &= ~(1<<CS); //laag maken
 	/* Start transmission */
-	SPDR = d;
+	SPDR = data;
 	/* Wait for transmission complete */
 	while(!(SPSR & (1<<SPIF)));
+	PORTB |= (1<<CS);		//hoog maken CS
 	
-	return SPDR;
-}
-
-static void xmit_spi(BYTE d)
-{
-	spi(d);
+	return SPDR; 
 }
 
 static BYTE rcv_spi(void)
 {
-	return spi(0xFF);
+	return xmit_spi(0xFF);
 }
 
 /*--------------------------------------------------------------------------
@@ -198,7 +169,6 @@ DSTATUS disk_initialize(void)
 
 	ty = 0;
 	if (send_cmd(CMD0, 0) == 1) { 
-		PORTC=1;        /* GO_IDLE_STATE */
 		if (send_cmd(CMD8, 0x1AA) == 1) { /* SDv2 */
 			for (n = 0; n < 4; n++)
 				ocr[n] = rcv_spi();                 /* Get trailing return value of R7 resp */

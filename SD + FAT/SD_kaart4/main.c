@@ -1,10 +1,3 @@
-/*
- * SD_kaart4.c
- *
- * Created: 3-5-2023 16:17:55
- * Author : Johan
- */ 
-
 #define F_CPU 16000000UL
 
 #define _PROTECTED_WRITE(register, value)
@@ -15,10 +8,7 @@
 #include "pff.h"
 #include "pffconf.h"
 
-#define EXAMPLE_FILENAME "log.txt"
-
-#define MINI_BOARD		false
-	
+#define EXAMPLE_FILENAME "LOG.TXT"
 
 #define LED_OFF()		PORTC &= ~(1 << PC0);	
 #define LED_ON()		PORTC |= (1 << PC0);
@@ -32,16 +22,11 @@ uint8_t read_buffer[BUFFER_SIZE]  = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 UINT    byte_counter              = 0;
 
 void init_sd_card(void);
-
-
 	
 int main(void)
 {
-	
-	
-	
 	DDRC = 1; // output led (p4)
-	PORTC = 0; 
+	LED_OFF();
 	
 	//_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_4X_gc))
 	
@@ -57,6 +42,7 @@ int main(void)
 	pf_write(write_buffer, BUFFER_SIZE, &byte_counter);
 	if (byte_counter < BUFFER_SIZE) {
 		/* End of file */
+		
 	}
 
 	/* Finalize write */
@@ -81,7 +67,8 @@ int main(void)
 	/* SUCCESS! */
 	while (1) 
 		{
-			
+			//PORTC ^= (1 << PC0);
+			//_delay_ms(250);
 		}
 }
 
@@ -96,14 +83,13 @@ void init_sd_card(void)
 		
 		status = disk_initialize();
 		if (status != 0) {
-			
-			//LED_ON();
-		ERROR = 1; 
+			ERROR = 1; 
 		} else {
-			//LED_OFF();			
+			LED_OFF();
+			ERROR = 0;			
 			/* Set SPI clock faster after initialization */
 			SPCR = (1<<MSTR) | (0<<SPR1) | (0<<SPR0) | (1<<SPE);
-			SPSR = (1<<SPI2X); 			
+			SPSR = (1<<SPI2X); 		
 			//SPR1 en 0 op 0 SPI clock set to fck/4 (blaz. 174)
 			//MSTR, in mastermode zetten
 			//SPE, SPI enable maken.
@@ -122,20 +108,20 @@ void init_sd_card(void)
 
 	/* Mount volume */
 	result = pf_mount(&file_system);
-	if (result != FR_OK){
-		//LED_ON();
+	if (result != FR_OK){ // 0
+		
 	}
 
 	/* Open file */
 	result = pf_open(EXAMPLE_FILENAME);
 	if (result != FR_OK) {
-		//LED_ON();
+		if (result == FR_NO_FILE)
+		{
+			while (1)
+			{
+				PORTC ^= (1 << PC0);
+				_delay_ms(750);
+			}			
+		}
 	}
-
-		
-		
 }
-
-
-
-

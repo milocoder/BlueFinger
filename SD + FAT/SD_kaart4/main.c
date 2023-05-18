@@ -8,8 +8,6 @@
 #include "pff.h"
 #include "pffconf.h"
 
-#define EXAMPLE_FILENAME "LOG.TXT"
-
 #define LED_OFF()		PORTC &= ~(1 << PC0);	
 #define LED_ON()		PORTC |= (1 << PC0);
 
@@ -113,7 +111,7 @@ void init_sd_card(void)
 	}
 
 	/* Open file */
-	result = pf_open(EXAMPLE_FILENAME);
+	result = pf_open("LOG.TXT");
 	if (result != FR_OK) {
 		if (result == FR_NO_FILE)
 		{

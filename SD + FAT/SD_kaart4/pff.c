@@ -650,7 +650,7 @@ static FRESULT dir_find(DIR * dj, /* Pointer to the directory object linked to t
 		if (res != FR_OK)
 			break;
 		c = dir[DIR_Name]; /* First character */
-		if (c == 0) {
+		if (c == 0) { ///// hieerrr fout misschien
 			res = FR_NO_FILE;
 			break;
 		}                                                           /* Reached to end of table */
@@ -825,7 +825,7 @@ static FRESULT follow_path(                 /* FR_OK(0): successful, !=0: error 
 			res = create_name(dj, &path); /* Get a segment */
 			if (res != FR_OK)
 				break;
-			res = dir_find(dj, dir); /* Find it */
+			res = dir_find(dj, dir); /* Find it */ // het gaat denk ik hier fout
 			if (res != FR_OK)
 				break; /* Could not find the object */
 			if (dj->fn[11])
@@ -872,16 +872,18 @@ static BYTE check_fs(/* 0:The FAT boot record, 1:Valid boot record but not an FA
 /* Mount/Unmount a Locical Drive                                         */
 /*-----------------------------------------------------------------------*/
 
-FRESULT pf_mount(FATFS *fs /* Pointer to new file system object */
-)
+FRESULT pf_mount(FATFS *fs /* Pointer to new file system object */)
 {
 	BYTE  fmt, buf[36];
 	DWORD bsect, fsize, tsect, mclst;
 
 	FatFs = 0;
 
-	if (disk_initialize() & STA_NOINIT) /* Check if the drive is ready or not */
+	if (disk_initialize() & STA_NOINIT)
+	{
+		/* Check if the drive is ready or not */
 		return FR_NOT_READY;
+	} 
 
 	/* Search FAT partition on the drive */
 	bsect = 0;
@@ -966,8 +968,9 @@ FRESULT pf_open(const char *path /* Pointer to the file name */
 	res      = follow_path(&dj, dir, path); /* Follow the file path */
 	if (res != FR_OK)
 		return res;                          /* Follow failed */
-	if (!dir[0] || (dir[DIR_Attr] & AM_DIR)) /* It is a directory */
+	if (!dir[0] || (dir[DIR_Attr] & AM_DIR)) /* It is a directory */ // hier gaat het fout
 		return FR_NO_FILE;
+	
 
 	fs->org_clust = get_clust(dir);               /* File start cluster */
 	fs->fsize     = LD_DWORD(dir + DIR_FileSize); /* File size */

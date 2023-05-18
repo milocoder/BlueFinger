@@ -67,6 +67,9 @@ static void init_spi(void)
 		
 		
 		
+		SPCR = (0<<SPE);
+		
+		
 		/* Set MOSI and SCK output, all others input */
 		DDR_SPI = (1 << MOSI) | (1 << SCK) | (1 << CS);			//geen cs - dan in IDLE stand?
 		
@@ -74,7 +77,9 @@ static void init_spi(void)
 		DDR_SPI |= (1 << MISO);
 		
 		/* Enable SPI, Master, set clock rate fck/16 */
-		SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0); 
+		SPCR = (1<<MSTR) | (1<<SPR0);
+		SPCR = (1<<SPE);
+	
 }
 
 static BYTE spi(BYTE d)

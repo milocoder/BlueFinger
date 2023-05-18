@@ -38,6 +38,8 @@ void init_sd_card(void);
 int main(void)
 {
 	
+	
+	
 	DDRC = 1; // output led (p4)
 	PORTC = 0; 
 	
@@ -78,7 +80,9 @@ int main(void)
 	}
 	/* SUCCESS! */
 	while (1) 
-		;
+		{
+			
+		}
 }
 
 void init_sd_card(void)

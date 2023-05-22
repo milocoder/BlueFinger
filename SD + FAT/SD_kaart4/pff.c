@@ -632,35 +632,35 @@ static FRESULT dir_next(        /* FR_OK:Succeeded, FR_NO_FILE:End of table */
 /* Directory handling - Find an object in the directory                  */
 /*-----------------------------------------------------------------------*/
 
-static FRESULT dir_find(DIR * dj, /* Pointer to the directory object linked to the file name */
-                        BYTE *dir /* 32-byte working buffer */
-)
-{
-	FRESULT res;
-	BYTE    c;
+	static FRESULT dir_find(DIR * dj, /* Pointer to the directory object linked to the file name */
+							BYTE *dir /* 32-byte working buffer */
+	)
+	{
+		FRESULT res;
+		BYTE    c;
 
-	res = dir_rewind(dj); /* Rewind directory object */
-	if (res != FR_OK)
-		return res;
-
-	do {
-		res = disk_readp(dir, dj->sect, (dj->index % 16) * 32, 32) /* Read an entry */
-		          ? FR_DISK_ERR
-		          : FR_OK;
+		res = dir_rewind(dj); /* Rewind directory object */
 		if (res != FR_OK)
-			break;
-		c = dir[DIR_Name]; /* First character */
-		if (c == 0) { ///// hieerrr fout misschien
-			res = FR_NO_FILE;
-			break;
-		}                                                           /* Reached to end of table */
-		if (!(dir[DIR_Attr] & AM_VOL) && !mem_cmp(dir, dj->fn, 11)) /* Is it a valid entry? */
-			break;
-		res = dir_next(dj); /* Next entry */
-	} while (res == FR_OK);
+			return res;
 
-	return res;
-}
+		do {
+			res = disk_readp(dir, dj->sect, (dj->index % 16) * 32, 32) /* Read an entry */
+					  ? FR_DISK_ERR
+					  : FR_OK;
+			if (res != FR_OK)
+				break;
+			c = dir[DIR_Name]; /* First character */
+			if (c == 0) { ///// hieerrr fout misschien
+				res = FR_NO_FILE;
+				break;
+			}                                                           /* Reached to end of table */
+			if (!(dir[DIR_Attr] & AM_VOL) && !mem_cmp(dir, dj->fn, 11)) /* Is it a valid entry? */
+				break;
+			res = dir_next(dj); /* Next entry */
+		} while (res == FR_OK);
+
+		return res;
+	}
 
 /*-----------------------------------------------------------------------*/
 /* Read an object from the directory                                     */
@@ -954,7 +954,7 @@ FRESULT pf_mount(FATFS *fs /* Pointer to new file system object */)
 
 FRESULT pf_open(const char *path /* Pointer to the file name */
 )
-{
+ {
 	FRESULT res;
 	DIR     dj;
 	BYTE    sp[12], dir[32];

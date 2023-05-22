@@ -111,15 +111,13 @@ void init_sd_card(void)
 	}
 
 	/* Open file */
-	result = pf_open("LOG.TXT");
-	if (result != FR_OK) {
-		if (result == FR_NO_FILE)
+	result = pf_open("/LOG.TXT");
+	if (result == FR_NO_FILE)
+	{
+		while (1)
 		{
-			while (1)
-			{
-				PORTC ^= (1 << PC0);
-				_delay_ms(750);
-			}			
-		}
+			PORTC ^= (1 << PC0);
+			_delay_ms(750);
+		}			
 	}
 }

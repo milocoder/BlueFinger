@@ -3613,7 +3613,6 @@ FRESULT f_mount (
 	FRESULT res;
 	const TCHAR *rp = path;
 
-
 	/* Get logical drive number */
 	vol = get_ldnumber(&rp);
 	if (vol < 0) return FR_INVALID_DRIVE;
@@ -3640,6 +3639,7 @@ FRESULT f_mount (
 	if (opt == 0) return FR_OK;			/* Do not mount now, it will be mounted later */
 
 	res = mount_volume(&path, &fs, 0);	/* Force mounted the volume */
+
 	LEAVE_FF(fs, res);
 }
 

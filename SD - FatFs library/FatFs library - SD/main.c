@@ -11,8 +11,8 @@
  */ 
 
 #define F_CPU 1600000UL
+#define __DELAY_BACKWARD_COMPATIBLE__
 
-#include <avr/io.h>
 #include <avr/io.h>
 #include <avr/cpufunc.h>
 #include <util/delay.h>
@@ -22,54 +22,120 @@
 
 void init_timer(void); 
 
-ISR(TIMER1_OVF_vect)				//timer 2 ISR
+ISR(TIMER1_OVF_vect)				//timer 0 ISR
 {
+	//PORTC ^= (1 << PC0);
+	TCNT1 = 0xFF61;
 	disk_timerproc();	/* Drive timer procedure of low level disk I/O module */
-	
-	//ook nog omschrijven? Waarvoor nodig?
-	//TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;
 }
 
+void delayByEnumValue(FRESULT result) {
+	uint16_t delay_ms = 400;
 
+	switch (result) {
+		case FR_OK:
+		delay_ms = 400;
+		break;
+		case FR_DISK_ERR:
+		delay_ms = 450;
+		break;
+		case FR_INT_ERR:
+		delay_ms = 500;
+		break;
+		case FR_NOT_READY:
+		delay_ms = 550;
+		break;
+		case FR_NO_FILE:
+		delay_ms = 600;
+		break;
+		case FR_NO_PATH:
+		delay_ms = 650;
+		break;
+		case FR_INVALID_NAME:
+		delay_ms = 700;
+		break;
+		case FR_DENIED:
+		delay_ms = 750;
+		break;
+		case FR_EXIST:
+		delay_ms = 800;
+		break;
+		case FR_INVALID_OBJECT:
+		delay_ms = 850;
+		break;
+		case FR_WRITE_PROTECTED:
+		delay_ms = 900;
+		break;
+		case FR_INVALID_DRIVE:
+		delay_ms = 950;
+		break;
+		case FR_NOT_ENABLED:
+		delay_ms = 1000;
+		break;
+		case FR_NO_FILESYSTEM:
+		delay_ms = 1050;
+		break;
+		case FR_MKFS_ABORTED:
+		delay_ms = 1100;
+		break;
+		case FR_TIMEOUT:
+		delay_ms = 1150;
+		break;
+		case FR_LOCKED:
+		delay_ms = 1200;
+		break;
+		case FR_NOT_ENOUGH_CORE:
+		delay_ms = 1250;
+		break;
+		case FR_TOO_MANY_OPEN_FILES:
+		delay_ms = 1300;
+		break;
+		case FR_INVALID_PARAMETER:
+		delay_ms = 1350;
+		break;
+	}
+
+	while (1) {
+		PORTC ^= (1 << PC0);
+		_delay_ms(delay_ms);
+	}
+}
 
 int main(void)
 {
-	init_timer();   
-  
+	init_timer();  
+	
 	FATFS FatFs;
 
 	// init sdcard
 	UINT bw;
-	f_mount(&FatFs, "", 1);		// Give a work area to the FatFs module
+	FRESULT res = f_mount(&FatFs, "0:/", 1);		// Give a work area to the FatFs module
+	
+	if(res == FR_NO_FILESYSTEM)
+	{
+		while(1)
+		{
+			PORTC ^= (1 << PC0);
+			_delay_ms(250);
+		}
+	}
+	
 	
 	// open file
 	FIL *fp = (FIL *)malloc(sizeof (FIL));
-	if (f_open(fp, "file.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK) // Create a file
+	if (f_open(fp, "0:/LOG.TXT", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK) // Create a file
 	{
 		char *text = "Hello World! SDCard up and running!\r\n";
 		f_write(fp, text, strlen(text), &bw);	// Write data to the file
 		f_close(fp);// Close the file
 	}
-	
-    while (1) 
-    {
-    }
 }
 
-
-
-void init_timer(void) {
-	//Oude code:
-	//TCA0.SINGLE.INTCTRL = TCA_SINGLE_OVF_bm;
-	//TCA0.SINGLE.PER = 156; // tick every 10 msec = 100 hz: clock = 4000000 / 256 = 15625 hz
-	//TCA0.SINGLE.CTRLA = (TCA_SINGLE_CLKSEL1_bm | TCA_SINGLE_CLKSEL2_bm);
-	//TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
-	
-	TCCR1A = 0x00; 
-	TCCR1B = ((1 << CS02) | (1<<CS00)); //prescaler on 1024, pag. 139 datasheet	
-	TCNT1 = 159; //for 10 msec by 16 Mhz, 
-	//t = N(per+1)/F_CPU:  1024(1+159)/16000000 = 0.01 seconden (=10 msec)
+void init_timer(void) {	
+	CLKPR = 0x80; CLKPR = 0x00; // reset prescaler
+	TCNT1 = 0xFF61; // start counting at (256-159 = 0x61)
+	TCCR1A = 0x00;
+	TCCR1B = (( 1 << CS12) | ( 1 << CS10)); // prescaler op 1024
 	TIMSK1 = (1 << TOIE1) ;		// Enable timer 1 overflow interrupt(TOIE2), pag. 142 datasheet
-	sei();						// Enable global interrupts by setting global interrupt enable bit in SRE
+	sei();					// Enable global interrupts by setting global interrupt enable bit in SRE
 }
-

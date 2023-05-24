@@ -64,7 +64,7 @@ void verstuurCan(float snelheid)
 
 void init()
 {
-	init_millis(16000000UL);
+	init_millis(F_CPU);
 	sei();  // Zet interrupts aan
 	initCAN();	
 	

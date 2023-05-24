@@ -32,13 +32,12 @@ ISR (INT0_vect) {
 int main(void)
 {
 	
+	//nog aanpassen, D0 niet meer correct
 	DDRD &= ~(1 << PD0);				//PD0 als input
 	PORTD |= (1 << PD0);				//pull-up resistor aanzetten
-	EIMSK |= (1<<INT0);					//aanzetten interrupt IN0
-	EICRA |= (1 << ISC00)|(1 << ISC10);	//interrupt voor opgaande flank	
+	EIMSK |= (1<<INT0);					//aanzetten interrupt INT0, dat is de pin waarop wordt aangesloten (blaz 95)
+	EICRA |= (1 << ISC00)|(1 << ISC01);	//interrupt voor opgaande flank	asynchronous (blaz. 94)
 	
-	//MCUCR |= (1<<ISC01) | (1<<ISC00);	//zet INTO als trigger voor risig edge
-	//EICRA |= (1 << ISC01) | (1 << ISC00);		//andere definitie of hetzelfde voor rising edge?
 	
 	int address_hall = 0;
 	double snelheid_kmh = 0.0;

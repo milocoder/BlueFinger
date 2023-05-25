@@ -4,8 +4,6 @@
  * Created: 17-3-2023 18:08:43
  * Author : Johan
  
- Code maakt gebruik van een timer - millis() functie. Deze wordt iedere keer op 0 gezet als meeting gedaan is. 
- Andere suggestie is om oude waardes van de timer te gebruiken. Deze staan achter de // 
  */ 
 #define F_CPU 16000000UL
 #include <avr/io.h>
@@ -43,16 +41,16 @@ int main(void)
 
 void verstuurCan(float snelheid)
 {
-		// volgende stuk initaliseert de canmessage struct, verstuurt snelheid met data[0] en data[1]
-		int voorKomma = (int)snelheid; // pak getal voor de komma
-		int naKomma = (int)((snelheid-voorKomma)*100); // pak kommagetal en vermenigvuldig keer 100
+	// volgende stuk initaliseert de canmessage struct, verstuurt snelheid met data[0] en data[1]
+	int voorKomma = (int)snelheid; // pak getal voor de komma
+	int naKomma = (int)((snelheid-voorKomma)*100); // pak kommagetal en vermenigvuldig keer 100
 		
-		CANMessage tx_message;
-		tx_message.id = 0x50; // can ID
-		tx_message.length = 2;
-		tx_message.data[0] = voorKomma;
-		tx_message.data[1] = naKomma;
-		sendCAN(&tx_message);
+	CANMessage tx_message;
+	tx_message.id = 0x50; // can ID
+	tx_message.length = 2;
+	tx_message.data[0] = voorKomma;
+	tx_message.data[1] = naKomma;
+	sendCAN(&tx_message);
 }
 
 void init()

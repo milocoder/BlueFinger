@@ -3,31 +3,31 @@ Datalogger_ontvangen.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  00000544  2**0
+  0 .data         00000000  00800100  00800100  000004e8  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000004d0  00000000  00000000  00000074  2**1
+  1 .text         00000474  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000107  00800100  00800100  00000544  2**0
+  2 .bss          000000df  00800100  00800100  000004e8  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000544  2**0
+  3 .comment      00000030  00000000  00000000  000004e8  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000574  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000518  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000098  00000000  00000000  000005b0  2**3
+  5 .debug_aranges 00000070  00000000  00000000  00000554  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000010b7  00000000  00000000  00000648  2**0
+  6 .debug_info   00000f8d  00000000  00000000  000005c4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000ca6  00000000  00000000  000016ff  2**0
+  7 .debug_abbrev 00000c4d  00000000  00000000  00001551  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000719  00000000  00000000  000023a5  2**0
+  8 .debug_line   000005fe  00000000  00000000  0000219e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000144  00000000  00000000  00002ac0  2**2
+  9 .debug_frame  00000120  00000000  00000000  0000279c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000069c  00000000  00000000  00002c04  2**0
+ 10 .debug_str    00000656  00000000  00000000  000028bc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000004fd  00000000  00000000  000032a0  2**0
+ 11 .debug_loc    0000043d  00000000  00000000  00002f12  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000058  00000000  00000000  0000379d  2**0
+ 12 .debug_ranges 00000050  00000000  00000000  0000334f  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -51,7 +51,7 @@ Disassembly of section .text:
   3c:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__bad_interrupt>
   40:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__bad_interrupt>
   44:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__bad_interrupt>
-  48:	0c 94 52 01 	jmp	0x2a4	; 0x2a4 <__vector_18>
+  48:	0c 94 3c 01 	jmp	0x278	; 0x278 <__vector_18>
   4c:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__bad_interrupt>
   50:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__bad_interrupt>
   54:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <__bad_interrupt>
@@ -75,12 +75,12 @@ Disassembly of section .text:
   94:	11 24       	eor	r1, r1
   96:	1f be       	out	0x3f, r1	; 63
   98:	cf ef       	ldi	r28, 0xFF	; 255
-  9a:	d0 e1       	ldi	r29, 0x10	; 16
+  9a:	d8 e0       	ldi	r29, 0x08	; 8
   9c:	de bf       	out	0x3e, r29	; 62
   9e:	cd bf       	out	0x3d, r28	; 61
 
 000000a0 <__do_clear_bss>:
-  a0:	22 e0       	ldi	r18, 0x02	; 2
+  a0:	21 e0       	ldi	r18, 0x01	; 1
   a2:	a0 e0       	ldi	r26, 0x00	; 0
   a4:	b1 e0       	ldi	r27, 0x01	; 1
   a6:	01 c0       	rjmp	.+2      	; 0xaa <.do_clear_bss_start>
@@ -89,11 +89,11 @@ Disassembly of section .text:
   a8:	1d 92       	st	X+, r1
 
 000000aa <.do_clear_bss_start>:
-  aa:	a7 30       	cpi	r26, 0x07	; 7
+  aa:	af 3d       	cpi	r26, 0xDF	; 223
   ac:	b2 07       	cpc	r27, r18
   ae:	e1 f7       	brne	.-8      	; 0xa8 <.do_clear_bss_loop>
-  b0:	0e 94 0a 02 	call	0x414	; 0x414 <main>
-  b4:	0c 94 66 02 	jmp	0x4cc	; 0x4cc <_exit>
+  b0:	0e 94 f3 01 	call	0x3e6	; 0x3e6 <main>
+  b4:	0c 94 38 02 	jmp	0x470	; 0x470 <_exit>
 
 000000b8 <__bad_interrupt>:
   b8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -111,25 +111,25 @@ Disassembly of section .text:
   c2:	81 60       	ori	r24, 0x01	; 1
   c4:	80 83       	st	Z, r24
   c6:	86 e0       	ldi	r24, 0x06	; 6
-  c8:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7f00e2>
+  c8:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7f80e2>
   cc:	84 e0       	ldi	r24, 0x04	; 4
-  ce:	80 93 e3 00 	sts	0x00E3, r24	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7f00e3>
+  ce:	80 93 e3 00 	sts	0x00E3, r24	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7f80e3>
   d2:	83 e1       	ldi	r24, 0x13	; 19
-  d4:	80 93 e4 00 	sts	0x00E4, r24	; 0x8000e4 <__TEXT_REGION_LENGTH__+0x7f00e4>
+  d4:	80 93 e4 00 	sts	0x00E4, r24	; 0x8000e4 <__TEXT_REGION_LENGTH__+0x7f80e4>
   d8:	80 e0       	ldi	r24, 0x00	; 0
   da:	08 c0       	rjmp	.+16     	; 0xec <initCAN+0x30>
   dc:	98 2f       	mov	r25, r24
   de:	92 95       	swap	r25
   e0:	90 7f       	andi	r25, 0xF0	; 240
-  e2:	90 93 ed 00 	sts	0x00ED, r25	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f00ed>
-  e6:	10 92 ef 00 	sts	0x00EF, r1	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f00ef>
+  e2:	90 93 ed 00 	sts	0x00ED, r25	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f80ed>
+  e6:	10 92 ef 00 	sts	0x00EF, r1	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f80ef>
   ea:	8f 5f       	subi	r24, 0xFF	; 255
   ec:	8f 30       	cpi	r24, 0x0F	; 15
   ee:	b0 f3       	brcs	.-20     	; 0xdc <initCAN+0x20>
   f0:	78 94       	sei
-  f2:	10 92 da 00 	sts	0x00DA, r1	; 0x8000da <__TEXT_REGION_LENGTH__+0x7f00da>
+  f2:	10 92 da 00 	sts	0x00DA, r1	; 0x8000da <__TEXT_REGION_LENGTH__+0x7f80da>
   f6:	80 eb       	ldi	r24, 0xB0	; 176
-  f8:	80 93 db 00 	sts	0x00DB, r24	; 0x8000db <__TEXT_REGION_LENGTH__+0x7f00db>
+  f8:	80 93 db 00 	sts	0x00DB, r24	; 0x8000db <__TEXT_REGION_LENGTH__+0x7f80db>
   fc:	e8 ed       	ldi	r30, 0xD8	; 216
   fe:	f0 e0       	ldi	r31, 0x00	; 0
  100:	80 81       	ld	r24, Z
@@ -143,8 +143,8 @@ Disassembly of section .text:
  10c:	98 2f       	mov	r25, r24
  10e:	92 95       	swap	r25
  110:	90 7f       	andi	r25, 0xF0	; 240
- 112:	90 93 ed 00 	sts	0x00ED, r25	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f00ed>
- 116:	90 91 ef 00 	lds	r25, 0x00EF	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f00ef>
+ 112:	90 93 ed 00 	sts	0x00ED, r25	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f80ed>
+ 116:	90 91 ef 00 	lds	r25, 0x00EF	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f80ef>
  11a:	90 7c       	andi	r25, 0xC0	; 192
  11c:	21 f0       	breq	.+8      	; 0x126 <getFreeMob+0x1e>
  11e:	8f 5f       	subi	r24, 0xFF	; 255
@@ -158,704 +158,635 @@ Disassembly of section .text:
  * @return 0 if no free message objects left, 1 otherwise
  *
  */
-uint8_t listenForMessage( uint32_t id, uint8_t expectedLength )
+uint8_t listenForMessage( uint16_t id, uint8_t expectedLength )
 {
- 128:	cf 92       	push	r12
- 12a:	df 92       	push	r13
- 12c:	ef 92       	push	r14
- 12e:	ff 92       	push	r15
- 130:	0f 93       	push	r16
- 132:	1f 93       	push	r17
- 134:	cf 93       	push	r28
- 136:	6b 01       	movw	r12, r22
- 138:	7c 01       	movw	r14, r24
- 13a:	c4 2f       	mov	r28, r20
+ 128:	1f 93       	push	r17
+ 12a:	cf 93       	push	r28
+ 12c:	df 93       	push	r29
+ 12e:	ec 01       	movw	r28, r24
+ 130:	16 2f       	mov	r17, r22
 	// Try to get a free MOb
 	uint8_t mobIndex = getFreeMob();
- 13c:	0e 94 84 00 	call	0x108	; 0x108 <getFreeMob>
+ 132:	0e 94 84 00 	call	0x108	; 0x108 <getFreeMob>
 
 	if( mobIndex == 0xFF )
- 140:	8f 3f       	cpi	r24, 0xFF	; 255
- 142:	09 f4       	brne	.+2      	; 0x146 <listenForMessage+0x1e>
- 144:	53 c0       	rjmp	.+166    	; 0x1ec <listenForMessage+0xc4>
+ 136:	8f 3f       	cpi	r24, 0xFF	; 255
+ 138:	09 f4       	brne	.+2      	; 0x13c <listenForMessage+0x14>
+ 13a:	4e c0       	rjmp	.+156    	; 0x1d8 <listenForMessage+0xb0>
 		// No free Message Objects
 		return 0;
 	}
 
 	// Point to the free message object
 	CANPAGE |= (mobIndex << 4);
- 146:	ed ee       	ldi	r30, 0xED	; 237
- 148:	f0 e0       	ldi	r31, 0x00	; 0
- 14a:	90 81       	ld	r25, Z
- 14c:	68 2f       	mov	r22, r24
- 14e:	70 e0       	ldi	r23, 0x00	; 0
- 150:	9b 01       	movw	r18, r22
- 152:	22 95       	swap	r18
- 154:	32 95       	swap	r19
- 156:	30 7f       	andi	r19, 0xF0	; 240
- 158:	32 27       	eor	r19, r18
- 15a:	20 7f       	andi	r18, 0xF0	; 240
- 15c:	32 27       	eor	r19, r18
- 15e:	29 2b       	or	r18, r25
- 160:	20 83       	st	Z, r18
+ 13c:	ed ee       	ldi	r30, 0xED	; 237
+ 13e:	f0 e0       	ldi	r31, 0x00	; 0
+ 140:	90 81       	ld	r25, Z
+ 142:	48 2f       	mov	r20, r24
+ 144:	50 e0       	ldi	r21, 0x00	; 0
+ 146:	9a 01       	movw	r18, r20
+ 148:	22 95       	swap	r18
+ 14a:	32 95       	swap	r19
+ 14c:	30 7f       	andi	r19, 0xF0	; 240
+ 14e:	32 27       	eor	r19, r18
+ 150:	20 7f       	andi	r18, 0xF0	; 240
+ 152:	32 27       	eor	r19, r18
+ 154:	29 2b       	or	r18, r25
+ 156:	20 83       	st	Z, r18
 
 	// Set the MOb's CAN id to the id to be listened for
-	CANIDT4 = id >> 3;
- 162:	97 01       	movw	r18, r14
- 164:	86 01       	movw	r16, r12
- 166:	68 94       	set
- 168:	12 f8       	bld	r1, 2
- 16a:	36 95       	lsr	r19
- 16c:	27 95       	ror	r18
- 16e:	17 95       	ror	r17
- 170:	07 95       	ror	r16
- 172:	16 94       	lsr	r1
- 174:	d1 f7       	brne	.-12     	; 0x16a <listenForMessage+0x42>
- 176:	00 93 f0 00 	sts	0x00F0, r16	; 0x8000f0 <__TEXT_REGION_LENGTH__+0x7f00f0>
-	CANIDT3 = id << 5;
- 17a:	cc 0c       	add	r12, r12
- 17c:	cc 0c       	add	r12, r12
- 17e:	cc 0c       	add	r12, r12
- 180:	cc 0c       	add	r12, r12
- 182:	cc 0c       	add	r12, r12
- 184:	c0 92 f1 00 	sts	0x00F1, r12	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7f00f1>
-	CANIDT2 = id << 13;
- 188:	10 92 f2 00 	sts	0x00F2, r1	; 0x8000f2 <__TEXT_REGION_LENGTH__+0x7f00f2>
-	CANIDT1 = id << 21;
- 18c:	10 92 f3 00 	sts	0x00F3, r1	; 0x8000f3 <__TEXT_REGION_LENGTH__+0x7f00f3>
-	
+	CANIDT4 = 0;
+ 158:	10 92 f0 00 	sts	0x00F0, r1	; 0x8000f0 <__TEXT_REGION_LENGTH__+0x7f80f0>
+	CANIDT3 = 0;
+ 15c:	10 92 f1 00 	sts	0x00F1, r1	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7f80f1>
+	CANIDT2 = id << 5;
+ 160:	9c 2f       	mov	r25, r28
+ 162:	92 95       	swap	r25
+ 164:	99 0f       	add	r25, r25
+ 166:	90 7e       	andi	r25, 0xE0	; 224
+ 168:	90 93 f2 00 	sts	0x00F2, r25	; 0x8000f2 <__TEXT_REGION_LENGTH__+0x7f80f2>
+	CANIDT1 = id >> 3;
+ 16c:	d6 95       	lsr	r29
+ 16e:	c7 95       	ror	r28
+ 170:	d6 95       	lsr	r29
+ 172:	c7 95       	ror	r28
+ 174:	d6 95       	lsr	r29
+ 176:	c7 95       	ror	r28
+ 178:	c0 93 f3 00 	sts	0x00F3, r28	; 0x8000f3 <__TEXT_REGION_LENGTH__+0x7f80f3>
 
 	if( expectedLength > 8 )
- 190:	c9 30       	cpi	r28, 0x09	; 9
- 192:	08 f0       	brcs	.+2      	; 0x196 <listenForMessage+0x6e>
+ 17c:	19 30       	cpi	r17, 0x09	; 9
+ 17e:	08 f0       	brcs	.+2      	; 0x182 <listenForMessage+0x5a>
 	{
 		expectedLength = 8;
- 194:	c8 e0       	ldi	r28, 0x08	; 8
+ 180:	18 e0       	ldi	r17, 0x08	; 8
 	}
 
 	// Set the MOb's expected length
 	CANCDMOB |= expectedLength;
- 196:	ef ee       	ldi	r30, 0xEF	; 239
- 198:	f0 e0       	ldi	r31, 0x00	; 0
- 19a:	40 81       	ld	r20, Z
- 19c:	4c 2b       	or	r20, r28
- 19e:	40 83       	st	Z, r20
+ 182:	ef ee       	ldi	r30, 0xEF	; 239
+ 184:	f0 e0       	ldi	r31, 0x00	; 0
+ 186:	60 81       	ld	r22, Z
+ 188:	61 2b       	or	r22, r17
+ 18a:	60 83       	st	Z, r22
 
 	// Enable interrupts for this MOb
 	if( mobIndex < 8 )
- 1a0:	88 30       	cpi	r24, 0x08	; 8
- 1a2:	78 f4       	brcc	.+30     	; 0x1c2 <listenForMessage+0x9a>
+ 18c:	88 30       	cpi	r24, 0x08	; 8
+ 18e:	78 f4       	brcc	.+30     	; 0x1ae <listenForMessage+0x86>
 	{
 		CANIE2 |= (1 << mobIndex);
- 1a4:	ee ed       	ldi	r30, 0xDE	; 222
- 1a6:	f0 e0       	ldi	r31, 0x00	; 0
- 1a8:	40 81       	ld	r20, Z
- 1aa:	21 e0       	ldi	r18, 0x01	; 1
- 1ac:	30 e0       	ldi	r19, 0x00	; 0
- 1ae:	b9 01       	movw	r22, r18
- 1b0:	02 c0       	rjmp	.+4      	; 0x1b6 <listenForMessage+0x8e>
- 1b2:	66 0f       	add	r22, r22
- 1b4:	77 1f       	adc	r23, r23
- 1b6:	8a 95       	dec	r24
- 1b8:	e2 f7       	brpl	.-8      	; 0x1b2 <listenForMessage+0x8a>
- 1ba:	cb 01       	movw	r24, r22
- 1bc:	84 2b       	or	r24, r20
- 1be:	80 83       	st	Z, r24
- 1c0:	0e c0       	rjmp	.+28     	; 0x1de <listenForMessage+0xb6>
+ 190:	ee ed       	ldi	r30, 0xDE	; 222
+ 192:	f0 e0       	ldi	r31, 0x00	; 0
+ 194:	40 81       	ld	r20, Z
+ 196:	21 e0       	ldi	r18, 0x01	; 1
+ 198:	30 e0       	ldi	r19, 0x00	; 0
+ 19a:	b9 01       	movw	r22, r18
+ 19c:	02 c0       	rjmp	.+4      	; 0x1a2 <listenForMessage+0x7a>
+ 19e:	66 0f       	add	r22, r22
+ 1a0:	77 1f       	adc	r23, r23
+ 1a2:	8a 95       	dec	r24
+ 1a4:	e2 f7       	brpl	.-8      	; 0x19e <listenForMessage+0x76>
+ 1a6:	cb 01       	movw	r24, r22
+ 1a8:	84 2b       	or	r24, r20
+ 1aa:	80 83       	st	Z, r24
+ 1ac:	0e c0       	rjmp	.+28     	; 0x1ca <listenForMessage+0xa2>
 	}
 	else
 	{
 		CANIE1 |= (1 << (mobIndex-8));
- 1c2:	ef ed       	ldi	r30, 0xDF	; 223
- 1c4:	f0 e0       	ldi	r31, 0x00	; 0
- 1c6:	20 81       	ld	r18, Z
- 1c8:	68 50       	subi	r22, 0x08	; 8
- 1ca:	71 09       	sbc	r23, r1
- 1cc:	81 e0       	ldi	r24, 0x01	; 1
- 1ce:	90 e0       	ldi	r25, 0x00	; 0
- 1d0:	02 c0       	rjmp	.+4      	; 0x1d6 <listenForMessage+0xae>
- 1d2:	88 0f       	add	r24, r24
- 1d4:	99 1f       	adc	r25, r25
- 1d6:	6a 95       	dec	r22
- 1d8:	e2 f7       	brpl	.-8      	; 0x1d2 <listenForMessage+0xaa>
- 1da:	82 2b       	or	r24, r18
- 1dc:	80 83       	st	Z, r24
+ 1ae:	ef ed       	ldi	r30, 0xDF	; 223
+ 1b0:	f0 e0       	ldi	r31, 0x00	; 0
+ 1b2:	20 81       	ld	r18, Z
+ 1b4:	48 50       	subi	r20, 0x08	; 8
+ 1b6:	51 09       	sbc	r21, r1
+ 1b8:	81 e0       	ldi	r24, 0x01	; 1
+ 1ba:	90 e0       	ldi	r25, 0x00	; 0
+ 1bc:	02 c0       	rjmp	.+4      	; 0x1c2 <listenForMessage+0x9a>
+ 1be:	88 0f       	add	r24, r24
+ 1c0:	99 1f       	adc	r25, r25
+ 1c2:	4a 95       	dec	r20
+ 1c4:	e2 f7       	brpl	.-8      	; 0x1be <listenForMessage+0x96>
+ 1c6:	82 2b       	or	r24, r18
+ 1c8:	80 83       	st	Z, r24
 	}
 
 	// Set the MOb's mode to receive, also activating it.
 	CANCDMOB |= (0x02 << CONMOB0);
- 1de:	ef ee       	ldi	r30, 0xEF	; 239
- 1e0:	f0 e0       	ldi	r31, 0x00	; 0
- 1e2:	80 81       	ld	r24, Z
- 1e4:	80 68       	ori	r24, 0x80	; 128
- 1e6:	80 83       	st	Z, r24
+ 1ca:	ef ee       	ldi	r30, 0xEF	; 239
+ 1cc:	f0 e0       	ldi	r31, 0x00	; 0
+ 1ce:	80 81       	ld	r24, Z
+ 1d0:	80 68       	ori	r24, 0x80	; 128
+ 1d2:	80 83       	st	Z, r24
 
 	return 1;
- 1e8:	81 e0       	ldi	r24, 0x01	; 1
- 1ea:	01 c0       	rjmp	.+2      	; 0x1ee <listenForMessage+0xc6>
+ 1d4:	81 e0       	ldi	r24, 0x01	; 1
+ 1d6:	01 c0       	rjmp	.+2      	; 0x1da <listenForMessage+0xb2>
 	uint8_t mobIndex = getFreeMob();
 
 	if( mobIndex == 0xFF )
 	{
 		// No free Message Objects
 		return 0;
- 1ec:	80 e0       	ldi	r24, 0x00	; 0
+ 1d8:	80 e0       	ldi	r24, 0x00	; 0
 
 	// Set the MOb's mode to receive, also activating it.
 	CANCDMOB |= (0x02 << CONMOB0);
 
 	return 1;
 }
- 1ee:	cf 91       	pop	r28
- 1f0:	1f 91       	pop	r17
- 1f2:	0f 91       	pop	r16
- 1f4:	ff 90       	pop	r15
- 1f6:	ef 90       	pop	r14
- 1f8:	df 90       	pop	r13
- 1fa:	cf 90       	pop	r12
- 1fc:	08 95       	ret
+ 1da:	df 91       	pop	r29
+ 1dc:	cf 91       	pop	r28
+ 1de:	1f 91       	pop	r17
+ 1e0:	08 95       	ret
 
-000001fe <getMessage>:
+000001e2 <getMessage>:
  * @param[out] message - message data to fill
  * @return 1 if message was filled, 0 otherwise
  *
  */
 uint8_t getMessage( CANMessage * message )
 {
- 1fe:	dc 01       	movw	r26, r24
+ 1e2:	dc 01       	movw	r26, r24
 	// Default to no message available
 	uint8_t messageAvailable = 0;
 
 	if( serviceIndex != bufIndex )
- 200:	e0 91 02 01 	lds	r30, 0x0102	; 0x800102 <serviceIndex>
- 204:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <bufIndex>
- 208:	e8 17       	cp	r30, r24
- 20a:	09 f4       	brne	.+2      	; 0x20e <getMessage+0x10>
- 20c:	49 c0       	rjmp	.+146    	; 0x2a0 <getMessage+0xa2>
+ 1e4:	e0 91 02 01 	lds	r30, 0x0102	; 0x800102 <serviceIndex>
+ 1e8:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <bufIndex>
+ 1ec:	e8 17       	cp	r30, r24
+ 1ee:	09 f4       	brne	.+2      	; 0x1f2 <getMessage+0x10>
+ 1f0:	41 c0       	rjmp	.+130    	; 0x274 <getMessage+0x92>
 	{
 		// Load the data from the next message received in FIFO order into the out message
 		message->id = messageBuffer[ serviceIndex ].id;
- 20e:	2d e0       	ldi	r18, 0x0D	; 13
- 210:	2e 9f       	mul	r18, r30
- 212:	f0 01       	movw	r30, r0
- 214:	11 24       	eor	r1, r1
- 216:	ed 5f       	subi	r30, 0xFD	; 253
- 218:	fe 4f       	sbci	r31, 0xFE	; 254
- 21a:	50 81       	ld	r21, Z
- 21c:	41 81       	ldd	r20, Z+1	; 0x01
- 21e:	32 81       	ldd	r19, Z+2	; 0x02
- 220:	83 81       	ldd	r24, Z+3	; 0x03
- 222:	98 2f       	mov	r25, r24
- 224:	9f 71       	andi	r25, 0x1F	; 31
- 226:	5c 93       	st	X, r21
- 228:	11 96       	adiw	r26, 0x01	; 1
- 22a:	4c 93       	st	X, r20
- 22c:	11 97       	sbiw	r26, 0x01	; 1
- 22e:	12 96       	adiw	r26, 0x02	; 2
- 230:	3c 93       	st	X, r19
- 232:	12 97       	sbiw	r26, 0x02	; 2
- 234:	13 96       	adiw	r26, 0x03	; 3
- 236:	8c 91       	ld	r24, X
- 238:	13 97       	sbiw	r26, 0x03	; 3
- 23a:	80 7e       	andi	r24, 0xE0	; 224
- 23c:	89 2b       	or	r24, r25
- 23e:	13 96       	adiw	r26, 0x03	; 3
- 240:	8c 93       	st	X, r24
- 242:	13 97       	sbiw	r26, 0x03	; 3
+ 1f2:	2b e0       	ldi	r18, 0x0B	; 11
+ 1f4:	2e 9f       	mul	r18, r30
+ 1f6:	f0 01       	movw	r30, r0
+ 1f8:	11 24       	eor	r1, r1
+ 1fa:	ed 5f       	subi	r30, 0xFD	; 253
+ 1fc:	fe 4f       	sbci	r31, 0xFE	; 254
+ 1fe:	30 81       	ld	r19, Z
+ 200:	81 81       	ldd	r24, Z+1	; 0x01
+ 202:	98 2f       	mov	r25, r24
+ 204:	97 70       	andi	r25, 0x07	; 7
+ 206:	3c 93       	st	X, r19
+ 208:	11 96       	adiw	r26, 0x01	; 1
+ 20a:	8c 91       	ld	r24, X
+ 20c:	11 97       	sbiw	r26, 0x01	; 1
+ 20e:	88 7f       	andi	r24, 0xF8	; 248
+ 210:	89 2b       	or	r24, r25
+ 212:	11 96       	adiw	r26, 0x01	; 1
+ 214:	8c 93       	st	X, r24
+ 216:	11 97       	sbiw	r26, 0x01	; 1
 		message->length = messageBuffer[ serviceIndex ].length;
- 244:	60 91 02 01 	lds	r22, 0x0102	; 0x800102 <serviceIndex>
- 248:	70 e0       	ldi	r23, 0x00	; 0
- 24a:	26 9f       	mul	r18, r22
- 24c:	f0 01       	movw	r30, r0
- 24e:	27 9f       	mul	r18, r23
- 250:	f0 0d       	add	r31, r0
- 252:	11 24       	eor	r1, r1
- 254:	ed 5f       	subi	r30, 0xFD	; 253
- 256:	fe 4f       	sbci	r31, 0xFE	; 254
- 258:	84 85       	ldd	r24, Z+12	; 0x0c
- 25a:	1c 96       	adiw	r26, 0x0c	; 12
- 25c:	8c 93       	st	X, r24
- 25e:	1c 97       	sbiw	r26, 0x0c	; 12
+ 218:	60 91 02 01 	lds	r22, 0x0102	; 0x800102 <serviceIndex>
+ 21c:	70 e0       	ldi	r23, 0x00	; 0
+ 21e:	26 9f       	mul	r18, r22
+ 220:	f0 01       	movw	r30, r0
+ 222:	27 9f       	mul	r18, r23
+ 224:	f0 0d       	add	r31, r0
+ 226:	11 24       	eor	r1, r1
+ 228:	ed 5f       	subi	r30, 0xFD	; 253
+ 22a:	fe 4f       	sbci	r31, 0xFE	; 254
+ 22c:	82 85       	ldd	r24, Z+10	; 0x0a
+ 22e:	1a 96       	adiw	r26, 0x0a	; 10
+ 230:	8c 93       	st	X, r24
+ 232:	1a 97       	sbiw	r26, 0x0a	; 10
 
 		for( uint8_t i = 0; i < message->length; ++i )
- 260:	90 e0       	ldi	r25, 0x00	; 0
- 262:	12 c0       	rjmp	.+36     	; 0x288 <getMessage+0x8a>
+ 234:	90 e0       	ldi	r25, 0x00	; 0
+ 236:	12 c0       	rjmp	.+36     	; 0x25c <getMessage+0x7a>
 		{
 			message->data[ i ] = messageBuffer[ serviceIndex ].data[ i ];
- 264:	29 2f       	mov	r18, r25
- 266:	30 e0       	ldi	r19, 0x00	; 0
- 268:	4d e0       	ldi	r20, 0x0D	; 13
- 26a:	46 9f       	mul	r20, r22
- 26c:	f0 01       	movw	r30, r0
- 26e:	47 9f       	mul	r20, r23
- 270:	f0 0d       	add	r31, r0
- 272:	11 24       	eor	r1, r1
- 274:	ed 5f       	subi	r30, 0xFD	; 253
- 276:	fe 4f       	sbci	r31, 0xFE	; 254
- 278:	e2 0f       	add	r30, r18
- 27a:	f3 1f       	adc	r31, r19
- 27c:	44 81       	ldd	r20, Z+4	; 0x04
- 27e:	fd 01       	movw	r30, r26
- 280:	e2 0f       	add	r30, r18
- 282:	f3 1f       	adc	r31, r19
- 284:	44 83       	std	Z+4, r20	; 0x04
+ 238:	29 2f       	mov	r18, r25
+ 23a:	30 e0       	ldi	r19, 0x00	; 0
+ 23c:	4b e0       	ldi	r20, 0x0B	; 11
+ 23e:	46 9f       	mul	r20, r22
+ 240:	f0 01       	movw	r30, r0
+ 242:	47 9f       	mul	r20, r23
+ 244:	f0 0d       	add	r31, r0
+ 246:	11 24       	eor	r1, r1
+ 248:	ed 5f       	subi	r30, 0xFD	; 253
+ 24a:	fe 4f       	sbci	r31, 0xFE	; 254
+ 24c:	e2 0f       	add	r30, r18
+ 24e:	f3 1f       	adc	r31, r19
+ 250:	42 81       	ldd	r20, Z+2	; 0x02
+ 252:	fd 01       	movw	r30, r26
+ 254:	e2 0f       	add	r30, r18
+ 256:	f3 1f       	adc	r31, r19
+ 258:	42 83       	std	Z+2, r20	; 0x02
 	{
 		// Load the data from the next message received in FIFO order into the out message
 		message->id = messageBuffer[ serviceIndex ].id;
 		message->length = messageBuffer[ serviceIndex ].length;
 
 		for( uint8_t i = 0; i < message->length; ++i )
- 286:	9f 5f       	subi	r25, 0xFF	; 255
- 288:	98 17       	cp	r25, r24
- 28a:	60 f3       	brcs	.-40     	; 0x264 <getMessage+0x66>
+ 25a:	9f 5f       	subi	r25, 0xFF	; 255
+ 25c:	98 17       	cp	r25, r24
+ 25e:	60 f3       	brcs	.-40     	; 0x238 <getMessage+0x56>
 		{
 			message->data[ i ] = messageBuffer[ serviceIndex ].data[ i ];
 		}
 
 		// Increment the index pointing to the next message to be serviced
 		serviceIndex = (serviceIndex + 1) % MESSAGE_BUFFER_LENGTH;
- 28c:	cb 01       	movw	r24, r22
- 28e:	01 96       	adiw	r24, 0x01	; 1
- 290:	64 e1       	ldi	r22, 0x14	; 20
- 292:	70 e0       	ldi	r23, 0x00	; 0
- 294:	0e 94 31 02 	call	0x462	; 0x462 <__divmodhi4>
- 298:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <serviceIndex>
+ 260:	cb 01       	movw	r24, r22
+ 262:	01 96       	adiw	r24, 0x01	; 1
+ 264:	64 e1       	ldi	r22, 0x14	; 20
+ 266:	70 e0       	ldi	r23, 0x00	; 0
+ 268:	0e 94 10 02 	call	0x420	; 0x420 <__divmodhi4>
+ 26c:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <serviceIndex>
 
 		messageAvailable = 1;
- 29c:	81 e0       	ldi	r24, 0x01	; 1
- 29e:	08 95       	ret
+ 270:	81 e0       	ldi	r24, 0x01	; 1
+ 272:	08 95       	ret
  *
  */
 uint8_t getMessage( CANMessage * message )
 {
 	// Default to no message available
 	uint8_t messageAvailable = 0;
- 2a0:	80 e0       	ldi	r24, 0x00	; 0
+ 274:	80 e0       	ldi	r24, 0x00	; 0
 
 		messageAvailable = 1;
 	}
 
 	return messageAvailable;
 }
- 2a2:	08 95       	ret
+ 276:	08 95       	ret
 
-000002a4 <__vector_18>:
+00000278 <__vector_18>:
  * Note that the NO_BLOCK attribute is not applied here, so while this is running,
  * all interrupts are blocked.
  *
  */
 ISR( CANIT_vect )
 {
- 2a4:	1f 92       	push	r1
- 2a6:	0f 92       	push	r0
- 2a8:	0f b6       	in	r0, 0x3f	; 63
- 2aa:	0f 92       	push	r0
- 2ac:	11 24       	eor	r1, r1
- 2ae:	2f 93       	push	r18
- 2b0:	3f 93       	push	r19
- 2b2:	4f 93       	push	r20
- 2b4:	5f 93       	push	r21
- 2b6:	6f 93       	push	r22
- 2b8:	7f 93       	push	r23
- 2ba:	8f 93       	push	r24
- 2bc:	9f 93       	push	r25
- 2be:	af 93       	push	r26
- 2c0:	bf 93       	push	r27
- 2c2:	cf 93       	push	r28
- 2c4:	ef 93       	push	r30
- 2c6:	ff 93       	push	r31
+ 278:	1f 92       	push	r1
+ 27a:	0f 92       	push	r0
+ 27c:	0f b6       	in	r0, 0x3f	; 63
+ 27e:	0f 92       	push	r0
+ 280:	11 24       	eor	r1, r1
+ 282:	2f 93       	push	r18
+ 284:	3f 93       	push	r19
+ 286:	4f 93       	push	r20
+ 288:	5f 93       	push	r21
+ 28a:	6f 93       	push	r22
+ 28c:	7f 93       	push	r23
+ 28e:	8f 93       	push	r24
+ 290:	9f 93       	push	r25
+ 292:	af 93       	push	r26
+ 294:	bf 93       	push	r27
+ 296:	cf 93       	push	r28
+ 298:	ef 93       	push	r30
+ 29a:	ff 93       	push	r31
 	// **Save off CANPAGE to prevent application code bugs**
 	uint8_t canPage = CANPAGE;
- 2c8:	c0 91 ed 00 	lds	r28, 0x00ED	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f00ed>
+ 29c:	c0 91 ed 00 	lds	r28, 0x00ED	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f80ed>
 
 	// CANHPMOB will contain the mob index of the highest priority mob that has interrupted,
 	// or 0xFF if no mob has interrupted. If multiple mobs have interrupted, they need to all be
 	// serviced, so this loop is required.
 	while( ((CANHPMOB & 0xF0) >> 4) != 0x0F )
- 2cc:	82 c0       	rjmp	.+260    	; 0x3d2 <__vector_18+0x12e>
+ 2a0:	87 c0       	rjmp	.+270    	; 0x3b0 <__vector_18+0x138>
 	{
 		// Point to the Message Object that needs to be serviced
 		CANPAGE = CANHPMOB & 0xF0;
- 2ce:	80 91 ec 00 	lds	r24, 0x00EC	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7f00ec>
- 2d2:	80 7f       	andi	r24, 0xF0	; 240
- 2d4:	80 93 ed 00 	sts	0x00ED, r24	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f00ed>
+ 2a2:	80 91 ec 00 	lds	r24, 0x00EC	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7f80ec>
+ 2a6:	80 7f       	andi	r24, 0xF0	; 240
+ 2a8:	80 93 ed 00 	sts	0x00ED, r24	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f80ed>
 
 		// Service the correct kind of interrupt
 		// Transmit Interrupts
 		if( CANSTMOB & (1 << TXOK) )
- 2d8:	80 91 ee 00 	lds	r24, 0x00EE	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f00ee>
- 2dc:	86 ff       	sbrs	r24, 6
- 2de:	0c c0       	rjmp	.+24     	; 0x2f8 <__vector_18+0x54>
+ 2ac:	80 91 ee 00 	lds	r24, 0x00EE	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f80ee>
+ 2b0:	86 ff       	sbrs	r24, 6
+ 2b2:	0c c0       	rjmp	.+24     	; 0x2cc <__vector_18+0x54>
 		{
 			// Acknowledge the interrupt
 			CANSTMOB = 0;
- 2e0:	10 92 ee 00 	sts	0x00EE, r1	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f00ee>
+ 2b4:	10 92 ee 00 	sts	0x00EE, r1	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f80ee>
 
 			// Free up the MOb
 			CANCDMOB = 0;
- 2e4:	10 92 ef 00 	sts	0x00EF, r1	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f00ef>
+ 2b8:	10 92 ef 00 	sts	0x00EF, r1	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f80ef>
 
 			// Determine the MOb index
 			uint8_t mob = (CANPAGE & 0xF0) >> 8;
- 2e8:	80 91 ed 00 	lds	r24, 0x00ED	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f00ed>
+ 2bc:	80 91 ed 00 	lds	r24, 0x00ED	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f80ed>
 
 			// Disable interrupts for this MOb
 			if( mob < 8 )
 			{
 				CANIE2 &= ~(1 << mob);
- 2ec:	ee ed       	ldi	r30, 0xDE	; 222
- 2ee:	f0 e0       	ldi	r31, 0x00	; 0
- 2f0:	80 81       	ld	r24, Z
- 2f2:	8e 7f       	andi	r24, 0xFE	; 254
- 2f4:	80 83       	st	Z, r24
- 2f6:	6d c0       	rjmp	.+218    	; 0x3d2 <__vector_18+0x12e>
+ 2c0:	ee ed       	ldi	r30, 0xDE	; 222
+ 2c2:	f0 e0       	ldi	r31, 0x00	; 0
+ 2c4:	80 81       	ld	r24, Z
+ 2c6:	8e 7f       	andi	r24, 0xFE	; 254
+ 2c8:	80 83       	st	Z, r24
+ 2ca:	72 c0       	rjmp	.+228    	; 0x3b0 <__vector_18+0x138>
 			{
 				CANIE1 &= ~(1 << (mob-8));
 			}
 		}
 		// Receive Interrupts
 		else if ( CANSTMOB & (1 << RXOK) )
- 2f8:	80 91 ee 00 	lds	r24, 0x00EE	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f00ee>
- 2fc:	85 ff       	sbrs	r24, 5
- 2fe:	5d c0       	rjmp	.+186    	; 0x3ba <__vector_18+0x116>
+ 2cc:	80 91 ee 00 	lds	r24, 0x00EE	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f80ee>
+ 2d0:	85 ff       	sbrs	r24, 5
+ 2d2:	62 c0       	rjmp	.+196    	; 0x398 <__vector_18+0x120>
 		{
 			// Default to impossible ID
-			uint32_t id = 0xFFFF;			//omgezet naar 32 bits voor 2.0B
+			uint16_t id = 0xFFFF;
 
 			// Load the message data into a free message buffer object
 			if( CANCDMOB & (1 << IDE) )
- 300:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f00ef>
- 304:	84 ff       	sbrs	r24, 4
- 306:	12 c0       	rjmp	.+36     	; 0x32c <__vector_18+0x88>
+ 2d4:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f80ef>
+ 2d8:	84 ff       	sbrs	r24, 4
+ 2da:	0e c0       	rjmp	.+28     	; 0x2f8 <__vector_18+0x80>
 			{
 				// Message type is CAN 2.0B
 				id = (CANIDT4 >> 3) | ((CANIDT3 & 0x7F) << 5); 
- 308:	80 91 f0 00 	lds	r24, 0x00F0	; 0x8000f0 <__TEXT_REGION_LENGTH__+0x7f00f0>
- 30c:	86 95       	lsr	r24
- 30e:	86 95       	lsr	r24
- 310:	86 95       	lsr	r24
- 312:	40 91 f1 00 	lds	r20, 0x00F1	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7f00f1>
- 316:	4f 77       	andi	r20, 0x7F	; 127
- 318:	90 e2       	ldi	r25, 0x20	; 32
- 31a:	49 9f       	mul	r20, r25
- 31c:	a0 01       	movw	r20, r0
- 31e:	11 24       	eor	r1, r1
- 320:	48 2b       	or	r20, r24
- 322:	05 2e       	mov	r0, r21
- 324:	00 0c       	add	r0, r0
- 326:	66 0b       	sbc	r22, r22
- 328:	77 0b       	sbc	r23, r23
- 32a:	04 c0       	rjmp	.+8      	; 0x334 <__vector_18+0x90>
-		}
-		// Receive Interrupts
-		else if ( CANSTMOB & (1 << RXOK) )
-		{
-			// Default to impossible ID
-			uint32_t id = 0xFFFF;			//omgezet naar 32 bits voor 2.0B
- 32c:	4f ef       	ldi	r20, 0xFF	; 255
- 32e:	5f ef       	ldi	r21, 0xFF	; 255
- 330:	60 e0       	ldi	r22, 0x00	; 0
- 332:	70 e0       	ldi	r23, 0x00	; 0
-			//{
+ 2dc:	80 91 f0 00 	lds	r24, 0x00F0	; 0x8000f0 <__TEXT_REGION_LENGTH__+0x7f80f0>
+ 2e0:	86 95       	lsr	r24
+ 2e2:	86 95       	lsr	r24
+ 2e4:	86 95       	lsr	r24
+ 2e6:	40 91 f1 00 	lds	r20, 0x00F1	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7f80f1>
+ 2ea:	4f 77       	andi	r20, 0x7F	; 127
+ 2ec:	90 e2       	ldi	r25, 0x20	; 32
+ 2ee:	49 9f       	mul	r20, r25
+ 2f0:	a0 01       	movw	r20, r0
+ 2f2:	11 24       	eor	r1, r1
+ 2f4:	48 2b       	or	r20, r24
+ 2f6:	0f c0       	rjmp	.+30     	; 0x316 <__vector_18+0x9e>
+			}
+			else
+			{
 				// Message type is CAN 2.0A
-			//	id = (CANIDT2 >> 5) | (((uint16_t)CANIDT1 << 3));
-			//}
+				id = (CANIDT2 >> 5) | (((uint16_t)CANIDT1 << 3));
+ 2f8:	80 91 f2 00 	lds	r24, 0x00F2	; 0x8000f2 <__TEXT_REGION_LENGTH__+0x7f80f2>
+ 2fc:	82 95       	swap	r24
+ 2fe:	86 95       	lsr	r24
+ 300:	87 70       	andi	r24, 0x07	; 7
+ 302:	40 91 f3 00 	lds	r20, 0x00F3	; 0x8000f3 <__TEXT_REGION_LENGTH__+0x7f80f3>
+ 306:	50 e0       	ldi	r21, 0x00	; 0
+ 308:	44 0f       	add	r20, r20
+ 30a:	55 1f       	adc	r21, r21
+ 30c:	44 0f       	add	r20, r20
+ 30e:	55 1f       	adc	r21, r21
+ 310:	44 0f       	add	r20, r20
+ 312:	55 1f       	adc	r21, r21
+ 314:	48 2b       	or	r20, r24
+			}
 
 			messageBuffer[bufIndex].id = id;
- 334:	20 91 01 01 	lds	r18, 0x0101	; 0x800101 <bufIndex>
- 338:	30 e0       	ldi	r19, 0x00	; 0
- 33a:	8d e0       	ldi	r24, 0x0D	; 13
- 33c:	82 9f       	mul	r24, r18
- 33e:	f0 01       	movw	r30, r0
- 340:	83 9f       	mul	r24, r19
- 342:	f0 0d       	add	r31, r0
- 344:	11 24       	eor	r1, r1
- 346:	ed 5f       	subi	r30, 0xFD	; 253
- 348:	fe 4f       	sbci	r31, 0xFE	; 254
- 34a:	40 83       	st	Z, r20
- 34c:	51 83       	std	Z+1, r21	; 0x01
- 34e:	62 83       	std	Z+2, r22	; 0x02
- 350:	97 2f       	mov	r25, r23
- 352:	9f 71       	andi	r25, 0x1F	; 31
- 354:	83 81       	ldd	r24, Z+3	; 0x03
- 356:	80 7e       	andi	r24, 0xE0	; 224
- 358:	89 2b       	or	r24, r25
- 35a:	83 83       	std	Z+3, r24	; 0x03
+ 316:	20 91 01 01 	lds	r18, 0x0101	; 0x800101 <bufIndex>
+ 31a:	30 e0       	ldi	r19, 0x00	; 0
+ 31c:	8b e0       	ldi	r24, 0x0B	; 11
+ 31e:	82 9f       	mul	r24, r18
+ 320:	f0 01       	movw	r30, r0
+ 322:	83 9f       	mul	r24, r19
+ 324:	f0 0d       	add	r31, r0
+ 326:	11 24       	eor	r1, r1
+ 328:	ed 5f       	subi	r30, 0xFD	; 253
+ 32a:	fe 4f       	sbci	r31, 0xFE	; 254
+ 32c:	40 83       	st	Z, r20
+ 32e:	95 2f       	mov	r25, r21
+ 330:	97 70       	andi	r25, 0x07	; 7
+ 332:	81 81       	ldd	r24, Z+1	; 0x01
+ 334:	88 7f       	andi	r24, 0xF8	; 248
+ 336:	89 2b       	or	r24, r25
+ 338:	81 83       	std	Z+1, r24	; 0x01
 
 			messageBuffer[bufIndex].length = CANCDMOB & 0x0F;
- 35c:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f00ef>
- 360:	8f 70       	andi	r24, 0x0F	; 15
- 362:	84 87       	std	Z+12, r24	; 0x0c
+ 33a:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <__TEXT_REGION_LENGTH__+0x7f80ef>
+ 33e:	8f 70       	andi	r24, 0x0F	; 15
+ 340:	82 87       	std	Z+10, r24	; 0x0a
 
 			// This trusts the length field in CANCDMOB is between 1 and 8...
 			for( uint8_t i = 0; i < messageBuffer[bufIndex].length; ++i )
- 364:	90 e0       	ldi	r25, 0x00	; 0
- 366:	0e c0       	rjmp	.+28     	; 0x384 <__vector_18+0xe0>
+ 342:	90 e0       	ldi	r25, 0x00	; 0
+ 344:	0e c0       	rjmp	.+28     	; 0x362 <__vector_18+0xea>
 			{
 				// Load the next byte from the MOb data register into the buffer
 				// CANMSG is set to auto increment to the next byte after each read
 				messageBuffer[bufIndex].data[i] = CANMSG;
- 368:	80 91 fa 00 	lds	r24, 0x00FA	; 0x8000fa <__TEXT_REGION_LENGTH__+0x7f00fa>
- 36c:	4d e0       	ldi	r20, 0x0D	; 13
- 36e:	42 9f       	mul	r20, r18
- 370:	f0 01       	movw	r30, r0
- 372:	43 9f       	mul	r20, r19
- 374:	f0 0d       	add	r31, r0
- 376:	11 24       	eor	r1, r1
- 378:	ed 5f       	subi	r30, 0xFD	; 253
- 37a:	fe 4f       	sbci	r31, 0xFE	; 254
- 37c:	e9 0f       	add	r30, r25
- 37e:	f1 1d       	adc	r31, r1
- 380:	84 83       	std	Z+4, r24	; 0x04
+ 346:	80 91 fa 00 	lds	r24, 0x00FA	; 0x8000fa <__TEXT_REGION_LENGTH__+0x7f80fa>
+ 34a:	4b e0       	ldi	r20, 0x0B	; 11
+ 34c:	42 9f       	mul	r20, r18
+ 34e:	f0 01       	movw	r30, r0
+ 350:	43 9f       	mul	r20, r19
+ 352:	f0 0d       	add	r31, r0
+ 354:	11 24       	eor	r1, r1
+ 356:	ed 5f       	subi	r30, 0xFD	; 253
+ 358:	fe 4f       	sbci	r31, 0xFE	; 254
+ 35a:	e9 0f       	add	r30, r25
+ 35c:	f1 1d       	adc	r31, r1
+ 35e:	82 83       	std	Z+2, r24	; 0x02
 			messageBuffer[bufIndex].id = id;
 
 			messageBuffer[bufIndex].length = CANCDMOB & 0x0F;
 
 			// This trusts the length field in CANCDMOB is between 1 and 8...
 			for( uint8_t i = 0; i < messageBuffer[bufIndex].length; ++i )
- 382:	9f 5f       	subi	r25, 0xFF	; 255
- 384:	8d e0       	ldi	r24, 0x0D	; 13
- 386:	82 9f       	mul	r24, r18
- 388:	f0 01       	movw	r30, r0
- 38a:	83 9f       	mul	r24, r19
- 38c:	f0 0d       	add	r31, r0
- 38e:	11 24       	eor	r1, r1
- 390:	ed 5f       	subi	r30, 0xFD	; 253
- 392:	fe 4f       	sbci	r31, 0xFE	; 254
- 394:	84 85       	ldd	r24, Z+12	; 0x0c
- 396:	98 17       	cp	r25, r24
- 398:	38 f3       	brcs	.-50     	; 0x368 <__vector_18+0xc4>
+ 360:	9f 5f       	subi	r25, 0xFF	; 255
+ 362:	8b e0       	ldi	r24, 0x0B	; 11
+ 364:	82 9f       	mul	r24, r18
+ 366:	f0 01       	movw	r30, r0
+ 368:	83 9f       	mul	r24, r19
+ 36a:	f0 0d       	add	r31, r0
+ 36c:	11 24       	eor	r1, r1
+ 36e:	ed 5f       	subi	r30, 0xFD	; 253
+ 370:	fe 4f       	sbci	r31, 0xFE	; 254
+ 372:	82 85       	ldd	r24, Z+10	; 0x0a
+ 374:	98 17       	cp	r25, r24
+ 376:	38 f3       	brcs	.-50     	; 0x346 <__vector_18+0xce>
 				// Load the next byte from the MOb data register into the buffer
 				// CANMSG is set to auto increment to the next byte after each read
 				messageBuffer[bufIndex].data[i] = CANMSG;
 			}
 
 			bufIndex = (bufIndex + 1) % MESSAGE_BUFFER_LENGTH;
- 39a:	c9 01       	movw	r24, r18
- 39c:	01 96       	adiw	r24, 0x01	; 1
- 39e:	64 e1       	ldi	r22, 0x14	; 20
- 3a0:	70 e0       	ldi	r23, 0x00	; 0
- 3a2:	0e 94 31 02 	call	0x462	; 0x462 <__divmodhi4>
- 3a6:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <bufIndex>
+ 378:	c9 01       	movw	r24, r18
+ 37a:	01 96       	adiw	r24, 0x01	; 1
+ 37c:	64 e1       	ldi	r22, 0x14	; 20
+ 37e:	70 e0       	ldi	r23, 0x00	; 0
+ 380:	0e 94 10 02 	call	0x420	; 0x420 <__divmodhi4>
+ 384:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <bufIndex>
 
 			// Acknowledge the interrupt
 			CANSTMOB = 0;
- 3aa:	10 92 ee 00 	sts	0x00EE, r1	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f00ee>
+ 388:	10 92 ee 00 	sts	0x00EE, r1	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7f80ee>
 
 			CANCDMOB |= (2 << CONMOB0);
- 3ae:	ef ee       	ldi	r30, 0xEF	; 239
- 3b0:	f0 e0       	ldi	r31, 0x00	; 0
- 3b2:	80 81       	ld	r24, Z
- 3b4:	80 68       	ori	r24, 0x80	; 128
- 3b6:	80 83       	st	Z, r24
- 3b8:	0c c0       	rjmp	.+24     	; 0x3d2 <__vector_18+0x12e>
+ 38c:	ef ee       	ldi	r30, 0xEF	; 239
+ 38e:	f0 e0       	ldi	r31, 0x00	; 0
+ 390:	80 81       	ld	r24, Z
+ 392:	80 68       	ori	r24, 0x80	; 128
+ 394:	80 83       	st	Z, r24
+ 396:	0c c0       	rjmp	.+24     	; 0x3b0 <__vector_18+0x138>
 			
 		}
 		else if ( CANGIT & ~(1 << CANIT) )
- 3ba:	80 91 da 00 	lds	r24, 0x00DA	; 0x8000da <__TEXT_REGION_LENGTH__+0x7f00da>
- 3be:	90 e0       	ldi	r25, 0x00	; 0
- 3c0:	8f 77       	andi	r24, 0x7F	; 127
- 3c2:	89 2b       	or	r24, r25
- 3c4:	31 f0       	breq	.+12     	; 0x3d2 <__vector_18+0x12e>
+ 398:	80 91 da 00 	lds	r24, 0x00DA	; 0x8000da <__TEXT_REGION_LENGTH__+0x7f80da>
+ 39c:	90 e0       	ldi	r25, 0x00	; 0
+ 39e:	8f 77       	andi	r24, 0x7F	; 127
+ 3a0:	89 2b       	or	r24, r25
+ 3a2:	31 f0       	breq	.+12     	; 0x3b0 <__vector_18+0x138>
 		{
 			// Preserve the last error received
 			lastError = CANGIT;
- 3c6:	ea ed       	ldi	r30, 0xDA	; 218
- 3c8:	f0 e0       	ldi	r31, 0x00	; 0
- 3ca:	80 81       	ld	r24, Z
- 3cc:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__DATA_REGION_ORIGIN__>
+ 3a4:	ea ed       	ldi	r30, 0xDA	; 218
+ 3a6:	f0 e0       	ldi	r31, 0x00	; 0
+ 3a8:	80 81       	ld	r24, Z
+ 3aa:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__DATA_REGION_ORIGIN__>
 
 			// Clear the error
 			CANGIT = 0;
- 3d0:	10 82       	st	Z, r1
+ 3ae:	10 82       	st	Z, r1
 	uint8_t canPage = CANPAGE;
 
 	// CANHPMOB will contain the mob index of the highest priority mob that has interrupted,
 	// or 0xFF if no mob has interrupted. If multiple mobs have interrupted, they need to all be
 	// serviced, so this loop is required.
 	while( ((CANHPMOB & 0xF0) >> 4) != 0x0F )
- 3d2:	80 91 ec 00 	lds	r24, 0x00EC	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7f00ec>
- 3d6:	82 95       	swap	r24
- 3d8:	8f 70       	andi	r24, 0x0F	; 15
- 3da:	8f 30       	cpi	r24, 0x0F	; 15
- 3dc:	09 f0       	breq	.+2      	; 0x3e0 <__vector_18+0x13c>
- 3de:	77 cf       	rjmp	.-274    	; 0x2ce <__vector_18+0x2a>
+ 3b0:	80 91 ec 00 	lds	r24, 0x00EC	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7f80ec>
+ 3b4:	82 95       	swap	r24
+ 3b6:	8f 70       	andi	r24, 0x0F	; 15
+ 3b8:	8f 30       	cpi	r24, 0x0F	; 15
+ 3ba:	09 f0       	breq	.+2      	; 0x3be <__vector_18+0x146>
+ 3bc:	72 cf       	rjmp	.-284    	; 0x2a2 <__vector_18+0x2a>
 			CANGIT = 0;
 		}
 	}
 
 	// Restore CANPAGE register to where application code had it before interrupt
 	CANPAGE = canPage;
- 3e0:	c0 93 ed 00 	sts	0x00ED, r28	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f00ed>
- 3e4:	ff 91       	pop	r31
- 3e6:	ef 91       	pop	r30
- 3e8:	cf 91       	pop	r28
- 3ea:	bf 91       	pop	r27
- 3ec:	af 91       	pop	r26
- 3ee:	9f 91       	pop	r25
- 3f0:	8f 91       	pop	r24
- 3f2:	7f 91       	pop	r23
- 3f4:	6f 91       	pop	r22
- 3f6:	5f 91       	pop	r21
- 3f8:	4f 91       	pop	r20
- 3fa:	3f 91       	pop	r19
- 3fc:	2f 91       	pop	r18
- 3fe:	0f 90       	pop	r0
- 400:	0f be       	out	0x3f, r0	; 63
- 402:	0f 90       	pop	r0
- 404:	1f 90       	pop	r1
- 406:	18 95       	reti
+ 3be:	c0 93 ed 00 	sts	0x00ED, r28	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7f80ed>
+ 3c2:	ff 91       	pop	r31
+ 3c4:	ef 91       	pop	r30
+ 3c6:	cf 91       	pop	r28
+ 3c8:	bf 91       	pop	r27
+ 3ca:	af 91       	pop	r26
+ 3cc:	9f 91       	pop	r25
+ 3ce:	8f 91       	pop	r24
+ 3d0:	7f 91       	pop	r23
+ 3d2:	6f 91       	pop	r22
+ 3d4:	5f 91       	pop	r21
+ 3d6:	4f 91       	pop	r20
+ 3d8:	3f 91       	pop	r19
+ 3da:	2f 91       	pop	r18
+ 3dc:	0f 90       	pop	r0
+ 3de:	0f be       	out	0x3f, r0	; 63
+ 3e0:	0f 90       	pop	r0
+ 3e2:	1f 90       	pop	r1
+ 3e4:	18 95       	reti
 
-00000408 <writeFloatToEEPROM>:
-}
+000003e6 <main>:
 
-
-
-void writeFloatToEEPROM(int value, int address)
-{
- 408:	28 2f       	mov	r18, r24
- 40a:	cb 01       	movw	r24, r22
-	int val1 = (int)value; // pak getal voor de komma
-	//int val2 = (int)((value-val1)*100); // pak kommagetal en doe keer 100
-	eeprom_write_byte((uint8_t*)address, val1);
- 40c:	62 2f       	mov	r22, r18
- 40e:	0e 94 59 02 	call	0x4b2	; 0x4b2 <eeprom_write_byte>
- 412:	08 95       	ret
-
-00000414 <main>:
-
-void writeFloatToEEPROM(int value, int address);
+#define CAN_ID_SNELHEIDSMETER 0x50
 
 
 int main(void)
 {
- 414:	cf 93       	push	r28
- 416:	df 93       	push	r29
- 418:	cd b7       	in	r28, 0x3d	; 61
- 41a:	de b7       	in	r29, 0x3e	; 62
- 41c:	2d 97       	sbiw	r28, 0x0d	; 13
- 41e:	0f b6       	in	r0, 0x3f	; 63
- 420:	f8 94       	cli
- 422:	de bf       	out	0x3e, r29	; 62
- 424:	0f be       	out	0x3f, r0	; 63
- 426:	cd bf       	out	0x3d, r28	; 61
+ 3e6:	cf 93       	push	r28
+ 3e8:	df 93       	push	r29
+ 3ea:	cd b7       	in	r28, 0x3d	; 61
+ 3ec:	de b7       	in	r29, 0x3e	; 62
+ 3ee:	2b 97       	sbiw	r28, 0x0b	; 11
+ 3f0:	0f b6       	in	r0, 0x3f	; 63
+ 3f2:	f8 94       	cli
+ 3f4:	de bf       	out	0x3e, r29	; 62
+ 3f6:	0f be       	out	0x3f, r0	; 63
+ 3f8:	cd bf       	out	0x3d, r28	; 61
 	CANMessage rx_message; 
 	uint8_t result; 
-	int addressEEPROM = 0;
-
    
     DDRC |= (1<<PC0);
- 428:	87 b1       	in	r24, 0x07	; 7
- 42a:	81 60       	ori	r24, 0x01	; 1
- 42c:	87 b9       	out	0x07, r24	; 7
+ 3fa:	87 b1       	in	r24, 0x07	; 7
+ 3fc:	81 60       	ori	r24, 0x01	; 1
+ 3fe:	87 b9       	out	0x07, r24	; 7
 	initCAN(); 
- 42e:	0e 94 5e 00 	call	0xbc	; 0xbc <initCAN>
+ 400:	0e 94 5e 00 	call	0xbc	; 0xbc <initCAN>
    
-   	result = listenForMessage(CAN_ID_ARDUINO, 8);
- 432:	48 e0       	ldi	r20, 0x08	; 8
- 434:	60 e1       	ldi	r22, 0x10	; 16
- 436:	70 e0       	ldi	r23, 0x00	; 0
- 438:	80 e0       	ldi	r24, 0x00	; 0
- 43a:	90 e0       	ldi	r25, 0x00	; 0
- 43c:	0e 94 94 00 	call	0x128	; 0x128 <listenForMessage>
+   	result = listenForMessage(CAN_ID_SNELHEIDSMETER, 8);
+ 404:	68 e0       	ldi	r22, 0x08	; 8
+ 406:	80 e5       	ldi	r24, 0x50	; 80
+ 408:	90 e0       	ldi	r25, 0x00	; 0
+ 40a:	0e 94 94 00 	call	0x128	; 0x128 <listenForMessage>
 		// PORTC |= (1<<PC0);				//hoog maken pin
 	
 		// PORTC &= ~(1 << PC0);			//laag maken pin	
 		
 		
 			uint8_t myMessage = getMessage(&rx_message);
- 440:	ce 01       	movw	r24, r28
- 442:	01 96       	adiw	r24, 0x01	; 1
- 444:	0e 94 ff 00 	call	0x1fe	; 0x1fe <getMessage>
+ 40e:	ce 01       	movw	r24, r28
+ 410:	01 96       	adiw	r24, 0x01	; 1
+ 412:	0e 94 f1 00 	call	0x1e2	; 0x1e2 <getMessage>
 			if (myMessage) {
- 448:	88 23       	and	r24, r24
- 44a:	d1 f3       	breq	.-12     	; 0x440 <main+0x2c>
+ 416:	88 23       	and	r24, r24
+ 418:	d1 f3       	breq	.-12     	; 0x40e <__EEPROM_REGION_LENGTH__+0xe>
 				
-						PORTC ^= (1<<PC0);	
- 44c:	98 b1       	in	r25, 0x08	; 8
- 44e:	81 e0       	ldi	r24, 0x01	; 1
- 450:	89 27       	eor	r24, r25
- 452:	88 b9       	out	0x08, r24	; 8
-						writeFloatToEEPROM(rx_message.id, addressEEPROM);
- 454:	60 e0       	ldi	r22, 0x00	; 0
- 456:	70 e0       	ldi	r23, 0x00	; 0
- 458:	89 81       	ldd	r24, Y+1	; 0x01
- 45a:	9a 81       	ldd	r25, Y+2	; 0x02
- 45c:	0e 94 04 02 	call	0x408	; 0x408 <writeFloatToEEPROM>
- 460:	ef cf       	rjmp	.-34     	; 0x440 <main+0x2c>
+						PORTC = (1<<PC0);	
+ 41a:	81 e0       	ldi	r24, 0x01	; 1
+ 41c:	88 b9       	out	0x08, r24	; 8
+ 41e:	f7 cf       	rjmp	.-18     	; 0x40e <__EEPROM_REGION_LENGTH__+0xe>
 
-00000462 <__divmodhi4>:
- 462:	97 fb       	bst	r25, 7
- 464:	07 2e       	mov	r0, r23
- 466:	16 f4       	brtc	.+4      	; 0x46c <__divmodhi4+0xa>
- 468:	00 94       	com	r0
- 46a:	07 d0       	rcall	.+14     	; 0x47a <__divmodhi4_neg1>
- 46c:	77 fd       	sbrc	r23, 7
- 46e:	09 d0       	rcall	.+18     	; 0x482 <__divmodhi4_neg2>
- 470:	0e 94 45 02 	call	0x48a	; 0x48a <__udivmodhi4>
- 474:	07 fc       	sbrc	r0, 7
- 476:	05 d0       	rcall	.+10     	; 0x482 <__divmodhi4_neg2>
- 478:	3e f4       	brtc	.+14     	; 0x488 <__divmodhi4_exit>
+00000420 <__divmodhi4>:
+ 420:	97 fb       	bst	r25, 7
+ 422:	07 2e       	mov	r0, r23
+ 424:	16 f4       	brtc	.+4      	; 0x42a <__divmodhi4+0xa>
+ 426:	00 94       	com	r0
+ 428:	07 d0       	rcall	.+14     	; 0x438 <__divmodhi4_neg1>
+ 42a:	77 fd       	sbrc	r23, 7
+ 42c:	09 d0       	rcall	.+18     	; 0x440 <__divmodhi4_neg2>
+ 42e:	0e 94 24 02 	call	0x448	; 0x448 <__udivmodhi4>
+ 432:	07 fc       	sbrc	r0, 7
+ 434:	05 d0       	rcall	.+10     	; 0x440 <__divmodhi4_neg2>
+ 436:	3e f4       	brtc	.+14     	; 0x446 <__divmodhi4_exit>
 
-0000047a <__divmodhi4_neg1>:
- 47a:	90 95       	com	r25
- 47c:	81 95       	neg	r24
- 47e:	9f 4f       	sbci	r25, 0xFF	; 255
- 480:	08 95       	ret
+00000438 <__divmodhi4_neg1>:
+ 438:	90 95       	com	r25
+ 43a:	81 95       	neg	r24
+ 43c:	9f 4f       	sbci	r25, 0xFF	; 255
+ 43e:	08 95       	ret
 
-00000482 <__divmodhi4_neg2>:
- 482:	70 95       	com	r23
- 484:	61 95       	neg	r22
- 486:	7f 4f       	sbci	r23, 0xFF	; 255
+00000440 <__divmodhi4_neg2>:
+ 440:	70 95       	com	r23
+ 442:	61 95       	neg	r22
+ 444:	7f 4f       	sbci	r23, 0xFF	; 255
 
-00000488 <__divmodhi4_exit>:
- 488:	08 95       	ret
+00000446 <__divmodhi4_exit>:
+ 446:	08 95       	ret
 
-0000048a <__udivmodhi4>:
- 48a:	aa 1b       	sub	r26, r26
- 48c:	bb 1b       	sub	r27, r27
- 48e:	51 e1       	ldi	r21, 0x11	; 17
- 490:	07 c0       	rjmp	.+14     	; 0x4a0 <__udivmodhi4_ep>
+00000448 <__udivmodhi4>:
+ 448:	aa 1b       	sub	r26, r26
+ 44a:	bb 1b       	sub	r27, r27
+ 44c:	51 e1       	ldi	r21, 0x11	; 17
+ 44e:	07 c0       	rjmp	.+14     	; 0x45e <__udivmodhi4_ep>
 
-00000492 <__udivmodhi4_loop>:
- 492:	aa 1f       	adc	r26, r26
- 494:	bb 1f       	adc	r27, r27
- 496:	a6 17       	cp	r26, r22
- 498:	b7 07       	cpc	r27, r23
- 49a:	10 f0       	brcs	.+4      	; 0x4a0 <__udivmodhi4_ep>
- 49c:	a6 1b       	sub	r26, r22
- 49e:	b7 0b       	sbc	r27, r23
+00000450 <__udivmodhi4_loop>:
+ 450:	aa 1f       	adc	r26, r26
+ 452:	bb 1f       	adc	r27, r27
+ 454:	a6 17       	cp	r26, r22
+ 456:	b7 07       	cpc	r27, r23
+ 458:	10 f0       	brcs	.+4      	; 0x45e <__udivmodhi4_ep>
+ 45a:	a6 1b       	sub	r26, r22
+ 45c:	b7 0b       	sbc	r27, r23
 
-000004a0 <__udivmodhi4_ep>:
- 4a0:	88 1f       	adc	r24, r24
- 4a2:	99 1f       	adc	r25, r25
- 4a4:	5a 95       	dec	r21
- 4a6:	a9 f7       	brne	.-22     	; 0x492 <__udivmodhi4_loop>
- 4a8:	80 95       	com	r24
- 4aa:	90 95       	com	r25
- 4ac:	bc 01       	movw	r22, r24
- 4ae:	cd 01       	movw	r24, r26
- 4b0:	08 95       	ret
+0000045e <__udivmodhi4_ep>:
+ 45e:	88 1f       	adc	r24, r24
+ 460:	99 1f       	adc	r25, r25
+ 462:	5a 95       	dec	r21
+ 464:	a9 f7       	brne	.-22     	; 0x450 <__udivmodhi4_loop>
+ 466:	80 95       	com	r24
+ 468:	90 95       	com	r25
+ 46a:	bc 01       	movw	r22, r24
+ 46c:	cd 01       	movw	r24, r26
+ 46e:	08 95       	ret
 
-000004b2 <eeprom_write_byte>:
- 4b2:	26 2f       	mov	r18, r22
+00000470 <_exit>:
+ 470:	f8 94       	cli
 
-000004b4 <eeprom_write_r18>:
- 4b4:	f9 99       	sbic	0x1f, 1	; 31
- 4b6:	fe cf       	rjmp	.-4      	; 0x4b4 <eeprom_write_r18>
- 4b8:	92 bd       	out	0x22, r25	; 34
- 4ba:	81 bd       	out	0x21, r24	; 33
- 4bc:	20 bd       	out	0x20, r18	; 32
- 4be:	0f b6       	in	r0, 0x3f	; 63
- 4c0:	f8 94       	cli
- 4c2:	fa 9a       	sbi	0x1f, 2	; 31
- 4c4:	f9 9a       	sbi	0x1f, 1	; 31
- 4c6:	0f be       	out	0x3f, r0	; 63
- 4c8:	01 96       	adiw	r24, 0x01	; 1
- 4ca:	08 95       	ret
-
-000004cc <_exit>:
- 4cc:	f8 94       	cli
-
-000004ce <__stop_program>:
- 4ce:	ff cf       	rjmp	.-2      	; 0x4ce <__stop_program>
+00000472 <__stop_program>:
+ 472:	ff cf       	rjmp	.-2      	; 0x472 <__stop_program>

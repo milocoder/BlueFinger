@@ -39,10 +39,10 @@
 // Number of Message Objects in the CAN Controller
 #define MOB_COUNT 15
 
-// CAN 2.0 type B message information
+// CAN 2.0 type A message information
 typedef struct
 {
-	uint32_t id : 29;
+	uint16_t id : 11;
 	char data[8];
 	uint8_t length;
 } CANMessage;
@@ -64,7 +64,7 @@ void initCAN();
 
 CANErrorStatus getLastCANError();
 
-uint8_t listenForMessage( uint32_t id, uint8_t expectedLength );
+uint8_t listenForMessage( uint16_t id, uint8_t expectedLength );
 
 uint8_t getMessage( CANMessage * message );
 

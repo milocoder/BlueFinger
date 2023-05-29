@@ -1,10 +1,8 @@
 #include "can.h"
-#include <avr/interrupt.h>
+#include "avr/interrupt.h"
 
 #include <util/delay.h>
 #include <avr/io.h>
-
-
 
 // Where the CAN ISR writes received messages to
 CANMessage messageBuffer[ MESSAGE_BUFFER_LENGTH ];
@@ -122,11 +120,10 @@ uint8_t sendCAN( CANMessage* message )
 	// Set up the MOB based on the message
 
 	// This library currently only supports standard CAN IDs
-	CANIDT4 = (uint8_t)	 message->id >> 3;
-	CANIDT3 = (uint32_t) message->id << 5;
-	CANIDT2 = (uint32_t) message->id << 13;
-	CANIDT1 = (uint32_t) message->id << 21;
-
+	CANIDT4 = 0;
+	CANIDT3 = 0;
+	CANIDT2 = (uint8_t) message->id << 5;
+	CANIDT1 = (uint8_t) message->id >> 3;
 
 	// Ensure nothing bigger than 8 is written to the CANCDMOB register
 	if( message->length > 8 )
@@ -169,7 +166,7 @@ uint8_t sendCAN( CANMessage* message )
  * @return 0 if no free message objects left, 1 otherwise
  *
  */
-uint8_t listenForMessage( uint32_t id, uint8_t expectedLength )
+uint8_t listenForMessage( uint16_t id, uint8_t expectedLength )
 {
 	// Try to get a free MOb
 	uint8_t mobIndex = getFreeMob();
@@ -184,11 +181,10 @@ uint8_t listenForMessage( uint32_t id, uint8_t expectedLength )
 	CANPAGE |= (mobIndex << 4);
 
 	// Set the MOb's CAN id to the id to be listened for
-	CANIDT4 = id >> 3;
-	CANIDT3 = id << 5;
-	CANIDT2 = id << 13;
-	CANIDT1 = id << 21;
-	
+	CANIDT4 = 0;
+	CANIDT3 = 0;
+	CANIDT2 = id << 5;
+	CANIDT1 = id >> 3;
 
 	if( expectedLength > 8 )
 	{
@@ -294,7 +290,7 @@ ISR( CANIT_vect )
 		else if ( CANSTMOB & (1 << RXOK) )
 		{
 			// Default to impossible ID
-			uint32_t id = 0xFFFF;			//omgezet naar 32 bits voor 2.0B
+			uint16_t id = 0xFFFF;
 
 			// Load the message data into a free message buffer object
 			if( CANCDMOB & (1 << IDE) )
@@ -302,12 +298,11 @@ ISR( CANIT_vect )
 				// Message type is CAN 2.0B
 				id = (CANIDT4 >> 3) | ((CANIDT3 & 0x7F) << 5); 
 			}
-			
-			//else
-			//{
+			else
+			{
 				// Message type is CAN 2.0A
-			//	id = (CANIDT2 >> 5) | (((uint16_t)CANIDT1 << 3));
-			//}
+				id = (CANIDT2 >> 5) | (((uint16_t)CANIDT1 << 3));
+			}
 
 			messageBuffer[bufIndex].id = id;
 

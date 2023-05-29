@@ -287,7 +287,30 @@ typedef enum {
 	FR_WRITE_PROTECTED,		/* (10) The physical drive is write protected */
 	FR_INVALID_DRIVE,		/* (11) The logical drive number is invalid */
 	FR_NOT_ENABLED,			/* (12) The volume has no work area */
-	FR_NO_FILESYSTEM,		/* (13) There is no valid FAT volume */
+	FR_NO_FILESYSTEM_a,		/* (13) There is no valid FAT volume */
+	FR_NO_FILESYSTEM_b,
+	FR_NO_FILESYSTEM_c,
+	FR_NO_FILESYSTEM_d,
+	FR_NO_FILESYSTEM_e,
+	FR_NO_FILESYSTEM_f,
+	FR_NO_FILESYSTEM_g,
+	FR_NO_FILESYSTEM_h,
+	FR_NO_FILESYSTEM_i,
+	FR_NO_FILESYSTEM_j,
+	FR_NO_FILESYSTEM_k,
+	FR_NO_FILESYSTEM_l,
+	FR_NO_FILESYSTEM_m,
+	FR_NO_FILESYSTEM_n,
+	FR_NO_FILESYSTEM_o,
+	FR_NO_FILESYSTEM_p,
+	FR_NO_FILESYSTEM_q,
+	FR_NO_FILESYSTEM_r,
+	FR_NO_FILESYSTEM_s,
+	FR_NO_FILESYSTEM_t,
+	FR_NO_FILESYSTEM_u,
+	FR_NO_FILESYSTEM_v,
+	FR_NO_FILESYSTEM_w,
+	FR_NO_FILESYSTEM_x,	
 	FR_MKFS_ABORTED,		/* (14) The f_mkfs() aborted due to any problem */
 	FR_TIMEOUT,				/* (15) Could not get a grant to access the volume within defined period */
 	FR_LOCKED,				/* (16) The operation is rejected according to the file sharing policy */

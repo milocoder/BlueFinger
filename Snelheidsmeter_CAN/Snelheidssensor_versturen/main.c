@@ -22,7 +22,7 @@ int main(void)
 	
 	while(1) {
 		// volgende stuk leest hall sensor input en incrementeert rpmaantal als de magneet langs is gekomen
-		huidigeStatusHall = PINC & (1 << PC0);
+		/*huidigeStatusHall = PINC & (1 << PC0);
 		if(huidigeStatusHall) {
 			if(vorigeStatusHall == 0)
 			{
@@ -34,13 +34,14 @@ int main(void)
 			}
 		}
 		vorigeStatusHall = huidigeStatusHall;
-		
+		*/
 		// volgende stuk kijkt eens in de 3000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
 		if(millis() - timer >= 3000)
 		{
-			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 3;
-			float snelheidKmh = snelheidms * 3.6;
-			rpmaantal = 0; // reset rpm
+			//float snelheidms = (float) (omtrek_wiel * rpmaantal) / 3;
+			//float snelheidKmh = snelheidms * 3.6;
+			float snelheidKmh = 5.63;
+			//rpmaantal = 0; // reset rpm
 			verstuurCan(snelheidKmh);
 			timer = millis(); // reset timer
 		}

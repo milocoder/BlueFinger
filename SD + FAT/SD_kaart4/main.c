@@ -8,66 +8,76 @@
 #include "pff.h"
 #include "pffconf.h"
 
-#define LED_OFF()		PORTC &= ~(1 << PC0);	
-#define LED_ON()		PORTC |= (1 << PC0);
+#define LED_OFF()		PORTC = (0 << PC0);
+#define LED_ON()		PORTC = (1 << PC0);
 
 #define BUFFER_SIZE 10
 
 FATFS file_system;
 
-uint8_t write_buffer[BUFFER_SIZE] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-uint8_t read_buffer[BUFFER_SIZE]  = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t write_buffer[BUFFER_SIZE] = {};
+uint8_t read_buffer[BUFFER_SIZE]  = {};
 UINT    byte_counter              = 0;
 
 void init_sd_card(void);
+void fill_buffer(void);
 	
 int main(void)
-{
-	DDRC = 1; // output led (p4)
+{	
 	LED_OFF();
-	
-	//_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_4X_gc))
-	
 	_PROTECTED_WRITE(CLKPR, ( (1<<CLKPCE) | ((0<<CLKPS3) | (0<<CLKPS2) | (1<<CLKPS1) | (0<<CLKPS0)))); 
 
-	/* Initialize card */
-	init_sd_card();
+	init_sd_card(); // initialize sd-card
+	
+	fill_buffer(); // fill buffer
 
-	/* Set file pointer to beginning of file */
-	pf_lseek(0);
+	/* Set file pointer to beginning of sector */
+	pf_lseek(0); // offset = 000420000 in sector 8.448
 
 	/* Write buffer */
 	pf_write(write_buffer, BUFFER_SIZE, &byte_counter);
+	
 	if (byte_counter < BUFFER_SIZE) {
 		/* End of file */
-		
 	}
 
 	/* Finalize write */
 	pf_write(0, 0, &byte_counter);
 
-	/* Reset file pointer to beginning of file */
+	/* Reset file pointer to beginning of sector 1 */
 	pf_lseek(0);
 
 	/* Read back the same bytes */
 	pf_read(read_buffer, BUFFER_SIZE, &byte_counter);
 
 	/* Check they're the same */
-	while (byte_counter) {
+	while (byte_counter) 
+	{
 		if (write_buffer[byte_counter] != read_buffer[byte_counter]) {
-			/* ERROR! */
-		//	LED_ON();
-			while (1)
-				;
+			while(1)
+			{
+				LED_ON(); // Error
+			}
 		}
 		byte_counter--;
 	}
 	/* SUCCESS! */
 	while (1) 
-		{
-			//PORTC ^= (1 << PC0);
-			//_delay_ms(250);
-		}
+	{
+		PORTC = (1 << PC0);
+		_delay_ms(1500);
+		PORTC = (0 << PC0);
+		_delay_ms(1500);
+	}
+}
+
+void fill_buffer(void)
+{
+	int grootte = 10;
+	for(int i = 0; i < grootte; i++)
+	{
+		write_buffer[i] = '5';
+	}
 }
 
 void init_sd_card(void)
@@ -97,11 +107,6 @@ void init_sd_card(void)
 			//SPI0.CTRLA = (SPI_MASTER_bm | SPI_CLK2X_bm | SPI_PRESC_DIV4_gc | SPI_ENABLE_bm);
 			
 		}
-		/* The application will continue to try and initialize the card.
-		 * If the LED is on, try taking out the SD card and putting
-		 * it back in again.  After an operation has been interrupted this is
-		 * sometimes necessary.
-		 */
 	} while (ERROR == 1);
 
 	/* Mount volume */
@@ -111,13 +116,11 @@ void init_sd_card(void)
 	}
 
 	/* Open file */
-	result = pf_open("/LOG.TXT");
-	if (result == FR_NO_FILE)
+	result = pf_open("LOG.txt");
+	if (result != FR_OK)
 	{
-		while (1)
-		{
-			PORTC ^= (1 << PC0);
-			_delay_ms(750);
-		}			
+		// error
 	}
+	
+	
 }

@@ -40,6 +40,22 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
+    <avrtool>com.atmel.avrdbg.tool.pickit4</avrtool>
+    <avrtoolserialnumber>BUR212675844</avrtoolserialnumber>
+    <avrdeviceexpectedsignature>0x1E9581</avrdeviceexpectedsignature>
+    <com_atmel_avrdbg_tool_pickit4>
+      <ToolOptions>
+        <InterfaceProperties>
+          <JtagDbgClock>200000</JtagDbgClock>
+        </InterfaceProperties>
+        <InterfaceName>JTAG</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.pickit4</ToolType>
+      <ToolNumber>BUR212675844</ToolNumber>
+      <ToolName>MPLAB® PICkit 4</ToolName>
+    </com_atmel_avrdbg_tool_pickit4>
+    <avrtoolinterface>JTAG</avrtoolinterface>
+    <avrtoolinterfaceclock>200000</avrtoolinterfaceclock>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>

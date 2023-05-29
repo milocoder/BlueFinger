@@ -22,7 +22,7 @@
 
 void init_timer(void); 
 
-ISR(TIMER1_OVF_vect)				//timer 0 ISR
+ISR(TIMER1_OVF_vect)
 {
 	//PORTC ^= (1 << PC0);
 	TCNT1 = 0xFF61;
@@ -72,7 +72,7 @@ void delayByEnumValue(FRESULT result) {
 		case FR_NOT_ENABLED:
 		delay_ms = 1000;
 		break;
-		case FR_NO_FILESYSTEM:
+		case FR_NO_FILESYSTEM_a:
 		delay_ms = 1050;
 		break;
 		case FR_MKFS_ABORTED:
@@ -109,9 +109,11 @@ int main(void)
 
 	// init sdcard
 	UINT bw;
-	FRESULT res = f_mount(&FatFs, "0:/", 1);		// Give a work area to the FatFs module
+	FRESULT res = f_mount(&FatFs, "", 1);		// Give a work area to the FatFs module
 	
-	if(res == FR_NO_FILESYSTEM)
+	
+
+	if(res == FR_NO_FILESYSTEM_a)
 	{
 		while(1)
 		{
@@ -123,17 +125,24 @@ int main(void)
 	
 	// open file
 	FIL *fp = (FIL *)malloc(sizeof (FIL));
-	if (f_open(fp, "0:/LOG.TXT", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK) // Create a file
+	if (f_open(fp, "LOG.TXT", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK) // Create a file
 	{
 		char *text = "Hello World! SDCard up and running!\r\n";
 		f_write(fp, text, strlen(text), &bw);	// Write data to the file
 		f_close(fp);// Close the file
 	}
+	
+	
+	while(1)
+	{
+		
+	}
+	
 }
 
 void init_timer(void) {	
 	CLKPR = 0x80; CLKPR = 0x00; // reset prescaler
-	TCNT1 = 0xFF61; // start counting at (256-159 = 0x61)
+	TCNT1 = 0xFF61; // start counting at (2^16 - 159 = 65377 = 0xFF61)
 	TCCR1A = 0x00;
 	TCCR1B = (( 1 << CS12) | ( 1 << CS10)); // prescaler op 1024
 	TIMSK1 = (1 << TOIE1) ;		// Enable timer 1 overflow interrupt(TOIE2), pag. 142 datasheet

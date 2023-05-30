@@ -148,6 +148,12 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="millis.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="millis.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="pff.c">
       <SubType>compile</SubType>
     </Compile>

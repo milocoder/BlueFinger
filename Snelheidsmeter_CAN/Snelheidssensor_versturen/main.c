@@ -25,7 +25,7 @@ void verstuurCan(float snelheid)
 {
 	// volgende stuk initaliseert de canmessage struct, verstuurt snelheid met data[0] en data[1]
 	int voorKomma = (int)snelheid; // pak getal voor de komma
-	int naKomma = (int)((snelheid-voorKomma)*100)+1; // pak kommagetal en vermenigvuldig keer 100
+	int naKomma = (int)((snelheid-voorKomma)*100); // pak kommagetal en vermenigvuldig keer 100
 	
 	
 	CANMessage tx_message;

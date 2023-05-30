@@ -14,51 +14,33 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
+#include <stdbool.h>
 #include "can.h"
 
-#define CAN_ID_SNELHEIDSMETER 0x50
-
+#define CAN_ID_SNELHEIDSMETER 5
 
 int main(void)
 {
-	CANMessage rx_message; 
-	uint8_t result; 
-   
-    DDRC |= (1<<PC0);
-	initCAN(); 
-   
-   	result = listenForMessage(CAN_ID_SNELHEIDSMETER, 8);
-	   
-   
-    while (1) 
-    {
-		// PORTC |= (1<<PC0);				//hoog maken pin
+	sei();
+	initCAN();
 	
-		// PORTC &= ~(1 << PC0);			//laag maken pin	
-		
-		
-			uint8_t myMessage = getMessage(&rx_message);
-			if (myMessage) {
-				
-						PORTC = (1<<PC0);	
-						if (rx_message.id == CAN_ID_SNELHEIDSMETER) {
-							//PORTC = (0<<PC0);
-						}
+	int waarde = 0;
+	uint8_t result1 = 0;
+	uint8_t result2 = 0;
+	
+	CANMessage bericht;
+	result1 = listenForMessage(CAN_ID_SNELHEIDSMETER, 8); // 0-geen MOB's available. 1- wel available
+	while(1)
+	{
+		result2 = getMessage(&bericht); // 1-bericht gevuld. 0-niet gevuld
+		waarde = 1;
+		if(result2)
+		{
+			waarde = 2;
+			if(bericht.id == CAN_ID_SNELHEIDSMETER)
+			{
+				waarde = 3;
 			}
-		
-			/*
-			
-			if(getMessage(&rx_message)) {
-				if (rx_message.id == CAN_ID_ARDUINO) {
-					PORTC ^= (1<<PC0);
-				}
-			}
-			
-			*/
-
-		
-		
-		 
+		}
 	}
 }
-

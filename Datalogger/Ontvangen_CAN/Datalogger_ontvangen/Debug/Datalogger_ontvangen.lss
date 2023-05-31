@@ -3,31 +3,31 @@ Datalogger_ontvangen.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000007c8  2**0
+  0 .data         00000000  00800100  00800100  000007b2  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000754  00000000  00000000  00000074  2**1
+  1 .text         0000073e  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          000000df  00800100  00800100  000007c8  2**0
+  2 .bss          000000df  00800100  00800100  000007b2  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000007c8  2**0
+  3 .comment      00000030  00000000  00000000  000007b2  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000007f8  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000007e4  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000070  00000000  00000000  00000834  2**0
+  5 .debug_aranges 00000070  00000000  00000000  00000820  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000f1e  00000000  00000000  000008a4  2**0
+  6 .debug_info   00000f1e  00000000  00000000  00000890  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000be4  00000000  00000000  000017c2  2**0
+  7 .debug_abbrev 00000be4  00000000  00000000  000017ae  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000065e  00000000  00000000  000023a6  2**0
+  8 .debug_line   00000652  00000000  00000000  00002392  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000170  00000000  00000000  00002a04  2**2
+  9 .debug_frame  00000170  00000000  00000000  000029e4  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000064e  00000000  00000000  00002b74  2**0
+ 10 .debug_str    00000657  00000000  00000000  00002b54  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000002f4  00000000  00000000  000031c2  2**0
+ 11 .debug_loc    000002f4  00000000  00000000  000031ab  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000050  00000000  00000000  000034b6  2**0
+ 12 .debug_ranges 00000050  00000000  00000000  0000349f  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -93,7 +93,7 @@ Disassembly of section .text:
   ac:	b2 07       	cpc	r27, r18
   ae:	e1 f7       	brne	.-8      	; 0xa8 <.do_clear_bss_loop>
   b0:	0e 94 4b 03 	call	0x696	; 0x696 <main>
-  b4:	0c 94 a8 03 	jmp	0x750	; 0x750 <_exit>
+  b4:	0c 94 9d 03 	jmp	0x73a	; 0x73a <_exit>
 
 000000b8 <__bad_interrupt>:
   b8:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -546,7 +546,7 @@ uint8_t getMessage( CANMessage * message )
  390:	24 e1       	ldi	r18, 0x14	; 20
  392:	30 e0       	ldi	r19, 0x00	; 0
  394:	b9 01       	movw	r22, r18
- 396:	0e 94 80 03 	call	0x700	; 0x700 <__divmodhi4>
+ 396:	0e 94 75 03 	call	0x6ea	; 0x6ea <__divmodhi4>
  39a:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__DATA_REGION_ORIGIN__>
 
 		messageAvailable = 1;
@@ -933,7 +933,7 @@ ISR( CANIT_vect )
  5f6:	24 e1       	ldi	r18, 0x14	; 20
  5f8:	30 e0       	ldi	r19, 0x00	; 0
  5fa:	b9 01       	movw	r22, r18
- 5fc:	0e 94 80 03 	call	0x700	; 0x700 <__divmodhi4>
+ 5fc:	0e 94 75 03 	call	0x6ea	; 0x6ea <__divmodhi4>
  600:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <bufIndex>
 
 			// Acknowledge the interrupt
@@ -1036,7 +1036,7 @@ ISR( CANIT_vect )
 00000696 <main>:
 #include "can.h"
 
-#define CAN_ID_SNELHEIDSMETER 5
+#define CAN_ID_SNELHEIDSMETER 0x10
 
 int main(void)
 {
@@ -1044,7 +1044,7 @@ int main(void)
  698:	df 93       	push	r29
  69a:	cd b7       	in	r28, 0x3d	; 61
  69c:	de b7       	in	r29, 0x3e	; 62
- 69e:	60 97       	sbiw	r28, 0x10	; 16
+ 69e:	2f 97       	sbiw	r28, 0x0f	; 15
  6a0:	0f b6       	in	r0, 0x3f	; 63
  6a2:	f8 94       	cli
  6a4:	de bf       	out	0x3e, r29	; 62
@@ -1055,121 +1055,109 @@ int main(void)
 	initCAN();
  6ac:	0e 94 5e 00 	call	0xbc	; 0xbc <initCAN>
 	
-	int waarde = 0;
- 6b0:	1a 82       	std	Y+2, r1	; 0x02
- 6b2:	19 82       	std	Y+1, r1	; 0x01
 	uint8_t result1 = 0;
- 6b4:	1b 82       	std	Y+3, r1	; 0x03
+ 6b0:	19 82       	std	Y+1, r1	; 0x01
 	uint8_t result2 = 0;
+ 6b2:	1a 82       	std	Y+2, r1	; 0x02
+	
+	bool foundMessage = false;
+ 6b4:	1b 82       	std	Y+3, r1	; 0x03
+	bool foundId = false;
  6b6:	1c 82       	std	Y+4, r1	; 0x04
-	bool res2 = false;
- 6b8:	1d 82       	std	Y+5, r1	; 0x05
 	
 	CANMessage bericht;
 	result1 = listenForMessage(CAN_ID_SNELHEIDSMETER, 8); // 0-geen MOB's available. 1- wel available
- 6ba:	68 e0       	ldi	r22, 0x08	; 8
- 6bc:	85 e0       	ldi	r24, 0x05	; 5
- 6be:	90 e0       	ldi	r25, 0x00	; 0
- 6c0:	0e 94 cb 00 	call	0x196	; 0x196 <listenForMessage>
- 6c4:	8b 83       	std	Y+3, r24	; 0x03
+ 6b8:	68 e0       	ldi	r22, 0x08	; 8
+ 6ba:	80 e1       	ldi	r24, 0x10	; 16
+ 6bc:	90 e0       	ldi	r25, 0x00	; 0
+ 6be:	0e 94 cb 00 	call	0x196	; 0x196 <listenForMessage>
+ 6c2:	89 83       	std	Y+1, r24	; 0x01
 	while(1)
 	{
 		result2 = getMessage(&bericht); // 1-bericht gevuld. 0-niet gevuld
- 6c6:	ce 01       	movw	r24, r28
- 6c8:	06 96       	adiw	r24, 0x06	; 6
- 6ca:	0e 94 5a 01 	call	0x2b4	; 0x2b4 <getMessage>
- 6ce:	8c 83       	std	Y+4, r24	; 0x04
-		waarde = 1;
- 6d0:	81 e0       	ldi	r24, 0x01	; 1
- 6d2:	90 e0       	ldi	r25, 0x00	; 0
- 6d4:	9a 83       	std	Y+2, r25	; 0x02
- 6d6:	89 83       	std	Y+1, r24	; 0x01
+ 6c4:	ce 01       	movw	r24, r28
+ 6c6:	05 96       	adiw	r24, 0x05	; 5
+ 6c8:	0e 94 5a 01 	call	0x2b4	; 0x2b4 <getMessage>
+ 6cc:	8a 83       	std	Y+2, r24	; 0x02
 		if(result2)
- 6d8:	8c 81       	ldd	r24, Y+4	; 0x04
- 6da:	88 23       	and	r24, r24
- 6dc:	a1 f3       	breq	.-24     	; 0x6c6 <main+0x30>
+ 6ce:	8a 81       	ldd	r24, Y+2	; 0x02
+ 6d0:	88 23       	and	r24, r24
+ 6d2:	c1 f3       	breq	.-16     	; 0x6c4 <main+0x2e>
 		{
-			res2 = true;
- 6de:	81 e0       	ldi	r24, 0x01	; 1
- 6e0:	8d 83       	std	Y+5, r24	; 0x05
-			waarde = 2;
- 6e2:	82 e0       	ldi	r24, 0x02	; 2
- 6e4:	90 e0       	ldi	r25, 0x00	; 0
- 6e6:	9a 83       	std	Y+2, r25	; 0x02
- 6e8:	89 83       	std	Y+1, r24	; 0x01
+			foundMessage = true;
+ 6d4:	81 e0       	ldi	r24, 0x01	; 1
+ 6d6:	8b 83       	std	Y+3, r24	; 0x03
 			if(bericht.id == CAN_ID_SNELHEIDSMETER)
- 6ea:	8e 81       	ldd	r24, Y+6	; 0x06
- 6ec:	2f 81       	ldd	r18, Y+7	; 0x07
- 6ee:	92 2f       	mov	r25, r18
- 6f0:	97 70       	andi	r25, 0x07	; 7
- 6f2:	05 97       	sbiw	r24, 0x05	; 5
- 6f4:	41 f7       	brne	.-48     	; 0x6c6 <main+0x30>
+ 6d8:	8d 81       	ldd	r24, Y+5	; 0x05
+ 6da:	2e 81       	ldd	r18, Y+6	; 0x06
+ 6dc:	92 2f       	mov	r25, r18
+ 6de:	97 70       	andi	r25, 0x07	; 7
+ 6e0:	40 97       	sbiw	r24, 0x10	; 16
+ 6e2:	81 f7       	brne	.-32     	; 0x6c4 <main+0x2e>
 			{
-				waarde = 3;
- 6f6:	83 e0       	ldi	r24, 0x03	; 3
- 6f8:	90 e0       	ldi	r25, 0x00	; 0
- 6fa:	9a 83       	std	Y+2, r25	; 0x02
- 6fc:	89 83       	std	Y+1, r24	; 0x01
+				foundId = true;
+ 6e4:	81 e0       	ldi	r24, 0x01	; 1
+ 6e6:	8c 83       	std	Y+4, r24	; 0x04
 			}
 		}
 	}
- 6fe:	e3 cf       	rjmp	.-58     	; 0x6c6 <main+0x30>
+ 6e8:	ed cf       	rjmp	.-38     	; 0x6c4 <main+0x2e>
 
-00000700 <__divmodhi4>:
- 700:	97 fb       	bst	r25, 7
- 702:	07 2e       	mov	r0, r23
- 704:	16 f4       	brtc	.+4      	; 0x70a <__divmodhi4+0xa>
- 706:	00 94       	com	r0
- 708:	07 d0       	rcall	.+14     	; 0x718 <__divmodhi4_neg1>
- 70a:	77 fd       	sbrc	r23, 7
- 70c:	09 d0       	rcall	.+18     	; 0x720 <__divmodhi4_neg2>
- 70e:	0e 94 94 03 	call	0x728	; 0x728 <__udivmodhi4>
- 712:	07 fc       	sbrc	r0, 7
- 714:	05 d0       	rcall	.+10     	; 0x720 <__divmodhi4_neg2>
- 716:	3e f4       	brtc	.+14     	; 0x726 <__divmodhi4_exit>
+000006ea <__divmodhi4>:
+ 6ea:	97 fb       	bst	r25, 7
+ 6ec:	07 2e       	mov	r0, r23
+ 6ee:	16 f4       	brtc	.+4      	; 0x6f4 <__divmodhi4+0xa>
+ 6f0:	00 94       	com	r0
+ 6f2:	07 d0       	rcall	.+14     	; 0x702 <__divmodhi4_neg1>
+ 6f4:	77 fd       	sbrc	r23, 7
+ 6f6:	09 d0       	rcall	.+18     	; 0x70a <__divmodhi4_neg2>
+ 6f8:	0e 94 89 03 	call	0x712	; 0x712 <__udivmodhi4>
+ 6fc:	07 fc       	sbrc	r0, 7
+ 6fe:	05 d0       	rcall	.+10     	; 0x70a <__divmodhi4_neg2>
+ 700:	3e f4       	brtc	.+14     	; 0x710 <__divmodhi4_exit>
 
-00000718 <__divmodhi4_neg1>:
- 718:	90 95       	com	r25
- 71a:	81 95       	neg	r24
- 71c:	9f 4f       	sbci	r25, 0xFF	; 255
- 71e:	08 95       	ret
+00000702 <__divmodhi4_neg1>:
+ 702:	90 95       	com	r25
+ 704:	81 95       	neg	r24
+ 706:	9f 4f       	sbci	r25, 0xFF	; 255
+ 708:	08 95       	ret
 
-00000720 <__divmodhi4_neg2>:
- 720:	70 95       	com	r23
- 722:	61 95       	neg	r22
- 724:	7f 4f       	sbci	r23, 0xFF	; 255
+0000070a <__divmodhi4_neg2>:
+ 70a:	70 95       	com	r23
+ 70c:	61 95       	neg	r22
+ 70e:	7f 4f       	sbci	r23, 0xFF	; 255
 
-00000726 <__divmodhi4_exit>:
- 726:	08 95       	ret
+00000710 <__divmodhi4_exit>:
+ 710:	08 95       	ret
 
-00000728 <__udivmodhi4>:
- 728:	aa 1b       	sub	r26, r26
- 72a:	bb 1b       	sub	r27, r27
- 72c:	51 e1       	ldi	r21, 0x11	; 17
- 72e:	07 c0       	rjmp	.+14     	; 0x73e <__udivmodhi4_ep>
+00000712 <__udivmodhi4>:
+ 712:	aa 1b       	sub	r26, r26
+ 714:	bb 1b       	sub	r27, r27
+ 716:	51 e1       	ldi	r21, 0x11	; 17
+ 718:	07 c0       	rjmp	.+14     	; 0x728 <__udivmodhi4_ep>
 
-00000730 <__udivmodhi4_loop>:
- 730:	aa 1f       	adc	r26, r26
- 732:	bb 1f       	adc	r27, r27
- 734:	a6 17       	cp	r26, r22
- 736:	b7 07       	cpc	r27, r23
- 738:	10 f0       	brcs	.+4      	; 0x73e <__udivmodhi4_ep>
- 73a:	a6 1b       	sub	r26, r22
- 73c:	b7 0b       	sbc	r27, r23
+0000071a <__udivmodhi4_loop>:
+ 71a:	aa 1f       	adc	r26, r26
+ 71c:	bb 1f       	adc	r27, r27
+ 71e:	a6 17       	cp	r26, r22
+ 720:	b7 07       	cpc	r27, r23
+ 722:	10 f0       	brcs	.+4      	; 0x728 <__udivmodhi4_ep>
+ 724:	a6 1b       	sub	r26, r22
+ 726:	b7 0b       	sbc	r27, r23
 
-0000073e <__udivmodhi4_ep>:
- 73e:	88 1f       	adc	r24, r24
- 740:	99 1f       	adc	r25, r25
- 742:	5a 95       	dec	r21
- 744:	a9 f7       	brne	.-22     	; 0x730 <__udivmodhi4_loop>
- 746:	80 95       	com	r24
- 748:	90 95       	com	r25
- 74a:	bc 01       	movw	r22, r24
- 74c:	cd 01       	movw	r24, r26
- 74e:	08 95       	ret
+00000728 <__udivmodhi4_ep>:
+ 728:	88 1f       	adc	r24, r24
+ 72a:	99 1f       	adc	r25, r25
+ 72c:	5a 95       	dec	r21
+ 72e:	a9 f7       	brne	.-22     	; 0x71a <__udivmodhi4_loop>
+ 730:	80 95       	com	r24
+ 732:	90 95       	com	r25
+ 734:	bc 01       	movw	r22, r24
+ 736:	cd 01       	movw	r24, r26
+ 738:	08 95       	ret
 
-00000750 <_exit>:
- 750:	f8 94       	cli
+0000073a <_exit>:
+ 73a:	f8 94       	cli
 
-00000752 <__stop_program>:
- 752:	ff cf       	rjmp	.-2      	; 0x752 <__stop_program>
+0000073c <__stop_program>:
+ 73c:	ff cf       	rjmp	.-2      	; 0x73c <__stop_program>

@@ -17,29 +17,30 @@
 #include <stdbool.h>
 #include "can.h"
 
-#define CAN_ID_SNELHEIDSMETER 5
+#define CAN_ID_SNELHEIDSMETER 0x10
 
 int main(void)
 {
 	sei();
 	initCAN();
 	
-	int waarde = 0;
 	uint8_t result1 = 0;
 	uint8_t result2 = 0;
+	
+	bool foundMessage = false;
+	bool foundId = false;
 	
 	CANMessage bericht;
 	result1 = listenForMessage(CAN_ID_SNELHEIDSMETER, 8); // 0-geen MOB's available. 1- wel available
 	while(1)
 	{
 		result2 = getMessage(&bericht); // 1-bericht gevuld. 0-niet gevuld
-		waarde = 1;
 		if(result2)
 		{
-			waarde = 2;
+			foundMessage = true;
 			if(bericht.id == CAN_ID_SNELHEIDSMETER)
 			{
-				waarde = 3;
+				foundId = true;
 			}
 		}
 	}

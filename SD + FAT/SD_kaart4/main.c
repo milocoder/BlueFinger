@@ -79,7 +79,9 @@ void init_timer(void)
 
 void fill_buffer(void)
 {
-	/*CANMessage bericht;
+	write_buffer[bufferAmt++] = '\n';
+	
+	CANMessage bericht;
 	int resultaat = getMessage(&bericht); // returnt 0 als het niet lukt om bericht uit te lezen, anders returnt 1
 	if(resultaat == 0)
 	{
@@ -106,9 +108,9 @@ void fill_buffer(void)
 	
 			
 		// if statement hierboven kan herhaald worden voor andere ID's.
-	}*/
+	}
 	
-	write_buffer[bufferAmt++] = '\n';
+	/*
 	const char* string = "testen: ";
 	int length = strlen(string);
 	for (int i = 0; i < length; i++)
@@ -120,6 +122,7 @@ void fill_buffer(void)
 	{
 		write_buffer[bufferAmt++] = c++;
 	}
+	*/
 	
 	if(bufferAmt>=(512-30)) // sectorgrootte van 512 bytes - ongeveer 30 bytes (iets meer dan 2 lines)
 	{

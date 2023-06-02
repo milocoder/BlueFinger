@@ -5,6 +5,7 @@
 
 #include <avr/io.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "diskio.h"
 #include "pff.h"
 #include "pffconf.h"
@@ -56,8 +57,8 @@ int main(void)
 		
 		if(startWriting)
 		{
+			PORTC ^= (1 << PC0); // toggle ter indicatie op oscilloscoop
 			writeToCard(); // schrijf buffer op kaart
-			PORTC ^= (1 << PC0); // toggle ter indicatie op oscilloscoop dat 1 sector geschreven is
 			curOffset += 512; // zet pointer naar volgende sector
 			startWriting = false;
 		}
@@ -86,43 +87,31 @@ void fill_buffer(void)
 	if(resultaat == 0)
 	{
 		// geen bericht ontvangen > can-bus werkt niet
-		const char* string = "FOUT MET CAN-BUS SYSTEEM";
+		const char* string = "GEEN DATA ONTVANGEN";
 		int length = strlen(string);
 		for (int i = 0; i < length; i++)
 		{
 			write_buffer[bufferAmt++] = string[i];
 		}
-	} else {
+	} else 
+	{
 		// bericht ontvangen > schrijf data naar buffer
 		if(bericht.id == CAN_ID_SNELHEIDSMETER)
 		{
-			const char* string = "snelheid: ";
-			int length = strlen(string);
+			int val1 = bericht.data[0];
+			int val2 = bericht.data[1];
+			char zin[15];
+			sprintf(zin, "snelheid: %d.%d", val1, val2); 			
+			int length = strlen(zin);
 			for (int i = 0; i < length; i++)
 			{
-				write_buffer[bufferAmt++] = string[i];
+				write_buffer[bufferAmt++] = zin[i];
 			}
-			write_buffer[bufferAmt++] = bericht.data[0];
-			write_buffer[bufferAmt++] = bericht.data[1];
 		}
 	
 			
 		// if statement hierboven kan herhaald worden voor andere ID's.
 	}
-	
-	/*
-	const char* string = "testen: ";
-	int length = strlen(string);
-	for (int i = 0; i < length; i++)
-	{
-		write_buffer[bufferAmt++] = string[i];
-	}
-	char c = 48;
-	for (int i = 0; i < 10; i++)
-	{
-		write_buffer[bufferAmt++] = c++;
-	}
-	*/
 	
 	if(bufferAmt>=(512-30)) // sectorgrootte van 512 bytes - ongeveer 30 bytes (iets meer dan 2 lines)
 	{

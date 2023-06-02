@@ -17,6 +17,8 @@ int main(void)
 	volatile int rpmaantal = 0;
 	int vorigeStatusHall = 0;
 	int huidigeStatusHall = 0;
+	float snelheidms = 0;
+	float snelheidKmh = 0;
 	
 	init();
 	
@@ -32,11 +34,11 @@ int main(void)
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		// volgende stuk kijkt eens in de 3000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
-		if(millis() - timer >= 3000)
+		// volgende stuk kijkt eens in de 2000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
+		if(millis() - timer >= 1000) // 2000
 		{
-			float snelheidms = (float) (omtrek_wiel * rpmaantal) / 3;
-			float snelheidKmh = snelheidms * 3.6;
+			snelheidms = (float) (omtrek_wiel * rpmaantal) / 1;
+			snelheidKmh = snelheidms * 3.6;
 			rpmaantal = 0; // reset rpm
 			verstuurCan(snelheidKmh);
 			timer = millis(); // reset timer
@@ -49,7 +51,7 @@ void verstuurCan(float snelheid)
 {
 	// volgende stuk initaliseert de canmessage struct, verstuurt snelheid met data[0] en data[1]
 	int voorKomma = (int)snelheid; // pak getal voor de komma
-	int naKomma = (int)((snelheid-voorKomma)*100); // pak kommagetal en vermenigvuldig keer 100
+	int naKomma = (int)((snelheid-voorKomma)*100)+1; // pak kommagetal en vermenigvuldig keer 100
 	
 	CANMessage tx_message;
 	tx_message.id = 0x10; // can ID

@@ -11,7 +11,6 @@
 #define CAN_ID_ACCU_TEMPERATUUR 0xFE06
 //nog can id's van motorcontrollers
 
-
 #include <avr/io.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -33,6 +32,9 @@ bool startWriting = false;
 unsigned long curOffset = 0;
 unsigned long timer = 0;
 
+// predeclaratie van char-arrays die gevuld worden in de switch(case)
+char zin_id[15];
+
 void init_timer(void);
 void init_sd_card(void);
 void fill_buffer(void);
@@ -53,6 +55,8 @@ int main(void)
 	sei();
 	initCAN(); // init can-bus
 	listenForMessage(CAN_ID_SNELHEIDSMETER, 8);
+	//listenForMessage(CAN_ID_MONITORINGSSYSTEEM, 8);
+	// voor elke ID die je uit wilt lezen moet je hier een keer de listenForMessage functie aanroepen
 	init_timer();
 	curOffset = find_offset(); // returnt offset van eerstvolgende lege sector
 	start_log_message(); // schrijf start log bericht naar de kaart zodat je kan zien wanneer de auto opnieuw aan is gezet
@@ -73,10 +77,8 @@ int main(void)
 		}
 		
 	}
-	while(1)
-	{
-		
-	}
+	
+	while(1) {}
 }
 
 void init_timer(void)
@@ -86,9 +88,21 @@ void init_timer(void)
 	TIMSK2 = (1 << TOIE2);
 }
 
+void write_sentence(char* zin, int length)
+{
+	for (int i = 0; i < length; i++)
+	{
+		write_buffer[bufferAmt++] = zin[i];
+	}
+}
+
 
 void fill_buffer(void)
 {
+	// predeclaratie van variabelen omdat dat in de switch(case) niet kan
+	int val1 = 0;
+	int val2 = 0;
+	
 	write_buffer[bufferAmt++] = '\n';
 	
 	CANMessage bericht;
@@ -96,35 +110,28 @@ void fill_buffer(void)
 	if(resultaat == 0)
 	{
 		// geen bericht ontvangen > can-bus werkt niet
-		const char* string = "GEEN DATA ONTVANGEN";
+		char* string = "GEEN DATA ONTVANGEN";
 		int length = strlen(string);
-		for (int i = 0; i < length; i++)
-		{
-			write_buffer[bufferAmt++] = string[i];
-		}
+		write_sentence(string, length);
 	} else 
-	{
-		// bericht ontvangen > schrijf data naar buffer
-		if(bericht.id == CAN_ID_SNELHEIDSMETER)
+	{		
+		switch(bericht.id)
 		{
-			int val1 = bericht.data[0];
-			int val2 = bericht.data[1];
-			char zin[15];
-			sprintf(zin, "snelheid: %d.%d", val1, val2); 			
-			int length = strlen(zin);
-			for (int i = 0; i < length; i++)
-			{
-				write_buffer[bufferAmt++] = zin[i];
-			}
-		}
-	
-			
-		// if statement hierboven kan herhaald worden voor andere ID's.
+			case CAN_ID_SNELHEIDSMETER:
+				val1 = bericht.data[0];
+				val2 = bericht.data[1];
+				sprintf(zin_id, "snelheid: %d.%d", val1, val2);
+				write_sentence(zin_id, 15);
+				break;
+			case CAN_ID_MONITORINGSSYSTEEM:
+				//
+				break;
+			// etc
+		}		
 	}
 	
 	if(bufferAmt>=(512-30)) // sectorgrootte van 512 bytes - ongeveer 30 bytes (iets meer dan 2 lines)
 	{
-			
 		bufferAmt = 0;
 		startWriting = true; // als dit op true staat gaat de microcontroller in de main>while(logging) in de if-statement en vult vanaf daar de sd-kaart 
 	}

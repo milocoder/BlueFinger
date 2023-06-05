@@ -1,7 +1,16 @@
 #define F_CPU 16000000UL
 #define _PROTECTED_WRITE(register, value)
 #define BUFFER_SIZE 512
+
+//can ID's
 #define CAN_ID_SNELHEIDSMETER 0x10
+#define CAN_ID_MONITORINGSSYSTEEM 0x123
+#define CAN_ID_ACCU_SPANNING   0xFE00
+#define CAN_ID_ACCU_STROOM 0xFE01
+#define CAN_ID_ACCU_VERMOGEN  0xFE02
+#define CAN_ID_ACCU_TEMPERATUUR 0xFE06
+//nog can id's van motorcontrollers
+
 
 #include <avr/io.h>
 #include <stdbool.h>

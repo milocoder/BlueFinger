@@ -53,3 +53,5 @@ dkms.conf
 *.txt
 *.txt
 PythonReadEEPROM/DocumentEEPROM.txt
+
+.atsuo

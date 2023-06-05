@@ -13,7 +13,7 @@ void verstuurCan(float snelheid);
 int main(void)
 {
 	//float omtrek_wiel = 1.728; // 2 * Pi * r. r = 0.275 m
-	float omtrek_wiel = 0.864;			//omtrek wiel delen door 2 magneten 
+	float omtrek_wiel = 0.864;			//omtrek wiel delen door aantal magneten, dus 1.728 /2 = 0.864
 	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
 	volatile int rpmaantal = 0;
 	int vorigeStatusHall = 0;
@@ -24,9 +24,7 @@ int main(void)
 	init();
 	
 	while(1) {
-		// volgende stuk leest hall sensor input en incrementeert rpmaantal als de magneet langs is gekomen
-		//huidigeStatusHall = PINC & (1 << PC0);
-		huidigeStatusHall = PINE & (1 << PE4);
+		huidigeStatusHall = PINE & (1 << PE4);			//uitlezen input (=output comparator)
 		if(huidigeStatusHall) {
 			if(vorigeStatusHall == 0)
 			{
@@ -36,10 +34,10 @@ int main(void)
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		// volgende stuk kijkt eens in de 2000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
-		if(millis() - timer >= 1000) // 2000
+		// volgende stuk kijkt eens in de 1000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
+		if(millis() - timer >= 1000) 
 		{
-			snelheidms = (float) (omtrek_wiel * rpmaantal) / 1;
+			snelheidms = (float) (omtrek_wiel * rpmaantal);		//v = s/t 
 			snelheidKmh = snelheidms * 3.6; 
 			rpmaantal = 0; // reset rpm
 			verstuurCan(snelheidKmh);

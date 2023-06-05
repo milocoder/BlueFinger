@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000001dc  00000000  00000000  00003320  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000073d  00000000  00000000  000034fc  2**0
+ 10 .debug_str    0000074d  00000000  00000000  000034fc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000719  00000000  00000000  00003c39  2**0
+ 11 .debug_loc    00000719  00000000  00000000  00003c49  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000080  00000000  00000000  00004352  2**0
+ 12 .debug_ranges 00000080  00000000  00000000  00004362  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -618,7 +618,7 @@ void verstuurCan(float snelheid)
 
 void init()
 {
-	init_millis(16000000UL);
+	init_millis(F_CPU);
  3fe:	60 e0       	ldi	r22, 0x00	; 0
  400:	74 e2       	ldi	r23, 0x24	; 36
  402:	84 ef       	ldi	r24, 0xF4	; 244
@@ -648,7 +648,7 @@ int main(void)
  41c:	cd b7       	in	r28, 0x3d	; 61
  41e:	de b7       	in	r29, 0x3e	; 62
 	//float omtrek_wiel = 1.728; // 2 * Pi * r. r = 0.275 m
-	float omtrek_wiel = 0.864;			//omtrek wiel delen door 2 magneten 
+	float omtrek_wiel = 0.864;			//omtrek wiel delen door aantal magneten, dus 1.728 /2 = 0.864
 	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
 	volatile int rpmaantal = 0;
  420:	1a 82       	std	Y+2, r1	; 0x02
@@ -662,7 +662,7 @@ int main(void)
  424:	0e 94 ff 01 	call	0x3fe	; 0x3fe <init>
 {
 	//float omtrek_wiel = 1.728; // 2 * Pi * r. r = 0.275 m
-	float omtrek_wiel = 0.864;			//omtrek wiel delen door 2 magneten 
+	float omtrek_wiel = 0.864;			//omtrek wiel delen door aantal magneten, dus 1.728 /2 = 0.864
 	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
 	volatile int rpmaantal = 0;
 	int vorigeStatusHall = 0;
@@ -672,19 +672,19 @@ int main(void)
 int main(void)
 {
 	//float omtrek_wiel = 1.728; // 2 * Pi * r. r = 0.275 m
-	float omtrek_wiel = 0.864;			//omtrek wiel delen door 2 magneten 
+	float omtrek_wiel = 0.864;			//omtrek wiel delen door aantal magneten, dus 1.728 /2 = 0.864
 	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
  42c:	c1 2c       	mov	r12, r1
  42e:	d1 2c       	mov	r13, r1
  430:	76 01       	movw	r14, r12
  432:	01 c0       	rjmp	.+2      	; 0x436 <main+0x20>
  434:	c8 01       	movw	r24, r16
+	float snelheidKmh = 0;
+	
 	init();
 	
 	while(1) {
-		// volgende stuk leest hall sensor input en incrementeert rpmaantal als de magneet langs is gekomen
-		//huidigeStatusHall = PINC & (1 << PC0);
-		huidigeStatusHall = PINE & (1 << PE4);
+		huidigeStatusHall = PINE & (1 << PE4);			//uitlezen input (=output comparator)
  436:	0c b1       	in	r16, 0x0c	; 12
  438:	00 71       	andi	r16, 0x10	; 16
  43a:	10 e0       	ldi	r17, 0x00	; 0
@@ -706,8 +706,8 @@ int main(void)
 		}
 		vorigeStatusHall = huidigeStatusHall;
 		
-		// volgende stuk kijkt eens in de 2000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
-		if(millis() - timer >= 1000) // 2000
+		// volgende stuk kijkt eens in de 1000ms naar het aantal rotaties (rpmaantal), berekent daarmee de snelheid in kmh en verstuurt deze snelheid
+		if(millis() - timer >= 1000) 
  450:	0e 94 90 02 	call	0x520	; 0x520 <millis>
  454:	dc 01       	movw	r26, r24
  456:	cb 01       	movw	r24, r22
@@ -721,7 +721,7 @@ int main(void)
  466:	b1 05       	cpc	r27, r1
  468:	28 f3       	brcs	.-54     	; 0x434 <main+0x1e>
 		{
-			snelheidms = (float) (omtrek_wiel * rpmaantal) / 1;
+			snelheidms = (float) (omtrek_wiel * rpmaantal);		//v = s/t 
  46a:	69 81       	ldd	r22, Y+1	; 0x01
  46c:	7a 81       	ldd	r23, Y+2	; 0x02
  46e:	07 2e       	mov	r0, r23

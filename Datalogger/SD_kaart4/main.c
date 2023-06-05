@@ -49,7 +49,6 @@ ISR(TIMER2_OVF_vect)
 int main(void)
 {	
 	_PROTECTED_WRITE(CLKPR, ( (1<<CLKPCE) | (1<<CLKPS1)));
-	//_PROTECTED_WRITE(CLKPR, ( (1<<CLKPCE) | ((0<<CLKPS3) | (0<<CLKPS2) | (1<<CLKPS1) | (0<<CLKPS0))));
 	init_sd_card(); // initialize sd-card
 	sei();
 	initCAN(); // init can-bus
@@ -219,7 +218,6 @@ void init_sd_card(void)
 			ERROR = 0;			
 			// Set SPI clock faster after initialization 
 			SPCR = (1<<MSTR) | (1<<SPE);
-			//SPCR = (1<<MSTR) | (0<<SPR1) | (0<<SPR0) | (1<<SPE);
 			SPSR = (1<<SPI2X); 		
 			//SPR1 en 0 op 0 SPI clock set to fck/4 (blaz. 174)
 			//MSTR, in mastermode zetten

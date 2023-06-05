@@ -25,7 +25,8 @@ int main(void)
 	
 	while(1) {
 		// volgende stuk leest hall sensor input en incrementeert rpmaantal als de magneet langs is gekomen
-		huidigeStatusHall = PINC & (1 << PC0);
+		//huidigeStatusHall = PINC & (1 << PC0);
+		huidigeStatusHall = PINE & (1 << PE4);
 		if(huidigeStatusHall) {
 			if(vorigeStatusHall == 0)
 			{
@@ -75,6 +76,6 @@ void init()
 	sei();  // Zet interrupts aan
 	initCAN();
 	
-	DDRC = 0;	//input sensor (p5)
-	PORTC = 0;
+	DDRE = 0;	//input sensor (e4)
+	PORTE = 0;
 }

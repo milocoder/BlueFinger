@@ -12,7 +12,8 @@ void verstuurCan(float snelheid);
 
 int main(void)
 {
-	float omtrek_wiel = 1.728; // 2 * Pi * r. r = 0.275 m
+	//float omtrek_wiel = 1.728; // 2 * Pi * r. r = 0.275 m
+	float omtrek_wiel = 0.864;			//omtrek wiel delen door 2 magneten 
 	unsigned long timer = 0; // hierin wordt de huidige tijd gestopt in miliseconden
 	volatile int rpmaantal = 0;
 	int vorigeStatusHall = 0;
@@ -38,7 +39,7 @@ int main(void)
 		if(millis() - timer >= 1000) // 2000
 		{
 			snelheidms = (float) (omtrek_wiel * rpmaantal) / 1;
-			snelheidKmh = snelheidms * 3.6;
+			snelheidKmh = snelheidms * 3.6; 
 			rpmaantal = 0; // reset rpm
 			verstuurCan(snelheidKmh);
 			timer = millis(); // reset timer
@@ -51,7 +52,7 @@ void verstuurCan(float snelheid)
 {
 	// volgende stuk initaliseert de canmessage struct, verstuurt snelheid met data[0] en data[1]
 	int voorKomma = (int)snelheid; // pak getal voor de komma
-	int naKomma = (int)((snelheid-voorKomma)*100)+1; // pak kommagetal en vermenigvuldig keer 100
+	int naKomma = (int)((snelheid-voorKomma)*100); // pak kommagetal en vermenigvuldig keer 100
 	
 	CANMessage tx_message;
 	tx_message.id = 0x10; // can ID

@@ -32,8 +32,8 @@ bool startWriting = false;
 unsigned long curOffset = 0;
 unsigned long timer = 0;
 
-// predeclaratie van char-arrays die gevuld worden in de switch(case)
-char zin_id[15];
+// predeclaratie van char-array die gevuld wordt in de switch(case)
+char zin_buffer[30]; // 30 is max waarde, dit kan vergroot worden als dat nodig is. in de write_sentence functie geef je als argument mee hoeveel karakters er geschreven moeten worden
 
 void init_timer(void);
 void init_sd_card(void);
@@ -41,6 +41,7 @@ void fill_buffer(void);
 void start_log_message(void);
 unsigned long find_offset(void);
 void writeToCard(void);
+void write_to_buffer(char* zin, int length);
 
 ISR(TIMER2_OVF_vect)
 {
@@ -88,7 +89,7 @@ void init_timer(void)
 	TIMSK2 = (1 << TOIE2);
 }
 
-void write_sentence(char* zin, int length)
+void write_to_buffer(char* zin, int length)
 {
 	for (int i = 0; i < length; i++)
 	{
@@ -102,33 +103,46 @@ void fill_buffer(void)
 	// predeclaratie van variabelen omdat dat in de switch(case) niet kan
 	int val1 = 0;
 	int val2 = 0;
+	int val3 = 0;
+	int val4 = 0;
+	int val5 = 0;
+	int val6 = 0;
+	int val7 = 0;
+	int val8 = 0;
 	
 	write_buffer[bufferAmt++] = '\n';
 	
 	CANMessage bericht;
-	int resultaat = getMessage(&bericht); // returnt 0 als het niet lukt om bericht uit te lezen, anders returnt 1
-	if(resultaat == 0)
+	int resultaat;
+	do 
 	{
-		// geen bericht ontvangen > can-bus werkt niet
-		char* string = "GEEN DATA ONTVANGEN";
-		int length = strlen(string);
-		write_sentence(string, length);
-	} else 
-	{		
-		switch(bericht.id)
+		resultaat = getMessage(&bericht); // 0 als er geen bericht is, anders 1
+		if(resultaat == 0)
 		{
-			case CAN_ID_SNELHEIDSMETER:
-				val1 = bericht.data[0];
-				val2 = bericht.data[1];
-				sprintf(zin_id, "snelheid: %d.%d", val1, val2);
-				write_sentence(zin_id, 15);
-				break;
-			case CAN_ID_MONITORINGSSYSTEEM:
-				//
-				break;
-			// etc
-		}		
-	}
+			char* string = "GEEN DATA ONTVANGEN";
+			int length = strlen(string);
+			write_to_buffer(string, length);
+		} else
+		{
+			switch(bericht.id)
+			{
+				case CAN_ID_SNELHEIDSMETER:
+					val1 = bericht.data[0];
+					val2 = bericht.data[1];
+					sprintf(zin_buffer, "snelheid: %03d.%02d", val1, val2);
+					write_to_buffer(zin_buffer, 16);
+					break;
+				case CAN_ID_ACCU_SPANNING:
+					val1 = bericht.data[0];
+					val2 = bericht.data[1];
+					sprintf(zin_buffer, "accuspanning: %02d.%02d", val1, val2);
+					write_to_buffer(zin_buffer, 19);
+					break;
+				// schrijf een case voor alle can_id's
+			}
+		}
+	} while (resultaat != 0);
+	
 	
 	if(bufferAmt>=(512-30)) // sectorgrootte van 512 bytes - ongeveer 30 bytes (iets meer dan 2 lines)
 	{

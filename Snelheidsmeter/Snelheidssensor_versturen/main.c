@@ -58,12 +58,10 @@ void verstuurCan(float snelheid)
 	tx_message.length = 8;
 	tx_message.data[0] = voorKomma;
 	tx_message.data[1] = naKomma;
-	tx_message.data[2] = 0x00;
-	tx_message.data[3] = 0x00;
-	tx_message.data[4] = 0x00;
-	tx_message.data[5] = 0x00;
-	tx_message.data[6] = 0x00;
-	tx_message.data[7] = 0x00;
+	for (int i = 2; i < 8; i++)
+	{
+		tx_message.data[i] = 0x00;
+	}
 	
 	sendCAN(&tx_message);
 }
